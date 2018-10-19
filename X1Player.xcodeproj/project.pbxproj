@@ -1,0 +1,458 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A32562E421787A65009E9DA2 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A32562E321787A65009E9DA2 /* AppDelegate.m */; };
+		A32562E721787A65009E9DA2 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A32562E621787A65009E9DA2 /* ViewController.m */; };
+		A32562EA21787A65009E9DA2 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A32562E821787A65009E9DA2 /* Main.storyboard */; };
+		A32562EC21787A67009E9DA2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A32562EB21787A67009E9DA2 /* Assets.xcassets */; };
+		A32562EF21787A67009E9DA2 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A32562ED21787A67009E9DA2 /* LaunchScreen.storyboard */; };
+		A32562F221787A67009E9DA2 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A32562F121787A67009E9DA2 /* main.m */; };
+		A325631721787A98009E9DA2 /* YZColorUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = A32562FA21787A97009E9DA2 /* YZColorUtil.m */; };
+		A325631821787A98009E9DA2 /* YZMoviePlayerController.mm in Sources */ = {isa = PBXBuildFile; fileRef = A32562FF21787A97009E9DA2 /* YZMoviePlayerController.mm */; };
+		A325631921787A98009E9DA2 /* YZMoivePlayerBrightnessView.m in Sources */ = {isa = PBXBuildFile; fileRef = A325630021787A97009E9DA2 /* YZMoivePlayerBrightnessView.m */; };
+		A325631A21787A98009E9DA2 /* YZMoviePlayerSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = A325630121787A97009E9DA2 /* YZMoviePlayerSlider.m */; };
+		A325631B21787A98009E9DA2 /* YZMoviePlayerCountdownView.m in Sources */ = {isa = PBXBuildFile; fileRef = A325630221787A97009E9DA2 /* YZMoviePlayerCountdownView.m */; };
+		A325631C21787A98009E9DA2 /* YZMoviePlayerGestureRecognizerView.m in Sources */ = {isa = PBXBuildFile; fileRef = A325630321787A97009E9DA2 /* YZMoviePlayerGestureRecognizerView.m */; };
+		A325631D21787A98009E9DA2 /* YZMoviePlayerControls.m in Sources */ = {isa = PBXBuildFile; fileRef = A325630421787A97009E9DA2 /* YZMoviePlayerControls.m */; };
+		A325631E21787A98009E9DA2 /* YZMoviePlayerControlButton.m in Sources */ = {isa = PBXBuildFile; fileRef = A325630721787A97009E9DA2 /* YZMoviePlayerControlButton.m */; };
+		A325631F21787A98009E9DA2 /* YZMoivePlayerNoStartView.m in Sources */ = {isa = PBXBuildFile; fileRef = A325630821787A97009E9DA2 /* YZMoivePlayerNoStartView.m */; };
+		A325632021787A98009E9DA2 /* X1PlayerView.m in Sources */ = {isa = PBXBuildFile; fileRef = A325630921787A97009E9DA2 /* X1PlayerView.m */; };
+		A325632121787A98009E9DA2 /* YZMoivePlayerReplayView.m in Sources */ = {isa = PBXBuildFile; fileRef = A325630E21787A97009E9DA2 /* YZMoivePlayerReplayView.m */; };
+		A325632221787A98009E9DA2 /* YZMoivePlayerFloatView.m in Sources */ = {isa = PBXBuildFile; fileRef = A325631421787A98009E9DA2 /* YZMoivePlayerFloatView.m */; };
+		A325632321787A98009E9DA2 /* libmediaplayer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A325631521787A98009E9DA2 /* libmediaplayer.a */; };
+		A325632421787A98009E9DA2 /* X1Player.bundle in Resources */ = {isa = PBXBuildFile; fileRef = A325631621787A98009E9DA2 /* X1Player.bundle */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		A32562DF21787A65009E9DA2 /* X1Player.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = X1Player.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A32562E221787A65009E9DA2 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		A32562E321787A65009E9DA2 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		A32562E521787A65009E9DA2 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		A32562E621787A65009E9DA2 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		A32562E921787A65009E9DA2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		A32562EB21787A67009E9DA2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		A32562EE21787A67009E9DA2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		A32562F021787A67009E9DA2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A32562F121787A67009E9DA2 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		A32562FA21787A97009E9DA2 /* YZColorUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YZColorUtil.m; sourceTree = "<group>"; };
+		A32562FB21787A97009E9DA2 /* YZColorUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YZColorUtil.h; sourceTree = "<group>"; };
+		A32562FC21787A97009E9DA2 /* X1Player.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = X1Player.h; sourceTree = "<group>"; };
+		A32562FD21787A97009E9DA2 /* X1PlayerCallback.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = X1PlayerCallback.h; sourceTree = "<group>"; };
+		A32562FF21787A97009E9DA2 /* YZMoviePlayerController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = YZMoviePlayerController.mm; sourceTree = "<group>"; };
+		A325630021787A97009E9DA2 /* YZMoivePlayerBrightnessView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YZMoivePlayerBrightnessView.m; sourceTree = "<group>"; };
+		A325630121787A97009E9DA2 /* YZMoviePlayerSlider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YZMoviePlayerSlider.m; sourceTree = "<group>"; };
+		A325630221787A97009E9DA2 /* YZMoviePlayerCountdownView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YZMoviePlayerCountdownView.m; sourceTree = "<group>"; };
+		A325630321787A97009E9DA2 /* YZMoviePlayerGestureRecognizerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YZMoviePlayerGestureRecognizerView.m; sourceTree = "<group>"; };
+		A325630421787A97009E9DA2 /* YZMoviePlayerControls.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YZMoviePlayerControls.m; sourceTree = "<group>"; };
+		A325630521787A97009E9DA2 /* YZMoivePlayerReplayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YZMoivePlayerReplayView.h; sourceTree = "<group>"; };
+		A325630621787A97009E9DA2 /* YZMoivePlayerFloatView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YZMoivePlayerFloatView.h; sourceTree = "<group>"; };
+		A325630721787A97009E9DA2 /* YZMoviePlayerControlButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YZMoviePlayerControlButton.m; sourceTree = "<group>"; };
+		A325630821787A97009E9DA2 /* YZMoivePlayerNoStartView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YZMoivePlayerNoStartView.m; sourceTree = "<group>"; };
+		A325630921787A97009E9DA2 /* X1PlayerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = X1PlayerView.m; sourceTree = "<group>"; };
+		A325630A21787A97009E9DA2 /* YZMoivePlayerBrightnessView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YZMoivePlayerBrightnessView.h; sourceTree = "<group>"; };
+		A325630B21787A97009E9DA2 /* YZMoviePlayerGestureRecognizerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YZMoviePlayerGestureRecognizerView.h; sourceTree = "<group>"; };
+		A325630C21787A97009E9DA2 /* YZMoviePlayerCountdownView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YZMoviePlayerCountdownView.h; sourceTree = "<group>"; };
+		A325630D21787A97009E9DA2 /* YZMoviePlayerSlider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YZMoviePlayerSlider.h; sourceTree = "<group>"; };
+		A325630E21787A97009E9DA2 /* YZMoivePlayerReplayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YZMoivePlayerReplayView.m; sourceTree = "<group>"; };
+		A325630F21787A97009E9DA2 /* YZMoviePlayerControls.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YZMoviePlayerControls.h; sourceTree = "<group>"; };
+		A325631021787A97009E9DA2 /* YZMoviePlayerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YZMoviePlayerController.h; sourceTree = "<group>"; };
+		A325631121787A97009E9DA2 /* X1PlayerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = X1PlayerView.h; sourceTree = "<group>"; };
+		A325631221787A97009E9DA2 /* YZMoivePlayerNoStartView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YZMoivePlayerNoStartView.h; sourceTree = "<group>"; };
+		A325631321787A97009E9DA2 /* YZMoviePlayerControlButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YZMoviePlayerControlButton.h; sourceTree = "<group>"; };
+		A325631421787A98009E9DA2 /* YZMoivePlayerFloatView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YZMoivePlayerFloatView.m; sourceTree = "<group>"; };
+		A325631521787A98009E9DA2 /* libmediaplayer.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libmediaplayer.a; sourceTree = "<group>"; };
+		A325631621787A98009E9DA2 /* X1Player.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = X1Player.bundle; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A32562DC21787A65009E9DA2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A325632321787A98009E9DA2 /* libmediaplayer.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A32562D621787A65009E9DA2 = {
+			isa = PBXGroup;
+			children = (
+				A32562E121787A65009E9DA2 /* X1Player */,
+				A32562E021787A65009E9DA2 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A32562E021787A65009E9DA2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A32562DF21787A65009E9DA2 /* X1Player.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A32562E121787A65009E9DA2 /* X1Player */ = {
+			isa = PBXGroup;
+			children = (
+				A32562F821787A97009E9DA2 /* X1PlayerSDK */,
+				A32562E221787A65009E9DA2 /* AppDelegate.h */,
+				A32562E321787A65009E9DA2 /* AppDelegate.m */,
+				A32562E521787A65009E9DA2 /* ViewController.h */,
+				A32562E621787A65009E9DA2 /* ViewController.m */,
+				A32562E821787A65009E9DA2 /* Main.storyboard */,
+				A32562EB21787A67009E9DA2 /* Assets.xcassets */,
+				A32562ED21787A67009E9DA2 /* LaunchScreen.storyboard */,
+				A32562F021787A67009E9DA2 /* Info.plist */,
+				A32562F121787A67009E9DA2 /* main.m */,
+			);
+			path = X1Player;
+			sourceTree = "<group>";
+		};
+		A32562F821787A97009E9DA2 /* X1PlayerSDK */ = {
+			isa = PBXGroup;
+			children = (
+				A32562F921787A97009E9DA2 /* X1playerUtils */,
+				A32562FC21787A97009E9DA2 /* X1Player.h */,
+				A32562FD21787A97009E9DA2 /* X1PlayerCallback.h */,
+				A32562FE21787A97009E9DA2 /* X1playerView */,
+				A325631521787A98009E9DA2 /* libmediaplayer.a */,
+				A325631621787A98009E9DA2 /* X1Player.bundle */,
+			);
+			path = X1PlayerSDK;
+			sourceTree = "<group>";
+		};
+		A32562F921787A97009E9DA2 /* X1playerUtils */ = {
+			isa = PBXGroup;
+			children = (
+				A32562FA21787A97009E9DA2 /* YZColorUtil.m */,
+				A32562FB21787A97009E9DA2 /* YZColorUtil.h */,
+			);
+			path = X1playerUtils;
+			sourceTree = "<group>";
+		};
+		A32562FE21787A97009E9DA2 /* X1playerView */ = {
+			isa = PBXGroup;
+			children = (
+				A325631121787A97009E9DA2 /* X1PlayerView.h */,
+				A325630921787A97009E9DA2 /* X1PlayerView.m */,
+				A325631021787A97009E9DA2 /* YZMoviePlayerController.h */,
+				A32562FF21787A97009E9DA2 /* YZMoviePlayerController.mm */,
+				A325630F21787A97009E9DA2 /* YZMoviePlayerControls.h */,
+				A325630421787A97009E9DA2 /* YZMoviePlayerControls.m */,
+				A325630B21787A97009E9DA2 /* YZMoviePlayerGestureRecognizerView.h */,
+				A325630321787A97009E9DA2 /* YZMoviePlayerGestureRecognizerView.m */,
+				A325630D21787A97009E9DA2 /* YZMoviePlayerSlider.h */,
+				A325630121787A97009E9DA2 /* YZMoviePlayerSlider.m */,
+				A325630A21787A97009E9DA2 /* YZMoivePlayerBrightnessView.h */,
+				A325630021787A97009E9DA2 /* YZMoivePlayerBrightnessView.m */,
+				A325631321787A97009E9DA2 /* YZMoviePlayerControlButton.h */,
+				A325630721787A97009E9DA2 /* YZMoviePlayerControlButton.m */,
+				A325631221787A97009E9DA2 /* YZMoivePlayerNoStartView.h */,
+				A325630821787A97009E9DA2 /* YZMoivePlayerNoStartView.m */,
+				A325630521787A97009E9DA2 /* YZMoivePlayerReplayView.h */,
+				A325630E21787A97009E9DA2 /* YZMoivePlayerReplayView.m */,
+				A325630C21787A97009E9DA2 /* YZMoviePlayerCountdownView.h */,
+				A325630221787A97009E9DA2 /* YZMoviePlayerCountdownView.m */,
+				A325630621787A97009E9DA2 /* YZMoivePlayerFloatView.h */,
+				A325631421787A98009E9DA2 /* YZMoivePlayerFloatView.m */,
+			);
+			path = X1playerView;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A32562DE21787A65009E9DA2 /* X1Player */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A32562F521787A67009E9DA2 /* Build configuration list for PBXNativeTarget "X1Player" */;
+			buildPhases = (
+				A32562DB21787A65009E9DA2 /* Sources */,
+				A32562DC21787A65009E9DA2 /* Frameworks */,
+				A32562DD21787A65009E9DA2 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = X1Player;
+			productName = X1Player;
+			productReference = A32562DF21787A65009E9DA2 /* X1Player.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A32562D721787A65009E9DA2 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 1000;
+				ORGANIZATIONNAME = channelsoft;
+				TargetAttributes = {
+					A32562DE21787A65009E9DA2 = {
+						CreatedOnToolsVersion = 10.0;
+					};
+				};
+			};
+			buildConfigurationList = A32562DA21787A65009E9DA2 /* Build configuration list for PBXProject "X1Player" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = A32562D621787A65009E9DA2;
+			productRefGroup = A32562E021787A65009E9DA2 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A32562DE21787A65009E9DA2 /* X1Player */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A32562DD21787A65009E9DA2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A32562EF21787A67009E9DA2 /* LaunchScreen.storyboard in Resources */,
+				A325632421787A98009E9DA2 /* X1Player.bundle in Resources */,
+				A32562EC21787A67009E9DA2 /* Assets.xcassets in Resources */,
+				A32562EA21787A65009E9DA2 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A32562DB21787A65009E9DA2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A325631821787A98009E9DA2 /* YZMoviePlayerController.mm in Sources */,
+				A325631E21787A98009E9DA2 /* YZMoviePlayerControlButton.m in Sources */,
+				A325632121787A98009E9DA2 /* YZMoivePlayerReplayView.m in Sources */,
+				A325632221787A98009E9DA2 /* YZMoivePlayerFloatView.m in Sources */,
+				A325631C21787A98009E9DA2 /* YZMoviePlayerGestureRecognizerView.m in Sources */,
+				A325631F21787A98009E9DA2 /* YZMoivePlayerNoStartView.m in Sources */,
+				A325631721787A98009E9DA2 /* YZColorUtil.m in Sources */,
+				A325631A21787A98009E9DA2 /* YZMoviePlayerSlider.m in Sources */,
+				A325632021787A98009E9DA2 /* X1PlayerView.m in Sources */,
+				A325631B21787A98009E9DA2 /* YZMoviePlayerCountdownView.m in Sources */,
+				A325631921787A98009E9DA2 /* YZMoivePlayerBrightnessView.m in Sources */,
+				A325631D21787A98009E9DA2 /* YZMoviePlayerControls.m in Sources */,
+				A32562E721787A65009E9DA2 /* ViewController.m in Sources */,
+				A32562F221787A67009E9DA2 /* main.m in Sources */,
+				A32562E421787A65009E9DA2 /* AppDelegate.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		A32562E821787A65009E9DA2 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A32562E921787A65009E9DA2 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		A32562ED21787A67009E9DA2 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A32562EE21787A67009E9DA2 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		A32562F321787A67009E9DA2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		A32562F421787A67009E9DA2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		A32562F621787A67009E9DA2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 34G453YHUY;
+				INFOPLIST_FILE = X1Player/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/X1Player/X1PlayerSDK",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = yz.X1Player;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A32562F721787A67009E9DA2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 34G453YHUY;
+				INFOPLIST_FILE = X1Player/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/X1Player/X1PlayerSDK",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = yz.X1Player;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A32562DA21787A65009E9DA2 /* Build configuration list for PBXProject "X1Player" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A32562F321787A67009E9DA2 /* Debug */,
+				A32562F421787A67009E9DA2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A32562F521787A67009E9DA2 /* Build configuration list for PBXNativeTarget "X1Player" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A32562F621787A67009E9DA2 /* Debug */,
+				A32562F721787A67009E9DA2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A32562D721787A65009E9DA2 /* Project object */;
+}
