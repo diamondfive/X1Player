@@ -1,9 +1,9 @@
 //
 //  ViewController.h
-//  X1Player
+//  X1PlayerSDK
 //
-//  Created by 付彦彰 on 2018/10/18.
-//  Copyright © 2018年 channelsoft. All rights reserved.
+//  Created by 彦彰 on 2017/10/9.
+//  Copyright © 2017年 channelsoft. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>

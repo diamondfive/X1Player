@@ -381,14 +381,15 @@ static const NSTimeInterval fullscreenAnimationDuration = 0.25;
         [loadImg.layer addAnimation:rotationAnimation forKey:@"rotationAnimation"];
         
         UILabel *percentLabel = [[UILabel alloc] initWithFrame:CGRectMake(15, 30, 60, 20)];
-        percentLabel.textColor = [YZColorUtil hexStringToColor:@"#249ff4"];
+        percentLabel.textColor = YZColorFromRGB(0x249ff4);
+        
         percentLabel.font = [UIFont systemFontOfSize:13.0f];
         percentLabel.textAlignment = NSTextAlignmentCenter;
         percentLabel.tag = 1;
         [loadView addSubview:percentLabel];
         
         UILabel *loadLabel = [[UILabel alloc] initWithFrame:CGRectMake(15, 70, 60, 20)];
-        loadLabel.textColor = [YZColorUtil hexStringToColor:@"b3b7ba"];
+        loadLabel.textColor = YZColorFromRGB(0xb3b7ba);
         loadLabel.font = [UIFont systemFontOfSize:13.0f];
         loadLabel.textAlignment = NSTextAlignmentCenter;
         loadLabel.text = @"正在缓冲";
@@ -432,7 +433,7 @@ static const NSTimeInterval fullscreenAnimationDuration = 0.25;
         tintLabel.text = @"哦哦~播放出错了";
         tintLabel.textAlignment = NSTextAlignmentCenter;
         tintLabel.font = [UIFont systemFontOfSize:14.0f];
-        tintLabel.textColor = [YZColorUtil hexStringToColor:@"#b3b7ba"];
+        tintLabel.textColor = YZColorFromRGB(0xb3b7ba);
         tintLabel.tag = 2;
         [noNetView addSubview: tintLabel];
         
@@ -440,8 +441,8 @@ static const NSTimeInterval fullscreenAnimationDuration = 0.25;
         setLabel.font= [UIFont systemFontOfSize:11.f];
         NSMutableAttributedString *content = [[NSMutableAttributedString alloc] initWithString:@"请检查您的网络设置，或者刷新看看"];
         [content addAttribute:NSUnderlineStyleAttributeName value:[NSNumber numberWithInteger:NSUnderlineStyleSingle] range:NSMakeRange(12, 4)];
-        [content addAttribute:NSForegroundColorAttributeName value:[YZColorUtil hexStringToColor:@"#b3b7ba"] range:NSMakeRange(0, 12)];
-        [content addAttribute:NSForegroundColorAttributeName value:[YZColorUtil hexStringToColor:@"#54ac5d"] range:NSMakeRange(12, 4)];
+        [content addAttribute:NSForegroundColorAttributeName value:YZColorFromRGB(0xb3b7ba) range:NSMakeRange(0, 12)];
+        [content addAttribute:NSForegroundColorAttributeName value:YZColorFromRGB(0x54ac5d) range:NSMakeRange(12, 4)];
         setLabel.attributedText = content;
         
         UITapGestureRecognizer *tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(refreshMoviePlayer)];
@@ -459,7 +460,7 @@ static const NSTimeInterval fullscreenAnimationDuration = 0.25;
         tintLabel.text = @"哦哦~播放出错了";
         tintLabel.textAlignment = NSTextAlignmentCenter;
         tintLabel.font = [UIFont systemFontOfSize:11.0f];
-        tintLabel.textColor = [YZColorUtil hexStringToColor:@"#b3b7ba"];
+        tintLabel.textColor = YZColorFromRGB(0xb3b7ba);
         tintLabel.tag = 2;
         [noNetView addSubview: tintLabel];
         
@@ -467,8 +468,8 @@ static const NSTimeInterval fullscreenAnimationDuration = 0.25;
         setLabel.font= [UIFont systemFontOfSize:11.f];
         NSMutableAttributedString *content = [[NSMutableAttributedString alloc] initWithString:@"请检查您的网络设置，或者刷新看看"];
         [content addAttribute:NSUnderlineStyleAttributeName value:[NSNumber numberWithInteger:NSUnderlineStyleSingle] range:NSMakeRange(12, 4)];
-        [content addAttribute:NSForegroundColorAttributeName value:[YZColorUtil hexStringToColor:@"#b3b7ba"] range:NSMakeRange(0, 12)];
-        [content addAttribute:NSForegroundColorAttributeName value:[YZColorUtil hexStringToColor:@"#54ac5d"] range:NSMakeRange(12, 4)];
+        [content addAttribute:NSForegroundColorAttributeName value:YZColorFromRGB(0xb3b7ba) range:NSMakeRange(0, 12)];
+        [content addAttribute:NSForegroundColorAttributeName value:YZColorFromRGB(0x54ac5d) range:NSMakeRange(12, 4)];
         setLabel.attributedText = content;
         
         UITapGestureRecognizer *tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(refreshMoviePlayer)];

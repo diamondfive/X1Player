@@ -13,6 +13,8 @@
 #define X1BUNDLE_PATH   [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:X1BUNDLE_NAME]
 #define X1BUNDLE_Image(imageName)   [X1BUNDLE_PATH stringByAppendingPathComponent:imageName]
 
+#define  YZColorFromRGB(rgbValue) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
+
 //点击小窗的通知
 extern NSString * const X1PlayerViewOnClickFloatViewNotification;
 //点击小窗关闭按钮的通知

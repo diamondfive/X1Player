@@ -7,6 +7,8 @@
 //
 
 #import "AppDelegate.h"
+#import "ViewController.h"
+#import "YZRootViewController.h"
 
 @interface AppDelegate ()
 
@@ -16,7 +18,16 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    // Override point for customization after application launch.
+    
+    ViewController *vc =[[ViewController alloc] init];
+    
+    YZRootViewController *rootVC=[[YZRootViewController alloc] initWithRootViewController:vc];
+    
+    self.window.backgroundColor =[UIColor whiteColor];
+    self.window.rootViewController = rootVC;
+    
+    [self.window makeKeyAndVisible];
+    
     return YES;
 }
 

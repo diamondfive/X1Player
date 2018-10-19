@@ -8,6 +8,7 @@
 
 #import "YZMoviePlayerCountdownView.h"
 #import "YZColorUtil.h"
+#import "X1PlayerView.h"
 
 
 
@@ -78,7 +79,7 @@ NSString * const QNCountdownTimeoutNotification = @"QNCountdownTimeoutNotificati
     self.leftTopStartTimeLabel =[[UILabel alloc] init];
     self.leftTopStartTimeLabel.layer.cornerRadius = 3;
     self.leftTopStartTimeLabel.layer.masksToBounds = YES;
-    self.leftTopStartTimeLabel.backgroundColor =[YZColorUtil hexStringToColor:@"#3AA151"];
+    self.leftTopStartTimeLabel.backgroundColor = YZColorFromRGB(0x3aa151);
     self.leftTopStartTimeLabel.text =[NSString stringWithFormat:@"　即将开始 %@　",currentDateString];
     self.leftTopStartTimeLabel.textColor =[UIColor whiteColor];
     self.leftTopStartTimeLabel.font =[UIFont systemFontOfSize:12];

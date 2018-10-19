@@ -358,7 +358,7 @@ static const inline BOOL isIpad() {
     
     // 标题
     _titleLabel = [[UILabel alloc] init];
-    _titleLabel.textColor = [YZColorUtil hexStringToColor:@"#ffffff"];
+    _titleLabel.textColor = YZColorFromRGB(0xffffff);
     _titleLabel.textAlignment = NSTextAlignmentLeft;
     _titleLabel.text = title;
     
@@ -371,29 +371,29 @@ static const inline BOOL isIpad() {
     
     //  剩余时间
     _timeRemainingLabel = [[UILabel alloc] init];
-    _timeRemainingLabel.textColor = [YZColorUtil hexStringToColor:@"#ffffff"];
+    _timeRemainingLabel.textColor = YZColorFromRGB(0xffffff);
     _timeRemainingLabel.textAlignment = NSTextAlignmentCenter;
     _timeRemainingLabel.adjustsFontSizeToFitWidth = YES;
     NSMutableAttributedString *attriString;
 //    if (_moviePlayer.isLive) {
         attriString = [[NSMutableAttributedString alloc]initWithString:@"00:00"];
-        [attriString addAttribute:NSForegroundColorAttributeName value:[YZColorUtil hexStringToColor:@"#ffffff"] range:NSMakeRange(0, 5)];
+        [attriString addAttribute:NSForegroundColorAttributeName value:YZColorFromRGB(0xffffff) range:NSMakeRange(0, 5)];
 //        _timeRemainingLabel.textAlignment = NSTextAlignmentLeft;
 //    } else {
 //        attriString = [[NSMutableAttributedString alloc]initWithString:@"00:00/00:00"];
-//        [attriString addAttribute:NSForegroundColorAttributeName value:[QNColorUtil hexStringToColor:@"#ffffff"] range:NSMakeRange(0, 11)];
+//        [attriString addAttribute:NSForegroundColorAttributeName value:YZColorFromRGB(0xffffff) range:NSMakeRange(0, 11)];
 //    }
     _timeRemainingLabel.attributedText = attriString;
     _timeRemainingLabel.minimumScaleFactor = 0.5;
     
     
     _timeTotalLabel = [[UILabel alloc] init];
-    _timeTotalLabel.textColor = [YZColorUtil hexStringToColor:@"#ffffff"];
+    _timeTotalLabel.textColor = YZColorFromRGB(0xffffff);
     _timeTotalLabel.textAlignment = NSTextAlignmentCenter;
     _timeTotalLabel.adjustsFontSizeToFitWidth = YES;
     NSMutableAttributedString *attriString2;
     attriString2 = [[NSMutableAttributedString alloc] initWithString:@"00:00"];
-    [attriString2 addAttribute:NSForegroundColorAttributeName value:[YZColorUtil hexStringToColor:@"#ffffff"] range:NSMakeRange(0, 5)];
+    [attriString2 addAttribute:NSForegroundColorAttributeName value:YZColorFromRGB(0xffffff) range:NSMakeRange(0, 5)];
 //    _timeTotalLabel.textAlignment = NSTextAlignmentLeft;
     _timeTotalLabel.attributedText = attriString2;
     _timeTotalLabel.minimumScaleFactor = 0.5;
@@ -406,9 +406,9 @@ static const inline BOOL isIpad() {
     _durationSlider.value = 0.0f;
     _durationSlider.middleValue = 0.0f;
     _durationSlider.thumbTintColor = [UIColor clearColor];
-    _durationSlider.minimumTrackTintColor = [YZColorUtil hexStringToColor:@"#0080FF"];
-    _durationSlider.middleTrackTintColor = [YZColorUtil hexStringToColor:@"#D0D1D1"];
-    _durationSlider.maximumTrackTintColor = [[YZColorUtil hexStringToColor:@"#ffffff"] colorWithAlphaComponent:0.26];
+    _durationSlider.minimumTrackTintColor = YZColorFromRGB(0x0080ff);
+    _durationSlider.middleTrackTintColor = [YZColorFromRGB(0xd0d1d1) colorWithAlphaComponent:0.26];
+    _durationSlider.maximumTrackTintColor = [YZColorFromRGB(0xffffff) colorWithAlphaComponent:0.26];
     _durationSlider.slider.continuous = YES;
     _durationSlider.slider.userInteractionEnabled = YES;
     
@@ -1064,7 +1064,7 @@ static const inline BOOL isIpad() {
     _timeOutView_3S = [[UILabel alloc] initWithFrame:CGRectMake(0, 10, 210, 20)];
     [_timeOutView_3S setFont:[UIFont systemFontOfSize:12]];
     _timeOutView_3S.textAlignment = NSTextAlignmentCenter;
-    [_timeOutView_3S setTextColor:[YZColorUtil hexStringToColor:@"#FFFFFF"]];
+    [_timeOutView_3S setTextColor:YZColorFromRGB(0xffffff)];
     _timeOutView_3S.center = CGPointMake(self.frame.size.width/2, self.frame.size.height/2);
     _timeOutView_3S.text = @"播放器正在玩命加载中，请稍后…";
     [self.moviePlayer.view addSubview:_timeOutView_3S];
