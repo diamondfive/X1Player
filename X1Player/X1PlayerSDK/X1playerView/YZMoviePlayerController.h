@@ -71,8 +71,8 @@ extern NSString * const YZMoviePlayerContentURLDidChangeNotification;
 @property (nonatomic, strong) GLKView *glkView;
 //是否是全屏
 @property (nonatomic, readwrite) BOOL movieFullscreen;
-//是否是未开播界面
-@property (nonatomic, assign) BOOL isNoStartView;
+//是否是未开播界面(倒计时视图)
+@property (nonatomic, assign) BOOL isCountdownView;
 //是否需要竖屏情况下展示返回按钮
 @property (nonatomic, assign) BOOL isNeedShowBackBtn;
 //是否完成的标识

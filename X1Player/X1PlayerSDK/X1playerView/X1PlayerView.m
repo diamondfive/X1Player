@@ -9,7 +9,6 @@
 #import "X1PlayerView.h"
 #import "YZMoviePlayerControls.h"
 #import "X1Player.h"
-#import "YZColorUtil.h"
 #import "YZMoviePlayerCountdownView.h"
 #import "YZMoivePlayerBrightnessView.h"
 
@@ -32,15 +31,16 @@ static X1PlayerView  *GlobalPlayerView;
 //小窗的frame
 @property (nonatomic, assign) CGRect smallViewFrame;
 //未开播倒计时视图
-@property (nonatomic, strong) YZMoviePlayerCountdownView *noStartView;
-//父视图
+@property (nonatomic, strong) YZMoviePlayerCountdownView *countdownView;
+
+//父视图(大窗状态时的父视图 由悬浮小窗切换到大窗时 由横屏切换到竖屏时使用)
 @property (nonatomic, weak) UIView *fatherView;
 
 @end
 
 @implementation X1PlayerView
 
-#pragma mark  -- lifecycle
+#pragma mark  -- LifeCycle
 //初始化方法
 - (instancetype)initWithFrame:(CGRect)frame{
     
@@ -68,7 +68,7 @@ static X1PlayerView  *GlobalPlayerView;
     
     GlobalPlayerView = nil;
     
-    //还原自动锁屏
+    //还原自动黑屏
     [UIApplication sharedApplication].idleTimerDisabled=NO;
     
 }
@@ -84,35 +84,27 @@ static X1PlayerView  *GlobalPlayerView;
     
     [super layoutSubviews];
     
+    if (self.countdownView) {
     
-    self.noStartView.frame = CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height);
-    [self bringSubviewToFront:self.noStartView];
+        [self bringSubviewToFront:self.countdownView];
+    }
     
 }
-
 
 #pragma mark -- public method
 // !!!: 播放视频
 -(void)playWithUrl:(NSString *)url playerTitle:(NSString *)title coverImage:(UIImage *)coverImage autoPlay:(BOOL)autoplay style:(YZMoviePlayerControlsStyle)style{
     
-    //不自动锁屏
+    //不自动黑屏
     [UIApplication sharedApplication].idleTimerDisabled=YES;
     
-    self.style = style;
-    self.playerTitle = title;
-  
-    //播放视频
-    self.mediasource = url;
-    self.coverimage = coverImage;
-    
     //网址相同并且小窗存在情况下过来的,需要继续播放
-    if (GlobalPlayerView && [GlobalPlayerView.moviePlayer.lastPlayUrl isEqual:url]) {
+    if (GlobalPlayerView && [GlobalPlayerView.mediasource isEqual:url]) {
         
         self.moviePlayer = GlobalPlayerView.moviePlayer;
         
         self.moviePlayer.delegate = self;
         self.moviePlayer.fatherView = self;
-        
         
         [self.moviePlayer setFrame:CGRectMake(0, 0, _originalFrame.size.width, _originalFrame.size.height)];
         
@@ -120,7 +112,7 @@ static X1PlayerView  *GlobalPlayerView;
         
         self.moviePlayer.controlsStyle = style;
         
-        //重设控制层UI状态
+        //重设控制层UI状态的通知
         [[NSNotificationCenter defaultCenter] postNotificationName:YZMoviePlayerMediaStateChangedNotification object:nil];
         
         [GlobalPlayerView removeNotifications];
@@ -129,6 +121,7 @@ static X1PlayerView  *GlobalPlayerView;
         
         
     }else{ //初始化一个新的开始播放
+        
         [GlobalPlayerView viewDestroy];
         
         if (self.moviePlayer) {
@@ -141,19 +134,26 @@ static X1PlayerView  *GlobalPlayerView;
         [self setUpMoviePlayWithStyle:style];
         
         self.moviePlayer.isAutoPlay = autoplay; //视频是否自动播放
-        self.moviePlayer.coverimage = self.coverimage;
+        self.moviePlayer.coverimage = coverImage;
         self.moviePlayer.lastPlayUrl = url;
         [self.moviePlayer changeTitle:title];
         
        
-        
         //播放视频关键代码
         [self.moviePlayer setContentURL:[NSURL URLWithString:url]];
     }
+    
+    //通用信息填充
+    self.style = style;
+    self.playerTitle = title;
+    self.mediasource = url;
+    self.coverimage = coverImage;
+    
+    
 }
 
-//展示未开播视图
--(void)showNoStartViewWithIsLive:(BOOL)isLive startTime:(NSTimeInterval)startTime{
+//展示倒计时视图
+-(void)showCountdownViewWithIsLive:(BOOL)isLive startTime:(NSTimeInterval)startTime{
     
     self.isReceiveLive = isLive;//是否是直播
     self.startTimeInterval = startTime;
@@ -165,8 +165,9 @@ static X1PlayerView  *GlobalPlayerView;
 //显示悬浮小窗
 -(void)showFloatViewWithFrame:(CGRect)frame showCloseBtn:(BOOL)showCloseBtn{
     
+    //展示悬浮小窗
     //判断 self.superview 是为了防止连续调用两次showFloatViewWithFrame 导致父视图缺失
-    if (!self.moviePlayer.isNoStartView && self.superview && [self.moviePlayer getPlaybackState] == PS_PLAYING){
+    if (!self.moviePlayer.isCountdownView && [self.moviePlayer getPlaybackState] == PS_PLAYING  && self.superview){
         // 16 : 9 的比例
         
         self.originalFrame = frame;
@@ -175,8 +176,9 @@ static X1PlayerView  *GlobalPlayerView;
         [self.moviePlayer setFrame:frame];
         
         self.fatherView = self.superview;
+
         
-        [[UIApplication sharedApplication].delegate.window addSubview:self.moviePlayer.view];
+        [[UIApplication sharedApplication].keyWindow addSubview:self.moviePlayer.view];
         GlobalPlayerView  = self;  //绑定全局变量
         NSLog(@"========%@",GlobalPlayerView);
         [self removeFromSuperview];
@@ -199,20 +201,20 @@ static X1PlayerView  *GlobalPlayerView;
     
     
 }
-
-// 滑动scrollView显示大窗(上滑当前tableView直到视频播放窗口可见时调用)
--(void)showOriginalViewWhileSlideUpPage{
+//由小窗切换为大窗口(适用于点击小窗恢复大窗 往下滑当前tableView直到视频播放窗口不可见时调用)
+-(void)showOriginView{
     
     self.moviePlayer.controls.style = YZMoviePlayerControlsStyleDefault;
     [self setFrame:_originalFrame];
     [self addSubview:self.moviePlayer.view];
-    [_fatherView addSubview:self];
     
+    [_fatherView addSubview:self];
+
     GlobalPlayerView = nil;
     
 }
 
-// 屏幕旋转时调用
+//屏幕旋转时调用
 -(void)rorateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation animated:(BOOL)animated{
     
     //播放器旋转
@@ -275,32 +277,6 @@ static X1PlayerView  *GlobalPlayerView;
 
 
 #pragma mark -- internal method
-// 设置未开播视图
--(void)setupBeforeStartView{
-    
-    if (self.isReceiveLive && (self.startTimeInterval -[[NSDate date] timeIntervalSince1970]) > 0) {
-        //未开播
-        
-        [self.noStartView removeFromSuperview];
-        self.noStartView = nil;
-        [self initNoStartView];
-        
-        self.moviePlayer.isNoStartView = YES;
-        [self.moviePlayer stop];
-
-        
-    }else if(self.isReceiveLive && (self.startTimeInterval -[[NSDate date] timeIntervalSince1970]) <= 0){ //直播中
-        [self.noStartView removeFromSuperview];
-        self.noStartView = nil;
-        self.moviePlayer.isNoStartView = NO;
-        
-    }else{//录播
-        [self.noStartView removeFromSuperview];
-        self.noStartView = nil;
-        self.moviePlayer.isNoStartView = NO;
-        
-    }
-}
 //设置播放控制器
 -(void)setUpMoviePlayWithStyle:(YZMoviePlayerControlsStyle)style
 {
@@ -311,7 +287,7 @@ static X1PlayerView  *GlobalPlayerView;
     self.moviePlayer.delegate = self;
     self.moviePlayer.fatherView = self;
     [self addSubview:self.moviePlayer.view];
-    NSLog(@"QNX1playerView setUpMoviePlay %@",self.moviePlayer.view);
+    NSLog(@"X1playerView setUpMoviePlay %@",self.moviePlayer.view);
     
     
     [self.moviePlayer changeTitle:self.playerTitle];
@@ -319,23 +295,50 @@ static X1PlayerView  *GlobalPlayerView;
     
     [self.moviePlayer setFrame:CGRectMake(0, 0, self.originalFrame.size.width, self.originalFrame.size.height)];
     
-    _coverImageView = self.moviePlayer.coverView.coverImageView;
-
-    
 }
-//初始化没开播视图
--(void)initNoStartView{
+
+// 设置未开播视图
+-(void)setupBeforeStartView{
     
-    self.noStartView = [[YZMoviePlayerCountdownView alloc] initWithStartTimeInterval:self.startTimeInterval];
-    [self addSubview:self.noStartView];
+    if (self.isReceiveLive && (self.startTimeInterval -[[NSDate date] timeIntervalSince1970]) > 0) {
+        //未开播
+        
+        [self.countdownView removeFromSuperview];
+        self.countdownView = nil;
+        [self initCountdownView];
+        
+        self.moviePlayer.isCountdownView = YES;
+        [self.moviePlayer stop];
+
+        
+    }else if(self.isReceiveLive && (self.startTimeInterval -[[NSDate date] timeIntervalSince1970]) <= 0){ //直播中
+        [self.countdownView removeFromSuperview];
+        self.countdownView = nil;
+        self.moviePlayer.isCountdownView = NO;
+        
+    }else{//录播
+        [self.countdownView removeFromSuperview];
+        self.countdownView = nil;
+        self.moviePlayer.isCountdownView = NO;
+        
+    }
+}
+
+//初始化没开播视图
+-(void)initCountdownView{
+    
+    self.countdownView = [[YZMoviePlayerCountdownView alloc] initWithStartTimeInterval:self.startTimeInterval];
+    self.countdownView.frame = CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height);
+    [self addSubview:self.countdownView];
+    
     
 }
 
 //销毁倒计时计时器
 -(void)invalidCountDownTimer{
-    if (self.noStartView.countDownTimer) {
-        [self.noStartView.countDownTimer invalidate];
-        self.noStartView.countDownTimer = nil;
+    if (self.countdownView.countDownTimer) {
+        [self.countdownView.countDownTimer invalidate];
+        self.countdownView.countDownTimer = nil;
     }
 }
 
@@ -344,14 +347,14 @@ static X1PlayerView  *GlobalPlayerView;
 //注册通知,设置通知回调
 - (void)registerNotification
 {
-    NSLog(@"QNX1PlayerView registerNotification");
+    NSLog(@"X1PlayerView registerNotification");
     // 注册播放器相关的通知
     //播放器将要进入全屏通知
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(qnMoviePlayerWillEnterFullscreen:) name:YZMoviePlayerWillEnterFullscreenNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moviePlayerWillEnterFullscreen:) name:YZMoviePlayerWillEnterFullscreenNotification object:nil];
     //播放器将要退出全屏通知
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(qnMoviePlayerWillExitFullscreen:) name:YZMoviePlayerWillExitFullscreenNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moviePlayerWillExitFullscreen:) name:YZMoviePlayerWillExitFullscreenNotification object:nil];
     //视频播放完成回调
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(qnMovieplayerFinish:) name:YZMoviePlayerOnCompletionNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(movieplayerFinish:) name:YZMoviePlayerOnCompletionNotification object:nil];
     
     // UIApplicationDidBecomeActiveNotification应用程序进入前台通知
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(appDidEnterForeroundNotification:) name:UIApplicationDidBecomeActiveNotification object:nil];
@@ -359,31 +362,30 @@ static X1PlayerView  *GlobalPlayerView;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(appDidEnterBackgroundNotification:) name:UIApplicationWillResignActiveNotification object:nil];
     
     //未开播倒计时走完通知
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(qnCountdownTimeout:) name:QNCountdownTimeoutNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(countdownTimeout:) name:YZCountdownTimeoutNotification object:nil];
     
 }
 //移除所有通知
 - (void)removeNotifications
 {
-    NSLog(@"QNX1PlayerView removeNotifications");
     
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 //进入全屏通知
--(void)qnMoviePlayerWillEnterFullscreen:(NSNotification *)sender{
+-(void)moviePlayerWillEnterFullscreen:(NSNotification *)sender{
     if ([self.delegate respondsToSelector:@selector(x1PlayerViewOnWillEnterFullScreen:)]) {
         [self.delegate x1PlayerViewOnWillEnterFullScreen:self];
     }
 }
 //退出全屏通知
--(void)qnMoviePlayerWillExitFullscreen:(NSNotification *)sender{
+-(void)moviePlayerWillExitFullscreen:(NSNotification *)sender{
     if ([self.delegate respondsToSelector:@selector(x1PlayerViewOnWillExitFullScreen:)]) {
         [self.delegate x1PlayerViewOnWillExitFullScreen:self];
     }
     
 }
 //视频播放完毕的回调
--(void)qnMovieplayerFinish:(NSNotification *)sender{
+-(void)movieplayerFinish:(NSNotification *)sender{
     
     if ([self.delegate respondsToSelector:@selector(x1PlayerViewOnPlayFinish:)]) {
         [self.delegate x1PlayerViewOnPlayFinish:self];
@@ -393,9 +395,9 @@ static X1PlayerView  *GlobalPlayerView;
 //程序已经进入前台
 - (void)appDidEnterForeroundNotification:(NSNotification *)note {
     
-    if (self.isSwitchForegroundNeedResumePlay) {
+    if (self.isSwitchResumePlay) {
         [self.moviePlayer play];
-        self.isSwitchForegroundNeedResumePlay = NO;
+        self.isSwitchResumePlay = NO;
     }
 }
 
@@ -404,18 +406,18 @@ static X1PlayerView  *GlobalPlayerView;
     
     if (self.moviePlayer.getPlaybackState == PS_PLAYING)
     {
-        self.isSwitchForegroundNeedResumePlay = YES;
+        self.isSwitchResumePlay = YES;
         [self.moviePlayer pause];
     }
 }
 
 //倒计时时间结束回调
--(void)qnCountdownTimeout:(NSNotification *)sender{
-    [self.noStartView.countDownTimer invalidate];
-    self.noStartView.countDownTimer = nil;
+-(void)countdownTimeout:(NSNotification *)sender{
+    [self.countdownView.countDownTimer invalidate];
+    self.countdownView.countDownTimer = nil;
     
-    [self.noStartView removeFromSuperview];
-    self.noStartView = nil;
+    [self.countdownView removeFromSuperview];
+    self.countdownView = nil;
     
     [self.moviePlayer play];
     self.moviePlayer.controls.style = YZMoviePlayerControlsStyleLivePortrait;
@@ -424,8 +426,8 @@ static X1PlayerView  *GlobalPlayerView;
 
 #pragma mark - YZMoviePlayerControllerDelegate
 
-- (void)qnMoviePlayerControllerMovieTimedOut {
-    NSLog(@"QNX1PlayerView MOVIE TIMED OUT");
+- (void)yzMoviePlayerControllerMovieTimedOut {
+    NSLog(@"X1PlayerView MOVIE TIMED OUT");
     
     //FIXME:网络连接失败
 //    if (![QNAlertUtil connectedToNetwork]) {
@@ -434,7 +436,7 @@ static X1PlayerView  *GlobalPlayerView;
 }
 
 //悬浮小窗被点击
--(void)qnMoviePlayerControllerFloatViewPressed{
+-(void)yzMoviePlayerControllerFloatViewPressed{
     
     if ([self.delegate respondsToSelector:@selector(x1PlayerViewOnClickFloatView:)]) {
         [self.delegate x1PlayerViewOnClickFloatView:self];
@@ -444,7 +446,7 @@ static X1PlayerView  *GlobalPlayerView;
     
 }
 //悬浮小窗叉号按钮被点击
--(void)qnMoviePlayerControllerCloseFloatViewBtnPressed{
+-(void)yzMoviePlayerControllerCloseFloatViewBtnPressed{
     
     
     if ([self.delegate respondsToSelector:@selector(x1PlayerViewOnClickCloseFloatViewBtn:)]) {
@@ -458,8 +460,8 @@ static X1PlayerView  *GlobalPlayerView;
     
 }
 //视频返回按钮点击的回调
--(void)qnMoviePlayerControllerBackBtnPressed{
-    NSLog(@"QNX1PlayerView backBtnPressed");
+-(void)yzMoviePlayerControllerBackBtnPressed{
+    NSLog(@"X1PlayerView backBtnPressed");
     
     if ([self.delegate respondsToSelector:@selector(x1PlayerViewOnClickBackBtn:)]) {
         [self.delegate x1PlayerViewOnClickBackBtn:self];
@@ -467,10 +469,10 @@ static X1PlayerView  *GlobalPlayerView;
     
 }
 //切换横屏
-- (void)qnMoviePlayerControllerMoviePlayerWillEnterFullScreen {
-    NSLog(@"QNX1PlayerView 将要进入了全屏");
-    
+- (void)yzMoviePlayerControllerMoviePlayerWillEnterFullScreen {
+    NSLog(@"X1PlayerView 将要进入了全屏");
     self.fatherView = self.superview;
+
     UIWindow *window = [[[UIApplication sharedApplication] delegate] window];
     [self setFrame:CGRectMake(0, 0, MAX(window.bounds.size.height, window.bounds.size.width), MIN(window.bounds.size.height, window.bounds.size.width))];
     
@@ -483,8 +485,8 @@ static X1PlayerView  *GlobalPlayerView;
     
 }
 //切换竖屏
--(void)qnMoviePlayerControllerMoviePlayerWillExitFullScreen{
-    NSLog(@"QNX1PlayerView 将要退出了全屏");
+-(void)yzMoviePlayerControllerMoviePlayerWillExitFullScreen{
+    NSLog(@"X1PlayerView 将要退出了全屏");
     //异常处理
     if (![self.subviews containsObject:self.moviePlayer.view]){
         [self addSubview:self.moviePlayer.view];
@@ -493,7 +495,7 @@ static X1PlayerView  *GlobalPlayerView;
     [self.moviePlayer setFrame:CGRectMake(0, 0, self.originalFrame.size.width, self.originalFrame.size.height)];
     
     [self.fatherView addSubview:self];
-    
+
 }
 
 
@@ -513,6 +515,9 @@ static X1PlayerView  *GlobalPlayerView;
 -(void)setCoverimage:(UIImage *)coverimage{
     
     _coverimage = coverimage;
+    
+    self.moviePlayer.coverimage = self.coverimage;
+
 }
 
 -(void)setStyle:(YZMoviePlayerControlsStyle)style{

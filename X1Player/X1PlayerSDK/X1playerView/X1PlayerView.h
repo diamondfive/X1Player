@@ -21,11 +21,11 @@ extern NSString * const X1PlayerViewOnClickFloatViewNotification;
 extern NSString * const X1PlayerVuewOnClickCloseFloatViewBtnNotification;
 
 @class X1PlayerView;
-@protocol X1PlayerViewDelegate <NSObject,UITableViewDelegate>
+@protocol X1PlayerViewDelegate <NSObject>
 @optional
-//将要进入全屏
+//将要进入全屏的回调
 -(void)x1PlayerViewOnWillEnterFullScreen:(X1PlayerView *)x1PlayerView;
-//将要退出全屏
+//将要退出全屏的回调
 -(void)x1PlayerViewOnWillExitFullScreen:(X1PlayerView *)x1PlayerView;
 //点击小窗的回调
 -(void)x1PlayerViewOnClickFloatView:(X1PlayerView *)x1PlayerView;
@@ -46,8 +46,7 @@ extern NSString * const X1PlayerVuewOnClickCloseFloatViewBtnNotification;
 @property (nonatomic, strong) NSArray *mediasourceArr;
 //封面图片
 @property (nonatomic, strong) UIImage *coverimage;
-//封面图片所在控件 暴露用于sdwebimage调用
-@property (nonatomic, strong, readonly) UIImageView *coverImageView;
+
 //视频播放器
 @property (nonatomic,strong) YZMoviePlayerController *moviePlayer;
 
@@ -61,7 +60,7 @@ extern NSString * const X1PlayerVuewOnClickCloseFloatViewBtnNotification;
 //播放风格
 @property (nonatomic, assign) YZMoviePlayerControlsStyle style;
  //app后台切换到前台需不需要继续播放
-@property (nonatomic, assign) BOOL isSwitchForegroundNeedResumePlay;
+@property (nonatomic, assign) BOOL isSwitchResumePlay;
 //竖屏状态下是否需要显示返回按钮
 @property (nonatomic, assign) BOOL isNeedShowBackBtn;
 
@@ -83,28 +82,47 @@ extern NSString * const X1PlayerVuewOnClickCloseFloatViewBtnNotification;
  */
 -(void)playWithUrl:(NSString *)url playerTitle:(NSString *)title coverImage:(UIImage *)coverImage autoPlay:(BOOL)autoplay style:(YZMoviePlayerControlsStyle)style;
 
+/**
+ 手动调用销毁视频窗口（eg. 离开视频播放页面时 全局悬浮窗点击叉号时调用）
+ */
+-(void)viewDestroy;
 
 
 /**
- 展示未开播视图
+ 显示悬浮小窗（返回上级页面或者往上滑当前tableView直到视频播放窗口不可见时调用）
+ 
+ @param frame 小窗坐标
+ @param showCloseBtn 是否展示小窗关闭按钮
+ */
+-(void)showFloatViewWithFrame:(CGRect)frame showCloseBtn:(BOOL)showCloseBtn;
+
+
+/**
+  由小窗切换为大窗口(适用于 往下滑当前tableView直到视频播放窗口可见时调用 或者在这种场景下的小窗点击小窗叉号)
+ 
+  warning: 返回上一级页面的悬浮小窗不能调用此方法 因为此时再次进入播放界面 播放控件的父视图为不同对象
+  此时需要在 x1PlayerViewOnClickFloatView 的回调中再次调用 playWithUrl 播放方法
+
+ */
+-(void)showOriginView;
+
+
+
+/**
+ 展示直播开播前倒计时视图
 
  @param isLive 是否是直播
- @param startTime 开播时间
+ @param startTime 开播时间距离1970年的时间戳 秒
  */
--(void)showNoStartViewWithIsLive:(BOOL)isLive startTime:(NSTimeInterval)startTime;
+-(void)showCountdownViewWithIsLive:(BOOL)isLive startTime:(NSTimeInterval)startTime;
+
+
 /**
- 设置遮罩层颜色
+ 设置控制层渐变遮罩颜色
  */
 -(void)setBarGradientColor:(UIColor *)color;
 
-//显示悬浮小窗 （返回或者上滑当前tableView直到视频播放窗口不可见时调用）
--(void)showFloatViewWithFrame:(CGRect)frame showCloseBtn:(BOOL)showCloseBtn;
 
-//滑动scrollView显示大窗(上滑当前tableView直到视频播放窗口可见时调用)
--(void)showOriginalViewWhileSlideUpPage;
-
-//手动调用销毁视频窗口（eg. 离开视频播放页面时调用）
--(void)viewDestroy;
 
 //设备横竖屏切换的时候调用,可以让播放控件适应设备全屏 （为什么不封装在SDK内部，因为设备旋转之后播放界面不一定要变为全屏，比如 淘宝的黑色背景小窗 腾讯新闻的竖屏全屏大窗 都不是由设备旋转触发）
 -(void)rorateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation animated:(BOOL)animated;

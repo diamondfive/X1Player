@@ -7,13 +7,12 @@
 //
 
 #import "YZMoviePlayerCountdownView.h"
-#import "YZColorUtil.h"
 #import "X1PlayerView.h"
 
 
 
 //倒计时计时器走完通知
-NSString * const QNCountdownTimeoutNotification = @"QNCountdownTimeoutNotification";
+NSString * const YZCountdownTimeoutNotification = @"QNCountdownTimeoutNotification";
 
 @interface YZMoviePlayerCountdownView()
 
@@ -134,7 +133,7 @@ NSString * const QNCountdownTimeoutNotification = @"QNCountdownTimeoutNotificati
     NSTimeInterval gap = [startTime timeIntervalSinceDate:nowTime];
     if (gap <= 0 ) { //时间到了
         
-        [[NSNotificationCenter defaultCenter] postNotificationName:QNCountdownTimeoutNotification object:nil];
+        [[NSNotificationCenter defaultCenter] postNotificationName:YZCountdownTimeoutNotification object:nil];
         
         [self.countDownTimer invalidate];
         self.countDownTimer = nil;

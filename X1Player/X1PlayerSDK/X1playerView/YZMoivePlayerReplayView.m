@@ -7,7 +7,6 @@
 //
 
 #import "YZMoivePlayerReplayView.h"
-#import "YZColorUtil.h"
 #import "YZMoviePlayerController.h"
 #import "X1PlayerView.h"
 

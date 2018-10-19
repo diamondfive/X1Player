@@ -8,7 +8,6 @@
 
 #import "YZMoviePlayerController.h"
 #import <AVFoundation/AVFoundation.h>
-#import "YZColorUtil.h"
 #import "X1PlayerView.h"
 
 
@@ -213,7 +212,7 @@ static const NSTimeInterval fullscreenAnimationDuration = 0.25;
     self.dataURL = contentURL;
     [_playerSDK setDataSource:contentURL.absoluteString];
     
-    if (self.isAutoPlay&& !self.isNoStartView) { //自动播放并且并非未开播视图
+    if (self.isAutoPlay&& !self.isCountdownView) { //自动播放并且并非未开播视图
         [_playerSDK prepareAsync];
         [self setPlayerMediaState:PS_LOADING];
     }

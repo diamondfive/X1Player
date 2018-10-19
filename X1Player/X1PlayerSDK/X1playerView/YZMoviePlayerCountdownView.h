@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 
 //倒计时计时器走完通知
-extern NSString * const QNCountdownTimeoutNotification;
+extern NSString * const YZCountdownTimeoutNotification;
 
 @interface YZMoviePlayerCountdownView : UIView
 

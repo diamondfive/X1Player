@@ -10,10 +10,7 @@
 #import "YZMoviePlayerController.h"
 #import <tgmath.h>
 #import <QuartzCore/QuartzCore.h>
-#import "YZColorUtil.h"
 #import "YZMoviePlayerSlider.h"
-//#import "QNAlertUtil.h"
-#import "YZColorUtil.h"
 #import "X1Player.h"
 #import "YZMoviePlayerGestureRecognizerView.h"
 #import "X1PlayerView.h"

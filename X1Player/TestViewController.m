@@ -73,7 +73,7 @@
         
         [self.playerView playWithUrl:@"http://live.butel.com/8bb.flv" playerTitle:@"未开播" coverImage:self.image  autoPlay:YES style:YZMoviePlayerControlsStyleLive];
         
-        [self.playerView showNoStartViewWithIsLive:YES startTime:[[NSDate date] timeIntervalSince1970]+20000];
+        [self.playerView showCountdownViewWithIsLive:YES startTime:[[NSDate date] timeIntervalSince1970]+20000];
     }else if (self.type == 4){//当前页面播放续集
         self.navigationController.navigationBar.hidden = NO;
 
@@ -127,7 +127,7 @@
 
 -(void)clickBtn2:(UIButton *)sender{
 
-    [self.playerView showOriginalViewWhileSlideUpPage];
+    [self.playerView showOriginView];
     
 }
 
