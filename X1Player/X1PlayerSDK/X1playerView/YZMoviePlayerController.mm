@@ -75,9 +75,10 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
 
 # pragma mark -- lifecycle
 
-- (id)initWithFrame:(CGRect)frame andStyle:(YZMoviePlayerControlsStyle)style mediasourceDefinitionDict:(NSDictionary *)mediasourceDefinitionDict{
+- (id)initWithFrame:(CGRect)frame andStyle:(YZMoviePlayerControlsStyle)style mediasourceDefinitionDict:(NSDictionary *)mediasourceDefinitionDict hostObject:(X1PlayerView *)hostObject{
     if ( (self = [super init]) ) {
 
+        self.fatherView = hostObject;
         self.view.frame = frame;
         self.view.backgroundColor = [UIColor blackColor];
         
@@ -104,7 +105,7 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
 }
 
 - (void)dealloc {
-    NSLog(@"YZYZMoviePlayerController 挂掉了");
+    
     _delegate = nil;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
@@ -260,9 +261,10 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
 }
 //初始化封面视图
 -(void)initPlayView{
+    
     [_coverView removeFromSuperview];
-    _coverView =[[YZMoivePlayerCoverView alloc] init];
-    _coverView.moviePlayer = self;
+    
+    _coverView =[[YZMoivePlayerCoverView alloc] initWithMoviePlayer:self];
     [self.view addSubview:_coverView];
     
 }

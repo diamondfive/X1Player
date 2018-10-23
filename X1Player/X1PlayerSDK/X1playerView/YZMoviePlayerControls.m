@@ -16,7 +16,7 @@
 #import "X1PlayerView.h"
 
 
-#define QNStateBarHeight [[UIApplication sharedApplication] statusBarFrame].size.height
+#define YZStateBarHeight [[UIApplication sharedApplication] statusBarFrame].size.height
 
 @implementation UIDevice (QNSystemVersion)
 
@@ -124,8 +124,8 @@ static const inline BOOL isIpad() {
     if (self.style == YZMoviePlayerControlsStyleFullscreen || (self.style == YZMoviePlayerControlsStyleDefault && self.moviePlayer.isFullscreen)) {//录播横屏
         
         //top bar
-        self.topBar.frame = CGRectMake(0, 0, self.frame.size.width,self.barHeight +QNStateBarHeight);
-        self.backButton.frame = CGRectMake(15, 10+QNStateBarHeight, 20, 20);
+        self.topBar.frame = CGRectMake(0, 0, self.frame.size.width,self.barHeight +YZStateBarHeight);
+        self.backButton.frame = CGRectMake(15, 10+YZStateBarHeight, 20, 20);
         self.titleLabel.frame = CGRectMake(CGRectGetMaxX(self.backButton.frame)+10, CGRectGetMinY(self.backButton.frame), self.frame.size.width - CGRectGetMaxX(self.backButton.frame)-10-12, 20);
         
         //bottom bar
@@ -144,8 +144,8 @@ static const inline BOOL isIpad() {
         
         //top bar
         if (_isNeedShowBackBtn) {
-            self.topBar.frame = CGRectMake(0, 0, self.frame.size.width, self.barHeight + QNStateBarHeight);
-            self.backButton.frame = CGRectMake(10, 10+QNStateBarHeight, 20, 20);
+            self.topBar.frame = CGRectMake(0, 0, self.frame.size.width, self.barHeight + YZStateBarHeight);
+            self.backButton.frame = CGRectMake(10, 10+YZStateBarHeight, 20, 20);
             
             self.titleLabel.frame = CGRectMake(CGRectGetMaxX(self.backButton.frame)+10, self.backButton.frame.origin.y, self.frame.size.width - CGRectGetMaxX(self.backButton.frame)-10-12, 20);
         }else{
@@ -173,8 +173,8 @@ static const inline BOOL isIpad() {
         
         
         //top bar
-        self.topBar.frame = CGRectMake(0, 0, self.frame.size.width,self.barHeight+QNStateBarHeight);
-        self.backButton.frame = CGRectMake(15, 10+QNStateBarHeight, 20, 20);
+        self.topBar.frame = CGRectMake(0, 0, self.frame.size.width,self.barHeight+YZStateBarHeight);
+        self.backButton.frame = CGRectMake(15, 10+YZStateBarHeight, 20, 20);
         self.titleLabel.frame = CGRectMake(CGRectGetMaxX(self.backButton.frame) + 10, CGRectGetMinY(self.backButton.frame), self.frame.size.width - CGRectGetMaxX(self.backButton.frame) - 10 - 12, 20);
         
         //bottom bar
@@ -189,8 +189,8 @@ static const inline BOOL isIpad() {
         
         //top bar
         if (_isNeedShowBackBtn) {
-            self.topBar.frame = CGRectMake(0, 0, self.frame.size.width, self.barHeight + QNStateBarHeight);
-            self.backButton.frame = CGRectMake(10, 10+QNStateBarHeight, 20, 20);
+            self.topBar.frame = CGRectMake(0, 0, self.frame.size.width, self.barHeight + YZStateBarHeight);
+            self.backButton.frame = CGRectMake(10, 10+YZStateBarHeight, 20, 20);
             
             self.titleLabel.frame = CGRectMake(CGRectGetMaxX(self.backButton.frame)+10, self.backButton.frame.origin.y, self.frame.size.width - CGRectGetMaxX(self.backButton.frame)-10-12, 20);
         }else{

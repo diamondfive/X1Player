@@ -47,10 +47,12 @@ static X1PlayerView  *GlobalPlayerView;
     if (self = [super initWithFrame:frame]) {
         
         self.originalFrame = frame;
-        //销毁计时器
-        [self invalidCountDownTimer];
+        
+        [self setupConfig];
+
         //注册通知
         [self registerNotification];
+        
         
     }
     return self;
@@ -68,6 +70,7 @@ static X1PlayerView  *GlobalPlayerView;
     
     GlobalPlayerView = nil;
     
+    
     //还原自动黑屏
     [UIApplication sharedApplication].idleTimerDisabled=NO;
     
@@ -77,7 +80,11 @@ static X1PlayerView  *GlobalPlayerView;
     
     [self removeNotifications];
     
+    [self viewDestroy];
+    
+
 }
+
 
 //布局子视图
 -(void)layoutSubviews{
@@ -237,73 +244,28 @@ static X1PlayerView  *GlobalPlayerView;
     [self.moviePlayer rorateToOrientation:interfaceOrientation animated:animated];
 }
 
-#pragma mark -- mediaplayer control
-//播放
-- (void)play{
-    
-    [self.moviePlayer play];
-}
-//暂停
-- (void)pause{
-    
-    [self.moviePlayer pause];
-}
-//停止，不再缓冲
-- (void)stop{
-    
-    [self.moviePlayer stop];
-}
-//继续播放
--(void)resume{
-    
-    [self.moviePlayer resume];
-}
-
-//播放出错进行的重连(刷新，点播调用会从断点继续播)
--(void)retryPlay{
-    
-    [self.moviePlayer retryPlay];
-}
-//直播重连操作(相当于刷新，点播调用会从头开始播)
-- (void)restart{
-    
-    [self.moviePlayer restart];
-}
-//定点播放
-- (void)setCurrentPlaybackTime:(NSTimeInterval)currentPlaybackTime{
-    
-    [self.moviePlayer setCurrentPlaybackTime:currentPlaybackTime];
-}
-//获得当前播放状态
-- (X1PlayerState)getPlaybackState{
-    
-    return  [self.moviePlayer getPlaybackState];
-}
-
-// 获取可播放时长
-- (NSTimeInterval)playableDuration{
-    
-    return  [self.moviePlayer playableDuration];
-}
-// 获取当前时长
-- (NSTimeInterval)currentPlaybackTime{
-    
-    return [self.moviePlayer currentPlaybackTime];
-}
-
 
 #pragma mark -- internal method
+
+-(void)setupConfig{
+    
+    //销毁计时器
+    [self invalidCountDownTimer];
+    
+    //网络监测器
+    self.networkMonitor =[YZReachability reachabilityForInternetConnection];
+    [self.networkMonitor startNotifier];
+    
+}
 //设置播放控制器
 -(void)setUpMoviePlayWithStyle:(YZMoviePlayerControlsStyle)style mediasourceDefinitionDict:(NSDictionary *)mediasourceDefinitionDict;
 {
     
-    self.moviePlayer =[[YZMoviePlayerController alloc] initWithFrame:CGRectMake(0, 0, self.originalFrame.size.width, self.originalFrame.size.height) andStyle:style mediasourceDefinitionDict:mediasourceDefinitionDict];
+    self.moviePlayer =[[YZMoviePlayerController alloc] initWithFrame:CGRectMake(0, 0, self.originalFrame.size.width, self.originalFrame.size.height) andStyle:style mediasourceDefinitionDict:mediasourceDefinitionDict hostObject:self];
     
     self.moviePlayer.view.alpha = 1.0f;
     self.moviePlayer.delegate = self;
-    self.moviePlayer.fatherView = self;
     [self addSubview:self.moviePlayer.view];
-    NSLog(@"X1playerView setUpMoviePlay %@",self.moviePlayer.view);
     
     
     [self.moviePlayer changeTitle:self.playerTitle];
@@ -325,7 +287,7 @@ static X1PlayerView  *GlobalPlayerView;
         
         self.moviePlayer.isCountdownView = YES;
         [self.moviePlayer stop];
-
+        
         
     }else if(self.isReceiveLive && (self.startTimeInterval -[[NSDate date] timeIntervalSince1970]) <= 0){ //直播中
         [self.countdownView removeFromSuperview];
@@ -439,6 +401,63 @@ static X1PlayerView  *GlobalPlayerView;
     
 }
 
+
+#pragma mark -- mediaplayer control
+//播放
+- (void)play{
+    
+    [self.moviePlayer play];
+}
+//暂停
+- (void)pause{
+    
+    [self.moviePlayer pause];
+}
+//停止，不再缓冲
+- (void)stop{
+    
+    [self.moviePlayer stop];
+}
+//继续播放
+-(void)resume{
+    
+    [self.moviePlayer resume];
+}
+
+//播放出错进行的重连(刷新，点播调用会从断点继续播)
+-(void)retryPlay{
+    
+    [self.moviePlayer retryPlay];
+}
+//直播重连操作(相当于刷新，点播调用会从头开始播)
+- (void)restart{
+    
+    [self.moviePlayer restart];
+}
+//定点播放
+- (void)setCurrentPlaybackTime:(NSTimeInterval)currentPlaybackTime{
+    
+    [self.moviePlayer setCurrentPlaybackTime:currentPlaybackTime];
+}
+//获得当前播放状态
+- (X1PlayerState)getPlaybackState{
+    
+    return  [self.moviePlayer getPlaybackState];
+}
+
+// 获取可播放时长
+- (NSTimeInterval)playableDuration{
+    
+    return  [self.moviePlayer playableDuration];
+}
+// 获取当前时长
+- (NSTimeInterval)currentPlaybackTime{
+    
+    return [self.moviePlayer currentPlaybackTime];
+}
+
+
+
 #pragma mark - YZMoviePlayerControllerDelegate
 
 - (void)yzMoviePlayerControllerMovieTimedOut {
@@ -476,7 +495,6 @@ static X1PlayerView  *GlobalPlayerView;
 }
 //视频返回按钮点击的回调
 -(void)yzMoviePlayerControllerOnClickBackBtn{
-    NSLog(@"X1PlayerView backBtnPressed");
     
     if ([self.delegate respondsToSelector:@selector(x1PlayerViewOnClickBackBtn:)]) {
         [self.delegate x1PlayerViewOnClickBackBtn:self];

@@ -35,6 +35,7 @@
 		A325633E21796B3C009E9DA2 /* YZRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A325633D21796B3C009E9DA2 /* YZRootViewController.m */; };
 		A325634321796B62009E9DA2 /* TestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A325633F21796B62009E9DA2 /* TestViewController.m */; };
 		A325634421796B62009E9DA2 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A325634121796B62009E9DA2 /* ViewController.m */; };
+		A3256354217EB674009E9DA2 /* YZReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = A3256352217EB674009E9DA2 /* YZReachability.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -88,6 +89,8 @@
 		A325634021796B62009E9DA2 /* TestViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestViewController.h; sourceTree = "<group>"; };
 		A325634121796B62009E9DA2 /* ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		A325634221796B62009E9DA2 /* ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		A3256352217EB674009E9DA2 /* YZReachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YZReachability.m; sourceTree = "<group>"; };
+		A3256353217EB674009E9DA2 /* YZReachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YZReachability.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -134,10 +137,10 @@
 				A32562E321787A65009E9DA2 /* AppDelegate.m */,
 				A325633C21796B3C009E9DA2 /* YZRootViewController.h */,
 				A325633D21796B3C009E9DA2 /* YZRootViewController.m */,
-				A325634021796B62009E9DA2 /* TestViewController.h */,
-				A325633F21796B62009E9DA2 /* TestViewController.m */,
 				A325634221796B62009E9DA2 /* ViewController.h */,
 				A325634121796B62009E9DA2 /* ViewController.m */,
+				A325634021796B62009E9DA2 /* TestViewController.h */,
+				A325633F21796B62009E9DA2 /* TestViewController.m */,
 				A32562E821787A65009E9DA2 /* Main.storyboard */,
 				A32562EB21787A67009E9DA2 /* Assets.xcassets */,
 				A32562ED21787A67009E9DA2 /* LaunchScreen.storyboard */,
@@ -184,6 +187,8 @@
 				A325630021787A97009E9DA2 /* YZMoivePlayerBrightnessView.m */,
 				A325631321787A97009E9DA2 /* YZMoviePlayerControlButton.h */,
 				A325630721787A97009E9DA2 /* YZMoviePlayerControlButton.m */,
+				A3256353217EB674009E9DA2 /* YZReachability.h */,
+				A3256352217EB674009E9DA2 /* YZReachability.m */,
 			);
 			path = X1playerView;
 			sourceTree = "<group>";
@@ -292,6 +297,7 @@
 				A32562F221787A67009E9DA2 /* main.m in Sources */,
 				A325634321796B62009E9DA2 /* TestViewController.m in Sources */,
 				A32562E421787A65009E9DA2 /* AppDelegate.m in Sources */,
+				A3256354217EB674009E9DA2 /* YZReachability.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

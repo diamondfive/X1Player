@@ -23,7 +23,7 @@ extern NSString * const YZMoviePlayerMediaStateChangedNotification;
 //播放地址变更
 extern NSString * const YZMoviePlayerContentURLDidChangeNotification;
 
-
+@class X1PlayerView;
 @protocol YZMoviePlayerControllerDelegate <NSObject>
 @optional
 //缓冲超时
@@ -68,7 +68,7 @@ extern NSString * const YZMoviePlayerContentURLDidChangeNotification;
 //是否自动播放
 @property (nonatomic, assign) BOOL isAutoPlay;
 //竖屏大窗时的父视图 用于横竖屏切换
-@property (nonatomic, weak) UIView *fatherView;
+@property (nonatomic, weak) X1PlayerView *fatherView;
 
 //是否真的点击了全屏按钮,因为触发全屏可能是因为旋转屏幕
 @property (nonatomic, assign) BOOL isRealFullScreenBtnPress;
@@ -102,7 +102,7 @@ extern NSString * const YZMoviePlayerContentURLDidChangeNotification;
  @param mediasourceDefinitionDict 视频清晰度字典
 
  */
-- (id)initWithFrame:(CGRect)frame andStyle:(YZMoviePlayerControlsStyle)style mediasourceDefinitionDict:(NSDictionary *)mediasourceDefinitionDict;
+- (id)initWithFrame:(CGRect)frame andStyle:(YZMoviePlayerControlsStyle)style mediasourceDefinitionDict:(NSDictionary *)mediasourceDefinitionDict hostObject:(X1PlayerView *)hostObject;
 - (void)setFrame:(CGRect)frame;
 -(void)setMovieCoverImage:(UIImage*)image;
 

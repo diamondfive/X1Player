@@ -10,43 +10,58 @@
 #import "YZMoviePlayerController.h"
 #import "X1PlayerView.h"
 
-#define QNStateBarHeight [[UIApplication sharedApplication] statusBarFrame].size.height
+#define YZStateBarHeight [[UIApplication sharedApplication] statusBarFrame].size.height
 
 
 @interface YZMoivePlayerCoverView ()
 
-//防止返回按钮和底色重合
-@property (nonatomic, strong) CALayer *maskLayer;
+//封面图片遮罩
+@property (nonatomic, strong) CALayer *coverImageViewMaskLayer;
+//防止视频底色与返回按钮底色一致导致返回按钮不可见
+@property (nonatomic, strong) CALayer *backBtnMaskLayer;
+
+
 
 @end
 
 @implementation YZMoivePlayerCoverView
 
 #pragma mark -- lifecycle
--(instancetype)initWithFrame:(CGRect)frame{
+-(instancetype)initWithMoviePlayer:(YZMoviePlayerController *)moviePlayer{
     
-    if (self = [super initWithFrame:frame]) {
-        
-        
+    if (self = [super init]) {
+        self.moviePlayer = moviePlayer;
         [self initUI];
         [self registerNotification];
     }
     return self;
 }
 
+-(void)willMoveToSuperview:(UIView *)newSuperview{
+    
+    if (newSuperview == nil) {
+        
+        NSLog(@"xxx");
+    }
+    
+}
+
 -(void)layoutSubviews{
     
     self.coverImageView.frame = CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height);
-    self.maskLayer.frame = self.coverImageView.bounds;
+    self.coverImageViewMaskLayer.frame = self.coverImageView.bounds;
     
     
-    self.backBtn.frame = CGRectMake(10, 10+QNStateBarHeight, 20, 20);
-    
+    self.backBtn.frame = CGRectMake(10, 5+YZStateBarHeight, 20, 20);
+    self.backBtnMaskLayer.frame = self.backBtn.bounds;
     
     
     self.playpauseBtn.frame = CGRectMake(self.bounds.size.width/2 - 38/2, self.bounds.size.height/2 - 38/2, 38, 38);
     
-    self.fullscreenBtn.frame = CGRectMake(self.frame.size.width-20-15, self.frame.size.height-20-15, 20, 20);
+    self.WWANPlayLabel.frame = CGRectMake(10, self.bounds.size.height/2-30, self.bounds.size.width-20, 20);
+    
+    self.WWANPlayBtn.frame = CGRectMake(self.bounds.size.width/2 - 40, self.bounds.size.height/2 , 80, 30);
+ 
     
 }
 
@@ -67,23 +82,6 @@
 
 
 
-#pragma mark setter && getter
--(void)setIsNeedShowBackBtn:(BOOL)isNeedShowBackBtn{
-    _isNeedShowBackBtn = isNeedShowBackBtn;
- 
-}
-
-
--(void)setupCoverImage:(UIImage *)image{
-    
-    if (!image) {
-        return;
-    }
-    
-    [self.coverImageView setImage:image];
-    
-}
-
 #pragma mark -- Internal Method
 
 -(void)initUI{
@@ -92,36 +90,60 @@
     
     self.coverImageView =[[UIImageView alloc] init];
     
-    self.maskLayer = [[CALayer alloc] init];
-    self.maskLayer.backgroundColor =[UIColor colorWithRed:0 green:0 blue:0 alpha:0.2].CGColor;
-    [self.coverImageView.layer addSublayer:self.maskLayer];
+    self.coverImageViewMaskLayer = [[CALayer alloc] init];
+    self.coverImageViewMaskLayer.backgroundColor =[UIColor colorWithRed:0 green:0 blue:0 alpha:0.2].CGColor;
+    [self.coverImageView.layer addSublayer:self.coverImageViewMaskLayer];
     
     [self addSubview:self.coverImageView];
+    
 
     self.backBtn =[[YZMoviePlayerControlButton alloc] init];
+    
+    self.backBtnMaskLayer = [[CALayer alloc] init];
+    self.backBtnMaskLayer.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.1].CGColor;
+    [self.backBtn.layer addSublayer:self.backBtnMaskLayer];
+    
     self.backBtn.showsTouchWhenHighlighted = YES;
     [self.backBtn setImage:[UIImage imageNamed:X1BUNDLE_Image(@"yz_ic_movie_back_nor")] forState:UIControlStateNormal];
     [self.backBtn setImage:[UIImage imageNamed:X1BUNDLE_Image(@"yz_ic_movie_back_nor")] forState:UIControlStateHighlighted];
-    [self.backBtn addTarget:self action:@selector(qnPlayViewClickBackBtn:) forControlEvents:UIControlEventTouchUpInside];
+    [self.backBtn addTarget:self action:@selector(yzPlayViewClickBackBtn:) forControlEvents:UIControlEventTouchUpInside];
     [self addSubview:self.backBtn];
     
 
-    self.playpauseBtn = [[YZMoviePlayerControlButton alloc] init];
-    self.playpauseBtn.showsTouchWhenHighlighted = YES;
-    [self.playpauseBtn setImage:[UIImage imageNamed:X1BUNDLE_Image(@"yz_ic_movie_bigplay_nor")] forState:UIControlStateNormal];
-    [self.playpauseBtn setImage:[UIImage imageNamed:X1BUNDLE_Image(@"yz_ic_movie_bigplay_nor")] forState:UIControlStateHighlighted];
-    [self.playpauseBtn addTarget:self action:@selector(qnPlayViewClickPlayPauseBtn:) forControlEvents:UIControlEventTouchUpInside];
+    if (self.moviePlayer.fatherView.networkMonitor.currentReachabilityStatus == ReachableViaWWAN) {
+        
+        self.WWANPlayLabel =[[UILabel alloc] init];
+        self.WWANPlayLabel.text = @"正在使用非WIFI网络,播放将产生流量费用";
+        self.WWANPlayLabel.textAlignment = NSTextAlignmentCenter;
+        self.WWANPlayLabel.font =[UIFont systemFontOfSize:15];
+        self.WWANPlayLabel.textColor = [UIColor whiteColor];
+        [self addSubview:self.WWANPlayLabel];
+        
+        self.WWANPlayBtn=[UIButton buttonWithType:UIButtonTypeCustom];
+        self.WWANPlayBtn.layer.cornerRadius = 4;
+        self.WWANPlayBtn.layer.masksToBounds = YES;
+        self.WWANPlayBtn.backgroundColor = YZColorFromRGB(0x3e9adf);
+        [self.WWANPlayBtn setTitle:@"继续播放" forState:UIControlStateNormal];
+        [self.WWANPlayBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        self.WWANPlayBtn.titleLabel.font = [UIFont systemFontOfSize:15];
+        
+        [self.WWANPlayBtn addTarget:self action:@selector(yzPlayViewClickPlayPauseBtn:) forControlEvents:UIControlEventTouchUpInside];
+        
+        [self addSubview:self.WWANPlayBtn];
+        
+    }else{
+        
+        self.playpauseBtn = [[YZMoviePlayerControlButton alloc] init];
+        self.playpauseBtn.showsTouchWhenHighlighted = YES;
+        [self.playpauseBtn setImage:[UIImage imageNamed:X1BUNDLE_Image(@"yz_ic_movie_bigplay_nor")] forState:UIControlStateNormal];
+        [self.playpauseBtn setImage:[UIImage imageNamed:X1BUNDLE_Image(@"yz_ic_movie_bigplay_nor")] forState:UIControlStateHighlighted];
+        [self.playpauseBtn addTarget:self action:@selector(yzPlayViewClickPlayPauseBtn:) forControlEvents:UIControlEventTouchUpInside];
+        
+        [self addSubview:self.playpauseBtn];
+        
+    }
 
-    [self addSubview:self.playpauseBtn];
-    
-//
-//    self.fullscreenBtn = [[QNButton alloc] init];
-//    self.fullscreenBtn.showsTouchWhenHighlighted = YES;
-//    [self.fullscreenBtn setImage:[UIImage imageNamed:X1BUNDLE_Image(@"yz_ic_movie_screen_full_nor")] forState:UIControlStateNormal];
-//    [self.fullscreenBtn setImage:[UIImage imageNamed:X1BUNDLE_Image(@"yz_ic_movie_screen_full_nor")] forState:UIControlStateHighlighted];
-//    [self.fullscreenBtn addTarget:self action:@selector(qnPlayViewClickFullScreenBtn:) forControlEvents:UIControlEventTouchUpInside];
-//
-//    [self addSubview:self.fullscreenBtn];
+
     
 
 }
@@ -139,18 +161,20 @@
     if (showCoverImagePlayBtn) {
         self.coverImageView.alpha = 1;
         self.playpauseBtn.alpha = 1;
+        self.WWANPlayBtn.alpha = 1;
+        self.WWANPlayLabel.alpha = 1;
+        
     }else{
         self.coverImageView.alpha = 0;
         self.playpauseBtn.alpha = 0;
+        self.WWANPlayBtn.alpha = 0;
+        self.WWANPlayLabel.alpha = 0;
         
     }
     
 }
 
 #pragma mark --- Notification
-
-
-
 -(void)registerNotification{
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moviePlayerWillEnterFullScreen:) name:YZMoviePlayerWillEnterFullscreenNotification object:nil];
@@ -164,21 +188,18 @@
 
 -(void)moviePlayerWillEnterFullScreen:(NSNotification *)sender{
     
-//    [self.fullscreenBtn setImage:[UIImage imageNamed:X1BUNDLE_Image(@"yz_ic_movie_screen_reduce_nor")] forState:UIControlStateNormal];
-//     [self.fullscreenBtn setImage:[UIImage imageNamed:X1BUNDLE_Image(@"yz_ic_movie_screen_reduce_nor")] forState:UIControlStateHighlighted];
-    [self.backBtn removeTarget:self action:@selector(qnPlayViewClickBackBtn:) forControlEvents:UIControlEventTouchUpInside];
-    [self.backBtn addTarget:self action:@selector(qnPlayViewClickFullScreenBtn:) forControlEvents:UIControlEventTouchUpInside];
+
+    [self.backBtn removeTarget:self action:@selector(yzPlayViewClickBackBtn:) forControlEvents:UIControlEventTouchUpInside];
+    [self.backBtn addTarget:self action:@selector(yzPlayViewClickFullScreenBtn:) forControlEvents:UIControlEventTouchUpInside];
+    
+
     
 }
 -(void)moviePlayerWillExitFullScreen:(NSNotification *)sender{
-//
-//    [self.fullscreenBtn setImage:[UIImage imageNamed:X1BUNDLE_Image(@"yz_ic_movie_screen_full_nor")] forState:UIControlStateNormal];
-//    [self.fullscreenBtn setImage:[UIImage imageNamed:X1BUNDLE_Image(@"yz_ic_movie_screen_full_nor")] forState:UIControlStateHighlighted];
 
     
-    
-    [self.backBtn removeTarget:self action:@selector(qnPlayViewClickFullScreenBtn:) forControlEvents:UIControlEventTouchUpInside];
-    [self.backBtn addTarget:self action:@selector(qnPlayViewClickBackBtn:) forControlEvents:UIControlEventTouchUpInside];
+    [self.backBtn removeTarget:self action:@selector(yzPlayViewClickFullScreenBtn:) forControlEvents:UIControlEventTouchUpInside];
+    [self.backBtn addTarget:self action:@selector(yzPlayViewClickBackBtn:) forControlEvents:UIControlEventTouchUpInside];
 
 }
 
@@ -186,7 +207,7 @@
 - (void)stateChangeCauseControlsUIChange
 {
     int state = [self.moviePlayer getPlaybackState];
-    NSLog(@"QNYZMovieControls stateChangeCauseControlsUIChange = %d", state);
+    NSLog(@"yzYZMovieControls stateChangeCauseControlsUIChange = %d", state);
     switch (state) {
         case PS_NONE:
 
@@ -201,7 +222,7 @@
                      [self showPlayViewWithBackBtn:NO coverImagePlayBtn:NO];
                 }else{
                     
-                    [self showPlayViewWithBackBtn:_isNeedShowBackBtn ?YES :NO coverImagePlayBtn:NO];
+                    [self showPlayViewWithBackBtn:_isNeedShowBackBtn coverImagePlayBtn:NO];
                 }
                 
             }
@@ -219,7 +240,7 @@
                     [self showPlayViewWithBackBtn:NO coverImagePlayBtn:NO];
                 }else{
                     
-                    [self showPlayViewWithBackBtn:_isNeedShowBackBtn ?YES :NO coverImagePlayBtn:NO];
+                    [self showPlayViewWithBackBtn:_isNeedShowBackBtn coverImagePlayBtn:NO];
                 }
                 
                 
@@ -237,7 +258,7 @@
                     [self showPlayViewWithBackBtn:NO coverImagePlayBtn:NO];
                 }else{
                     
-                    [self showPlayViewWithBackBtn:_isNeedShowBackBtn ?YES :NO coverImagePlayBtn:NO];
+                    [self showPlayViewWithBackBtn:_isNeedShowBackBtn coverImagePlayBtn:NO];
                 }
                 
             }
@@ -264,7 +285,7 @@
                         [self showPlayViewWithBackBtn:NO coverImagePlayBtn:NO];
                     }else{
                         
-                        [self showPlayViewWithBackBtn:_isNeedShowBackBtn ?YES :NO coverImagePlayBtn:YES];
+                        [self showPlayViewWithBackBtn:_isNeedShowBackBtn coverImagePlayBtn:YES];
                     }
                     
                 }
@@ -282,7 +303,7 @@
                     [self showPlayViewWithBackBtn:NO coverImagePlayBtn:NO];
                 }else{
                     
-                    [self showPlayViewWithBackBtn:_isNeedShowBackBtn ?YES :NO coverImagePlayBtn:NO];
+                    [self showPlayViewWithBackBtn:_isNeedShowBackBtn coverImagePlayBtn:NO];
                 }
                 
             }
@@ -298,23 +319,40 @@
 
 
 #pragma  mark --  btn action
--(void)qnPlayViewClickBackBtn:(UIButton *)sender{
+-(void)yzPlayViewClickBackBtn:(UIButton *)sender{
     
     [self.moviePlayer clickBackBtn];
 }
 
--(void)qnPlayViewClickPlayPauseBtn:(UIButton *)sender{
-    
-    [self removeFromSuperview];
+-(void)yzPlayViewClickPlayPauseBtn:(UIButton *)sender{
     
     [self.moviePlayer clickPlayPauseBtn];
 }
 
--(void)qnPlayViewClickFullScreenBtn:(UIButton *)sender{
+-(void)yzPlayViewClickFullScreenBtn:(UIButton *)sender{
     
     [self.moviePlayer clickFullScreenBtn];
 }
 
+
+
+
+#pragma mark setter && getter
+-(void)setIsNeedShowBackBtn:(BOOL)isNeedShowBackBtn{
+    _isNeedShowBackBtn = isNeedShowBackBtn;
+    
+}
+
+
+-(void)setupCoverImage:(UIImage *)image{
+    
+    if (!image) {
+        return;
+    }
+    
+    [self.coverImageView setImage:image];
+    
+}
 
 
 @end

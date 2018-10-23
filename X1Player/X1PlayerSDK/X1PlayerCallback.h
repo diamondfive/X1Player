@@ -2,9 +2,9 @@
 //  X1PlayerCallback.h
 //  mediaplayer
 //
-//  Created by Gexy on 15/11/11.
-//  Copyright (c) 2015年 Butel. All rights reserved.
-//
+//  Created by 付彦彰 on 2018/7/2.
+//  Copyright © 2018年 channelsoft. All rights reserved.
+//  SDK回调类
 
 #import <Foundation/Foundation.h>
 

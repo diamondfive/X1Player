@@ -8,12 +8,14 @@
 
 #import <UIKit/UIKit.h>
 #import "YZMoviePlayerController.h"
+#import "YZReachability.h"
 
 #define X1BUNDLE_NAME   @"X1Player.bundle"
 #define X1BUNDLE_PATH   [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:X1BUNDLE_NAME]
 #define X1BUNDLE_Image(imageName)   [X1BUNDLE_PATH stringByAppendingPathComponent:imageName]
 
 #define  YZColorFromRGB(rgbValue) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
+
 
 //点击小窗的通知
 extern NSString * const X1PlayerViewOnClickFloatViewNotification;
@@ -70,6 +72,9 @@ extern NSString * const X1PlayerVuewOnClickCloseFloatViewBtnNotification;
 
 //竖屏状态下是否需要显示返回按钮
 @property (nonatomic, assign) BOOL isNeedShowBackBtn;
+
+//网络监听器
+@property (nonatomic, strong) YZReachability *networkMonitor;
 
 /**
  初始化方法

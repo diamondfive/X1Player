@@ -11,7 +11,7 @@
 #import "X1PlayerView.h"
 
 
-#define QNStateBarHeight [[UIApplication sharedApplication] statusBarFrame].size.height
+#define YZStateBarHeight [[UIApplication sharedApplication] statusBarFrame].size.height
 
 @implementation YZMoivePlayerReplayView
 
@@ -31,7 +31,7 @@
 -(void)layoutSubviews{
     [super layoutSubviews];
     
-    self.backBtn.frame = CGRectMake(10, 10+QNStateBarHeight, 20, 20);
+    self.backBtn.frame = CGRectMake(10, 10+YZStateBarHeight, 20, 20);
     
     self.replayBtn.frame = CGRectMake((self.frame.size.width-30)/2, (self.frame.size.height-45)/2, 30, 45);
 //    self.replayLabel.frame = CGRectMake(self.replayBtn.frame.origin.x, self.replayBtn.frame.origin.y+44+5, 44, 20);

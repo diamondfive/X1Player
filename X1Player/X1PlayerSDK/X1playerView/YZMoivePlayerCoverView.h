@@ -18,13 +18,19 @@
 @property (nonatomic, strong) YZMoviePlayerControlButton *fullscreenBtn;
 
 @property (nonatomic, strong) YZMoviePlayerControlButton *playpauseBtn;
+//使用流量情况下的播放按钮
+@property (nonatomic, strong) UILabel *WWANPlayLabel;
+
+@property (nonatomic, strong) UIButton *WWANPlayBtn;
 
 @property (nonatomic, strong) UIImageView *coverImageView;
-
 
 @property (nonatomic, assign) BOOL isNeedShowBackBtn;
 
 @property (nonatomic, weak) YZMoviePlayerController *moviePlayer;
+
+
+-(instancetype)initWithMoviePlayer:(YZMoviePlayerController *)moviePlayer;
 
 /**
  展示播放视图
@@ -32,6 +38,13 @@
  @param showCoverImagePlayBtn 播放暂停按钮和封面图是否展示
  */
 -(void)showPlayViewWithBackBtn:(BOOL)showBackBtn coverImagePlayBtn:(BOOL)showCoverImagePlayBtn;
+
+
+/**
+ 隐藏封面层
+ */
+-(void)hideCoverView;
+
 //设置封面
 -(void)setupCoverImage:(UIImage *)image;
 

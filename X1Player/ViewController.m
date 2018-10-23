@@ -24,7 +24,6 @@
 
 @property(nonatomic, strong) UIImage *image1;
 
-@property(nonatomic, strong) UIImage *image2;
 
 
 @property (nonatomic, assign) NSInteger type;// 1 直播  2 录播  3 距离开始XX
@@ -38,7 +37,7 @@
     
     __weak typeof(self) wself = self;
     
-    
+    self.image1 = [UIImage imageNamed:X1BUNDLE_Image(@"yz_videoplayer_testzhanweitu")];
 
     
     
@@ -121,7 +120,7 @@
     TestViewController *test =[[TestViewController alloc] init];
     test.type = 2;
     self.type = 2;
-     test.image = self.image2;
+     test.image = self.image1;
     
     [self.navigationController pushViewController:test animated:YES];
     
@@ -140,7 +139,7 @@
     
     
     test.startTime = time+30;
-    test.image = self.image2;
+    test.image = self.image1;
     test.type = 3;
     self.type = 3;
     
@@ -152,7 +151,7 @@
     
     TestViewController *test =[[TestViewController alloc] init];
     test.startTime = self.startTime;
-    test.image = self.image2;
+    test.image = self.image1;
     test.type = 4;
     self.type = 4;
     
@@ -178,7 +177,7 @@
     
     TestViewController *test =[[TestViewController alloc] init];
     test.type = self.type;
-    test.image = self.image2;
+    test.image = self.image1;
     
     [self.navigationController pushViewController:test animated:YES];
 }
