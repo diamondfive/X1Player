@@ -92,33 +92,46 @@ static X1PlayerView  *GlobalPlayerView;
 }
 
 #pragma mark -- public method
-// !!!: 播放视频
+//普通播放视频 无清晰度切换
 -(void)playWithUrl:(NSString *)url playerTitle:(NSString *)title coverImage:(UIImage *)coverImage autoPlay:(BOOL)autoplay style:(YZMoviePlayerControlsStyle)style{
     
-    //不自动黑屏
-    [UIApplication sharedApplication].idleTimerDisabled=YES;
+ 
+    [self playWithUrl:url definitionUrlDict:nil playerTitle:title coverImage:coverImage autoPlay:autoplay style:style];
     
+}
+// !!!: 播放视频核心方法
+-(void)playWithUrl:(NSString *)url definitionUrlDict:(NSDictionary *)definitionUrlDict playerTitle:(NSString *)title coverImage:(UIImage *)coverImage autoPlay:(BOOL)autoplay style:(YZMoviePlayerControlsStyle)style{
+    //当前播放视频地址与上一个地址比较
+    __block BOOL isSameUrl = NO;
+    
+    if ([GlobalPlayerView.mediasource isEqual:url]) {
+        isSameUrl = YES;
+    }else{
+        [definitionUrlDict enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
+            if ([obj isEqual:url]) {
+                *stop = YES;
+                isSameUrl = YES;
+            }
+        }];
+    }
+
     //网址相同并且小窗存在情况下过来的,需要继续播放
-    if (GlobalPlayerView && [GlobalPlayerView.mediasource isEqual:url]) {
+    if (GlobalPlayerView && isSameUrl) {
         
         self.moviePlayer = GlobalPlayerView.moviePlayer;
         
         self.moviePlayer.delegate = self;
         self.moviePlayer.fatherView = self;
+        self.moviePlayer.controlsStyle = style;
         
         [self.moviePlayer setFrame:CGRectMake(0, 0, _originalFrame.size.width, _originalFrame.size.height)];
         
         [self addSubview:self.moviePlayer.view];
         
-        self.moviePlayer.controlsStyle = style;
-        
         //重设控制层UI状态的通知
         [[NSNotificationCenter defaultCenter] postNotificationName:YZMoviePlayerMediaStateChangedNotification object:nil];
         
-        [GlobalPlayerView removeNotifications];
-        [GlobalPlayerView invalidCountDownTimer];
-        GlobalPlayerView = nil;
-        
+        [GlobalPlayerView viewDestroy];
         
     }else{ //初始化一个新的开始播放
         
@@ -131,26 +144,29 @@ static X1PlayerView  *GlobalPlayerView;
         }
         
         
-        [self setUpMoviePlayWithStyle:style];
+        [self setUpMoviePlayWithStyle:style mediasourceDefinitionDict:definitionUrlDict];
         
         self.moviePlayer.isAutoPlay = autoplay; //视频是否自动播放
         self.moviePlayer.coverimage = coverImage;
-        self.moviePlayer.lastPlayUrl = url;
         [self.moviePlayer changeTitle:title];
         
-       
         //播放视频关键代码
-        [self.moviePlayer setContentURL:[NSURL URLWithString:url]];
+        [self.moviePlayer setContentURL:url];
+        
     }
     
     //通用信息填充
+    //不自动黑屏
+    [UIApplication sharedApplication].idleTimerDisabled=YES;
     self.style = style;
     self.playerTitle = title;
     self.mediasource = url;
     self.coverimage = coverImage;
-    
+    self.mediasource = url;
+    self.mediasourceDefinitionDict = definitionUrlDict;
     
 }
+
 
 //展示倒计时视图
 -(void)showCountdownViewWithIsLive:(BOOL)isLive startTime:(NSTimeInterval)startTime{
@@ -278,10 +294,10 @@ static X1PlayerView  *GlobalPlayerView;
 
 #pragma mark -- internal method
 //设置播放控制器
--(void)setUpMoviePlayWithStyle:(YZMoviePlayerControlsStyle)style
+-(void)setUpMoviePlayWithStyle:(YZMoviePlayerControlsStyle)style mediasourceDefinitionDict:(NSDictionary *)mediasourceDefinitionDict;
 {
     
-    self.moviePlayer =[[YZMoviePlayerController alloc] initWithFrame:CGRectMake(0, 0, self.originalFrame.size.width, self.originalFrame.size.height) andStyle:style];
+    self.moviePlayer =[[YZMoviePlayerController alloc] initWithFrame:CGRectMake(0, 0, self.originalFrame.size.width, self.originalFrame.size.height) andStyle:style mediasourceDefinitionDict:mediasourceDefinitionDict];
     
     self.moviePlayer.view.alpha = 1.0f;
     self.moviePlayer.delegate = self;
@@ -347,8 +363,7 @@ static X1PlayerView  *GlobalPlayerView;
 //注册通知,设置通知回调
 - (void)registerNotification
 {
-    NSLog(@"X1PlayerView registerNotification");
-    // 注册播放器相关的通知
+    /*********************** 注册播放器相关的通知 *********************/
     //播放器将要进入全屏通知
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moviePlayerWillEnterFullscreen:) name:YZMoviePlayerWillEnterFullscreenNotification object:nil];
     //播放器将要退出全屏通知
@@ -436,7 +451,7 @@ static X1PlayerView  *GlobalPlayerView;
 }
 
 //悬浮小窗被点击
--(void)yzMoviePlayerControllerFloatViewPressed{
+-(void)yzMoviePlayerControllerOnClickFloatView{
     
     if ([self.delegate respondsToSelector:@selector(x1PlayerViewOnClickFloatView:)]) {
         [self.delegate x1PlayerViewOnClickFloatView:self];
@@ -446,7 +461,7 @@ static X1PlayerView  *GlobalPlayerView;
     
 }
 //悬浮小窗叉号按钮被点击
--(void)yzMoviePlayerControllerCloseFloatViewBtnPressed{
+-(void)yzMoviePlayerControllerOnClickCloseFloatViewBtn{
     
     
     if ([self.delegate respondsToSelector:@selector(x1PlayerViewOnClickCloseFloatViewBtn:)]) {
@@ -460,7 +475,7 @@ static X1PlayerView  *GlobalPlayerView;
     
 }
 //视频返回按钮点击的回调
--(void)yzMoviePlayerControllerBackBtnPressed{
+-(void)yzMoviePlayerControllerOnClickBackBtn{
     NSLog(@"X1PlayerView backBtnPressed");
     
     if ([self.delegate respondsToSelector:@selector(x1PlayerViewOnClickBackBtn:)]) {
@@ -511,6 +526,7 @@ static X1PlayerView  *GlobalPlayerView;
     
     _originalFrame = originalFrame;
 }
+
 
 -(void)setCoverimage:(UIImage *)coverimage{
     

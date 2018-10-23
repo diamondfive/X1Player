@@ -72,13 +72,14 @@ static const inline BOOL isIpad() {
 
 # pragma mark -- Lifecycle
 
-- (id)initWithMoviePlayer:(YZMoviePlayerController *)moviePlayer style:(YZMoviePlayerControlsStyle)style
+- (id)initWithMoviePlayer:(YZMoviePlayerController *)moviePlayer style:(YZMoviePlayerControlsStyle)style mediasourceDefinitionDict:(NSDictionary *)mediasourceDefinitionDict
 {
     self = [super init];
     if (self) {
         self.backgroundColor = [UIColor clearColor];
         _moviePlayer = moviePlayer;
         _style = style;
+        _mediasourceDefinitionDict = mediasourceDefinitionDict;
     
         [self initParam];
         [self setupGestureView];
@@ -686,26 +687,26 @@ static const inline BOOL isIpad() {
 //点击了悬浮小窗
 -(void)floatViewClick:(id)sender{
     
-    [self.moviePlayer floatViewPressed];
+    [self.moviePlayer clickFloatView];
 }
 
 //点击了悬浮小窗叉号
 -(void)closeFloatViewButtonClick:(UIButton *)sender{
     
-    [self.moviePlayer closeFloatViewBtnPressed];
+    [self.moviePlayer clickCloseFloatViewBtn];
     
 }
 
 //点击了返回按钮
 -(void)backBtnClick:(UIButton *)sender{
     NSLog(@"backBtnClick");
-    [self.moviePlayer backBtnPressed];
+    [self.moviePlayer clickBackBtn];
 }
 
 //竖屏返回按钮被点击
 - (void)backBtnPressed:(UIButton *)sender {
     NSLog(@"QNYZMovieControls backBtnPressed");
-    [self.moviePlayer backBtnPressed];
+    [self.moviePlayer clickBackBtn];
 }
 
 

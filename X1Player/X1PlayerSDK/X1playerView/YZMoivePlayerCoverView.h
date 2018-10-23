@@ -4,14 +4,14 @@
 //
 //  Created by 付彦彰 on 2018/6/21.
 //  Copyright © 2018年 channelsoft. All rights reserved.
-//  播放视图，开始播放前的占位图
+//  封面视图，开始播放前的占位图
 
 #import <UIKit/UIKit.h>
 #import "YZMoviePlayerControlButton.h"
 
 @class YZMoviePlayerController;
 
-@interface YZMoivePlayerNoStartView : UIView
+@interface YZMoivePlayerCoverView : UIView
 
 @property (nonatomic, strong) YZMoviePlayerControlButton *backBtn;
 

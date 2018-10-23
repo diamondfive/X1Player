@@ -42,25 +42,32 @@ extern NSString * const X1PlayerVuewOnClickCloseFloatViewBtnNotification;
 
 //视频数据源url
 @property (nonatomic, strong) NSString *mediasource;
-//视频数据源数组 通常是统一视频包含不同清晰度
-@property (nonatomic, strong) NSArray *mediasourceArr;
+//视频清晰度字典 key对应显示名称 value对应url
+//eg. @{@"超清 720p":@"http://ivi.bupt.edu.cn/hls/cctv1hd.m3u8",@"高清 480p":@"http://ivi.bupt.edu.cn/hls/cctv1.m3u8"}
+@property (nonatomic, strong) NSDictionary *mediasourceDefinitionDict;
 //封面图片
 @property (nonatomic, strong) UIImage *coverimage;
 
-//视频播放器
+//视频播放器层
 @property (nonatomic,strong) YZMoviePlayerController *moviePlayer;
 
 @property (nonatomic, weak) id<X1PlayerViewDelegate> delegate;
+
 //视频显示标题
 @property (nonatomic, strong) NSString *playerTitle;
+
 //是否是直播(外界传入的标识,用于SDK解析视频源成功前的逻辑判断)
 @property (nonatomic, assign) BOOL isReceiveLive;
+
 //开播时间戳(用于直播视频未开播前遮罩的逻辑判断)
 @property (nonatomic, assign) NSTimeInterval startTimeInterval;
+
 //播放风格
 @property (nonatomic, assign) YZMoviePlayerControlsStyle style;
+
  //app后台切换到前台需不需要继续播放
 @property (nonatomic, assign) BOOL isSwitchResumePlay;
+
 //竖屏状态下是否需要显示返回按钮
 @property (nonatomic, assign) BOOL isNeedShowBackBtn;
 
@@ -83,7 +90,21 @@ extern NSString * const X1PlayerVuewOnClickCloseFloatViewBtnNotification;
 -(void)playWithUrl:(NSString *)url playerTitle:(NSString *)title coverImage:(UIImage *)coverImage autoPlay:(BOOL)autoplay style:(YZMoviePlayerControlsStyle)style;
 
 /**
- 手动调用销毁视频窗口（eg. 离开视频播放页面时 全局悬浮窗点击叉号时调用）
+  播放方法二 支持清晰度切换
+
+ @param url 优先播放清晰度的url url需要存在于视频清晰度字典中
+ @param definitionUrlDict 视频清晰度字典 key对应显示名称 value对应url
+ eg. @{@"超清 720p":@"http://ivi.bupt.edu.cn/hls/cctv1hd.m3u8",@"高清 480p":@"http://ivi.bupt.edu.cn/hls/cctv1.m3u8"}
+ @param title 视频标题
+ @param coverImage 封面图片 也可通过coverImageView/coverImage设置图片
+ @param autoplay 是否自动播放
+ @param style  参考X1PlayerViewStyle
+ */
+-(void)playWithUrl:(NSString *)url definitionUrlDict:(NSDictionary *)definitionUrlDict playerTitle:(NSString *)title coverImage:(UIImage *)coverImage autoPlay:(BOOL)autoplay style:(YZMoviePlayerControlsStyle)style;
+
+
+/**
+ 手动调用销毁视频控件（eg. 离开视频播放页面时 全局悬浮窗点击叉号时调用）
  */
 -(void)viewDestroy;
 
@@ -100,8 +121,10 @@ extern NSString * const X1PlayerVuewOnClickCloseFloatViewBtnNotification;
 /**
   由小窗切换为大窗口(适用于 往下滑当前tableView直到视频播放窗口可见时调用 或者在这种场景下的小窗点击小窗叉号)
  
-  warning: 返回上一级页面的悬浮小窗不能调用此方法 因为此时再次进入播放界面 播放控件的父视图为不同对象
+  warning: 错误调用会导致UI异常
+  eg. 返回上一级页面的悬浮小窗不能调用此方法 因为此时再次进入播放界面 播放控件的父视图为不同对象
   此时需要在 x1PlayerViewOnClickFloatView 的回调中再次调用 playWithUrl 播放方法
+ 
 
  */
 -(void)showOriginView;

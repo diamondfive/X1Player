@@ -6,21 +6,21 @@
 //  Copyright © 2018年 channelsoft. All rights reserved.
 //
 
-#import "YZMoivePlayerNoStartView.h"
+#import "YZMoivePlayerCoverView.h"
 #import "YZMoviePlayerController.h"
 #import "X1PlayerView.h"
 
 #define QNStateBarHeight [[UIApplication sharedApplication] statusBarFrame].size.height
 
 
-@interface YZMoivePlayerNoStartView ()
+@interface YZMoivePlayerCoverView ()
 
 //防止返回按钮和底色重合
 @property (nonatomic, strong) CALayer *maskLayer;
 
 @end
 
-@implementation YZMoivePlayerNoStartView
+@implementation YZMoivePlayerCoverView
 
 #pragma mark -- lifecycle
 -(instancetype)initWithFrame:(CGRect)frame{
@@ -61,7 +61,6 @@
 }
 
 -(void)dealloc{
-    NSLog(@"QNPlayView 销毁了");
     
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
@@ -301,7 +300,7 @@
 #pragma  mark --  btn action
 -(void)qnPlayViewClickBackBtn:(UIButton *)sender{
     
-    [self.moviePlayer backBtnPressed];
+    [self.moviePlayer clickBackBtn];
 }
 
 -(void)qnPlayViewClickPlayPauseBtn:(UIButton *)sender{

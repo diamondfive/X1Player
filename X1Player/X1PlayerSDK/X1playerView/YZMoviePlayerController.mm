@@ -19,24 +19,17 @@ NSString * const YZMoviePlayerDidExitFullscreenNotification = @"YZMoviePlayerDid
 NSString * const YZMoviePlayerOnCompletionNotification = @"YZMoviePlayerOnCompletionNotification";
 //播放状态变化通知
 NSString * const YZMoviePlayerMediaStateChangedNotification = @"YZMoviePlayerMediaStateChangedNotification";
-
+//播放地址改变通知
 NSString * const YZMoviePlayerContentURLDidChangeNotification = @"YZMoviePlayerContentURLDidChangeNotification";
 
 // block中弱引用self
 #define WEAKSELF typeof(self) __weak weakSelf = self;
 
-@implementation UIDevice (YZSystemVersion)
+#define IOSVERSION [[[UIDevice currentDevice] systemVersion] floatValue]
 
-+ (float)iOSVersion {
-    static float version = 0.f;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        version = [[[UIDevice currentDevice] systemVersion] floatValue];
-    });
-    return version;
-}
+static const CGFloat YZMovieBackgroundPadding = 20.f; //if we don't pad the movie's background view, the edges will appear jagged when rotating
+static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
 
-@end
 
 @implementation UIApplication (YZAppDimensions)
 
@@ -49,7 +42,7 @@ NSString * const YZMoviePlayerContentURLDidChangeNotification = @"YZMoviePlayerC
     if (UIInterfaceOrientationIsLandscape(orientation)) {
         size = CGSizeMake(size.height, size.width);
     }
-    if (!application.statusBarHidden && [UIDevice iOSVersion] < 7.0) {
+    if (!application.statusBarHidden && IOSVERSION < 7.0) {
         size.height -= MIN(application.statusBarFrame.size.width, application.statusBarFrame.size.height);
     }
     return size;
@@ -57,11 +50,6 @@ NSString * const YZMoviePlayerContentURLDidChangeNotification = @"YZMoviePlayerC
 
 @end
 
-static const CGFloat movieBackgroundPadding = 20.f; //if we don't pad the movie's background view, the edges will appear jagged when rotating
-static const NSTimeInterval fullscreenAnimationDuration = 0.25;
-
-#define kRandomColor [UIColor colorWithRed:arc4random_uniform(256) / 255.0 green:arc4random_uniform(256) / 255.0 blue:arc4random_uniform(256) / 255.0 alpha:1]
-#define kRandomFont [UIFont systemFontOfSize:15]
 
 @interface YZMoviePlayerController () <X1PlayerAgentDelegate> {
     
@@ -77,7 +65,6 @@ static const NSTimeInterval fullscreenAnimationDuration = 0.25;
     
     UIView *_tmpView;
 }
-@property (nonatomic, strong) NSURL *dataURL;
 //self.view是它的子视图，因为视频旋转的时候可能出现锯齿边缘，填充视图用于抗锯齿
 @property (nonatomic, strong) UIView *movieBackgroundView;
 
@@ -88,12 +75,7 @@ static const NSTimeInterval fullscreenAnimationDuration = 0.25;
 
 # pragma mark -- lifecycle
 
-- (id)init {
-    
-    return [self initWithFrame:CGRectZero andStyle:YZMoviePlayerControlsStyleNone];
-}
-
-- (id)initWithFrame:(CGRect)frame andStyle:(YZMoviePlayerControlsStyle)style{
+- (id)initWithFrame:(CGRect)frame andStyle:(YZMoviePlayerControlsStyle)style mediasourceDefinitionDict:(NSDictionary *)mediasourceDefinitionDict{
     if ( (self = [super init]) ) {
 
         self.view.frame = frame;
@@ -108,7 +90,7 @@ static const NSTimeInterval fullscreenAnimationDuration = 0.25;
             [_movieBackgroundView setBackgroundColor:[UIColor blackColor]];
         }
         //初始化控制层
-        [self initMovieControlsWithStyle:style];
+        [self initMovieControlsWithStyle:style mediasourceDefinitionDict:(NSDictionary *)mediasourceDefinitionDict];
         
         [self initReplayView];
 
@@ -201,7 +183,7 @@ static const NSTimeInterval fullscreenAnimationDuration = 0.25;
 }
 
 // !!!:视频播放关键代码
-- (void)setContentURL:(NSURL *)contentURL {
+- (void)setContentURL:(NSString *)contentURL {
     if (!_controls) {
         [[NSException exceptionWithName:@"YZMoviePlayerController Exception" reason:@"Set contentURL after setting controls." userInfo:nil] raise];
     }
@@ -209,10 +191,10 @@ static const NSTimeInterval fullscreenAnimationDuration = 0.25;
     [self stop];
     _retryPlayPos = -1;
     _glkView.backgroundColor=[UIColor blackColor];
-    self.dataURL = contentURL;
-    [_playerSDK setDataSource:contentURL.absoluteString];
+    self.mediasource = contentURL;
+    [_playerSDK setDataSource:contentURL];
     
-    if (self.isAutoPlay&& !self.isCountdownView) { //自动播放并且并非未开播视图
+    if (self.isAutoPlay&& !self.isCountdownView) { //自动播放并且并非倒计时视图
         [_playerSDK prepareAsync];
         [self setPlayerMediaState:PS_LOADING];
     }
@@ -266,9 +248,10 @@ static const NSTimeInterval fullscreenAnimationDuration = 0.25;
     
 }
 //初始化播放控制层
-- (void)initMovieControlsWithStyle:(YZMoviePlayerControlsStyle)style
+- (void)initMovieControlsWithStyle:(YZMoviePlayerControlsStyle)style mediasourceDefinitionDict:(NSDictionary *)mediasourceDefinitionDict
 {
-    YZMoviePlayerControls *movieControls = [[YZMoviePlayerControls alloc] initWithMoviePlayer:self style:style];
+    self.mediasourceDefinitionDict = mediasourceDefinitionDict;
+    YZMoviePlayerControls *movieControls = [[YZMoviePlayerControls alloc] initWithMoviePlayer:self style:style mediasourceDefinitionDict:mediasourceDefinitionDict];
     //    [movieControls  setBarColor:[UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.1]];
     //    [movieControls setBarGradientColor:[UIColor redColor]];
     
@@ -278,7 +261,7 @@ static const NSTimeInterval fullscreenAnimationDuration = 0.25;
 //初始化封面视图
 -(void)initPlayView{
     [_coverView removeFromSuperview];
-    _coverView =[[YZMoivePlayerNoStartView alloc] init];
+    _coverView =[[YZMoivePlayerCoverView alloc] init];
     _coverView.moviePlayer = self;
     [self.view addSubview:_coverView];
     
@@ -301,7 +284,7 @@ static const NSTimeInterval fullscreenAnimationDuration = 0.25;
 }
 
 - (CGFloat)statusBarHeightInOrientation:(UIInterfaceOrientation)orientation {
-    if ([UIDevice iOSVersion] >= 7.0)
+    if (IOSVERSION >= 7.0)
         return 0.f;
     else if ([UIApplication sharedApplication].statusBarHidden)
         return 0.f;
@@ -587,13 +570,13 @@ static const NSTimeInterval fullscreenAnimationDuration = 0.25;
             break;
         case UIInterfaceOrientationLandscapeLeft:
             angle = - M_PI_2;
-            backgroundFrame = CGRectMake([self statusBarHeightInOrientation:orientation] - movieBackgroundPadding, -movieBackgroundPadding, windowSize.height + movieBackgroundPadding*2, windowSize.width + movieBackgroundPadding*2);
-            movieFrame = CGRectMake(movieBackgroundPadding, movieBackgroundPadding, backgroundFrame.size.height - movieBackgroundPadding*2, backgroundFrame.size.width - movieBackgroundPadding*2);
+            backgroundFrame = CGRectMake([self statusBarHeightInOrientation:orientation] - YZMovieBackgroundPadding, -YZMovieBackgroundPadding, windowSize.height + YZMovieBackgroundPadding*2, windowSize.width + YZMovieBackgroundPadding*2);
+            movieFrame = CGRectMake(YZMovieBackgroundPadding, YZMovieBackgroundPadding, backgroundFrame.size.height - YZMovieBackgroundPadding*2, backgroundFrame.size.width - YZMovieBackgroundPadding*2);
             break;
         case UIInterfaceOrientationLandscapeRight:
             angle = M_PI_2;
-            backgroundFrame = CGRectMake(-movieBackgroundPadding, -movieBackgroundPadding,MAX(windowSize.width, windowSize.height) + movieBackgroundPadding*2,MIN(windowSize.width, windowSize.height) + movieBackgroundPadding*2);
-            movieFrame = CGRectMake(movieBackgroundPadding, movieBackgroundPadding, backgroundFrame.size.width - movieBackgroundPadding*2, backgroundFrame.size.height - movieBackgroundPadding*2);
+            backgroundFrame = CGRectMake(-YZMovieBackgroundPadding, -YZMovieBackgroundPadding,MAX(windowSize.width, windowSize.height) + YZMovieBackgroundPadding*2,MIN(windowSize.width, windowSize.height) + YZMovieBackgroundPadding*2);
+            movieFrame = CGRectMake(YZMovieBackgroundPadding, YZMovieBackgroundPadding, backgroundFrame.size.width - YZMovieBackgroundPadding*2, backgroundFrame.size.height - YZMovieBackgroundPadding*2);
           
             break;
         case UIInterfaceOrientationPortrait:
@@ -605,7 +588,7 @@ static const NSTimeInterval fullscreenAnimationDuration = 0.25;
     }
     
     if (animated) {//这个动画其实没什么用
-        [UIView animateWithDuration:fullscreenAnimationDuration delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+        [UIView animateWithDuration:YZFullscreenAnimationDuration delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
 //            self.movieBackgroundView.transform = CGAffineTransformMakeRotation(angle);
             self.movieBackgroundView.frame = backgroundFrame;
             [self setFrame:movieFrame];
@@ -644,12 +627,12 @@ static const NSTimeInterval fullscreenAnimationDuration = 0.25;
         }
     }
 }
--(void)backBtnPressed {
+-(void)clickBackBtn{
     
     _isHitBackBtn = YES;
 //    [self stop];
-    if ([self.delegate respondsToSelector:@selector(yzMoviePlayerControllerBackBtnPressed)]) {
-        [self.delegate performSelector:@selector(yzMoviePlayerControllerBackBtnPressed)];
+    if ([self.delegate respondsToSelector:@selector(yzMoviePlayerControllerOnClickBackBtn)]) {
+        [self.delegate performSelector:@selector(yzMoviePlayerControllerOnClickBackBtn)];
     }
 }
 
@@ -681,20 +664,19 @@ static const NSTimeInterval fullscreenAnimationDuration = 0.25;
         [self play];
     }
 }
+//点击了悬浮小窗窗体
+-(void)clickFloatView{
 
-//悬浮小窗视频被点击
--(void)floatViewPressed{
-
-    if ([self.delegate respondsToSelector:@selector(yzMoviePlayerControllerFloatViewPressed)]) {
-        [self.delegate performSelector:@selector(yzMoviePlayerControllerFloatViewPressed)];
+    if ([self.delegate respondsToSelector:@selector(yzMoviePlayerControllerOnClickFloatView)]) {
+        [self.delegate performSelector:@selector(yzMoviePlayerControllerOnClickFloatView)];
     }
     
 }
-//悬浮小窗关闭按钮被点击
--(void)closeFloatViewBtnPressed{
+//点击了悬浮小窗关闭按钮
+-(void)clickCloseFloatViewBtn{
   
-    if ([self.delegate respondsToSelector:@selector(yzMoviePlayerControllerCloseFloatViewBtnPressed)]) {
-        [self.delegate yzMoviePlayerControllerCloseFloatViewBtnPressed];
+    if ([self.delegate respondsToSelector:@selector(yzMoviePlayerControllerOnClickCloseFloatViewBtn)]) {
+        [self.delegate yzMoviePlayerControllerOnClickCloseFloatViewBtn];
     }
 }
 
@@ -789,10 +771,6 @@ static const NSTimeInterval fullscreenAnimationDuration = 0.25;
     return _playerMediaState;
 }
 
-- (NSURL *)contentURL
-{
-    return self.dataURL;
-}
 
 #pragma mark - X1PlayerAgentDelegate回调
 

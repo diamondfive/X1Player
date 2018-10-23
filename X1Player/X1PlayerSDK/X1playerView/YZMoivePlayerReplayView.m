@@ -226,7 +226,7 @@
 #pragma mark -- Action
 -(void)qnReplayViewClickBackBtn:(UIButton *)sender{
     
-    [self.moviePlayer backBtnPressed];
+    [self.moviePlayer clickBackBtn];
 
 }
 
@@ -244,7 +244,7 @@
 
 -(void)closeFloatViewButtonClick:(UIButton *)sender{
     
-    [self.moviePlayer closeFloatViewBtnPressed];
+    [self.moviePlayer clickCloseFloatViewBtn];
 
 }
 

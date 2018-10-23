@@ -9,7 +9,7 @@
 #import <MediaPlayer/MPMoviePlayerController.h>
 #import "YZMoviePlayerControls.h"
 #import "X1Player.h"
-#import "YZMoivePlayerNoStartView.h"
+#import "YZMoivePlayerCoverView.h"
 #import "YZMoivePlayerReplayView.h"
 
 extern NSString * const YZMoviePlayerWillEnterFullscreenNotification;
@@ -20,19 +20,20 @@ extern NSString * const YZMoviePlayerDidExitFullscreenNotification;
 extern NSString * const YZMoviePlayerOnCompletionNotification;
 //播放状态变化通知
 extern NSString * const YZMoviePlayerMediaStateChangedNotification;
-
+//播放地址变更
 extern NSString * const YZMoviePlayerContentURLDidChangeNotification;
 
 
 @protocol YZMoviePlayerControllerDelegate <NSObject>
 @optional
+//缓冲超时
 - (void)yzMoviePlayerControllerMovieTimedOut;
-- (void)yzMoviePlayerControllerMakeCall;
-- (void)yzMoviePlayerControllerBackBtnPressed;
+//竖屏情况下点击返回按钮
+- (void)yzMoviePlayerControllerOnClickBackBtn;
 //悬浮小窗被点击
-- (void)yzMoviePlayerControllerFloatViewPressed;
+- (void)yzMoviePlayerControllerOnClickFloatView;
 //悬浮小窗叉号按钮
-- (void)yzMoviePlayerControllerCloseFloatViewBtnPressed;
+- (void)yzMoviePlayerControllerOnClickCloseFloatViewBtn;
 @required
 //切换横屏的回调
 - (void)yzMoviePlayerControllerMoviePlayerWillEnterFullScreen;
@@ -43,35 +44,44 @@ extern NSString * const YZMoviePlayerContentURLDidChangeNotification;
 
 @interface YZMoviePlayerController : MPMoviePlayerController
 
+//视频数据源url
+@property (nonatomic, strong) NSString *mediasource;
+//视频清晰度字典 key对应显示名称 value对应url
+//eg. @{@"超清 720p":@"http://ivi.bupt.edu.cn/hls/cctv1hd.m3u8",@"高清 480p":@"http://ivi.bupt.edu.cn/hls/cctv1.m3u8"}
+@property (nonatomic, strong) NSDictionary *mediasourceDefinitionDict;
 
 @property (nonatomic, weak) id<YZMoviePlayerControllerDelegate> delegate;
 //控制层
 @property (nonatomic, strong) YZMoviePlayerControls *controls;
 //封面层
-@property (nonatomic, strong) YZMoivePlayerNoStartView *coverView;
+@property (nonatomic, strong) YZMoivePlayerCoverView *coverView;
 //重播层
 @property (nonatomic, strong) YZMoivePlayerReplayView *replayView;
 
 @property (nonatomic, assign) YZMoviePlayerControlsStyle controlsStyle;
-
+//由SDK判断的直播标识
 @property (nonatomic, assign) BOOL isLive;
-@property (nonatomic, assign) BOOL isMultiPlay;
 //接受到的是否是直播的标识
 @property (nonatomic, assign) BOOL isReceiveLive;
+
+@property (nonatomic, assign) BOOL isMultiPlay;
 //是否自动播放
 @property (nonatomic, assign) BOOL isAutoPlay;
-//父视图
+//竖屏大窗时的父视图 用于横竖屏切换
 @property (nonatomic, weak) UIView *fatherView;
 
 //是否真的点击了全屏按钮,因为触发全屏可能是因为旋转屏幕
 @property (nonatomic, assign) BOOL isRealFullScreenBtnPress;
 
+//播放器SDK
 @property (nonatomic, strong) X1Player *playerSDK;
+//播放器状态
+@property (nonatomic, assign) X1PlayerState playerMediaState;
 
 @property (nonatomic, strong) GLKView *glkView;
 //是否是全屏
 @property (nonatomic, readwrite) BOOL movieFullscreen;
-//是否是未开播界面(倒计时视图)
+//是否是倒计时视图
 @property (nonatomic, assign) BOOL isCountdownView;
 //是否需要竖屏情况下展示返回按钮
 @property (nonatomic, assign) BOOL isNeedShowBackBtn;
@@ -83,27 +93,29 @@ extern NSString * const YZMoviePlayerContentURLDidChangeNotification;
 //封面图片
 @property (nonatomic, strong) UIImage *coverimage;
 
-@property (nonatomic, assign) X1PlayerState playerMediaState;
-//上一次直播地址
-@property (nonatomic, strong) NSString *lastPlayUrl;
 
+/**
+ 初始化方法
 
+ @param frame 坐标
+ @param style 控制层风格
+ @param mediasourceDefinitionDict 视频清晰度字典
 
-- (id)initWithFrame:(CGRect)frame andStyle:(YZMoviePlayerControlsStyle)style;
+ */
+- (id)initWithFrame:(CGRect)frame andStyle:(YZMoviePlayerControlsStyle)style mediasourceDefinitionDict:(NSDictionary *)mediasourceDefinitionDict;
 - (void)setFrame:(CGRect)frame;
 -(void)setMovieCoverImage:(UIImage*)image;
 
-//返回按钮被点击
-- (void)backBtnPressed;
-//全屏按钮被点击
+//点击了返回按钮
+- (void)clickBackBtn;
+//点击了全屏按钮
 - (void)clickFullScreenBtn;
 //点击了播放暂停按钮
 - (void)clickPlayPauseBtn;
-
-//悬浮小窗窗体被点击
--(void)floatViewPressed;
-//悬浮小窗关闭按钮被点击
--(void)closeFloatViewBtnPressed;
+//点击了悬浮小窗窗体
+-(void)clickFloatView;
+//点击了悬浮小窗关闭按钮
+-(void)clickCloseFloatViewBtn;
 
 - (void)changeTitle:(NSString*)title;
 
@@ -147,7 +159,7 @@ extern NSString * const YZMoviePlayerContentURLDidChangeNotification;
 //设置当前播放状态
 - (void)setPlayerMediaState:(X1PlayerState)state;
 //关键代码 设置播放地址
-- (void)setContentURL:(NSURL *)contentURL;
+- (void)setContentURL:(NSString *)contentURL;
 //获取可播放时长
 - (NSTimeInterval)playableDuration;
 //获取当前时长
