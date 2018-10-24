@@ -30,12 +30,13 @@
 @property (nonatomic, weak) YZMoviePlayerController *moviePlayer;
 
 
+-(instancetype)initWithMoviePlayer:(YZMoviePlayerController *)moviePlayer;
+
 /**
  展示重播视图
- @param isNeedShow 是否展示重播视图
- @param showBackBtn 是否展示返回按钮
+
  */
--(void)showReplayView:(BOOL)isNeedShow backBtn:(BOOL)showBackBtn;
+-(void)showReplayViewWithBackBtn:(BOOL)isNeedShow;
 
 
 /**

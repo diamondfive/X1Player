@@ -23,7 +23,8 @@ NSString * const YZMoviePlayerMediaStateChangedNotification = @"YZMoviePlayerMed
 NSString * const YZMoviePlayerContentURLDidChangeNotification = @"YZMoviePlayerContentURLDidChangeNotification";
 
 // block中弱引用self
-#define WEAKSELF typeof(self) __weak weakSelf = self;
+#define WEAKSELF(object)   __weak __typeof__(object) weak##_##object = object;
+#define STRONGSELF(object)  __typeof__(object) object = weak##_##object;
 
 #define IOSVERSION [[[UIDevice currentDevice] systemVersion] floatValue]
 
@@ -60,12 +61,12 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
     int _movieDuration;
     int _playableDuration;
     
-    UIView *noNetView;
-    UIView *loadView;
+    UIView *_noNetView;
+    UIView *_loadView;
     
     UIView *_tmpView;
 }
-//self.view是它的子视图，因为视频旋转的时候可能出现锯齿边缘，填充视图用于抗锯齿
+//横屏情况下 self.view是它的子视图，因为视频旋转的时候可能出现锯齿边缘，填充视图用于抗锯齿
 @property (nonatomic, strong) UIView *movieBackgroundView;
 
 @end
@@ -73,33 +74,33 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
 
 @implementation YZMoviePlayerController
 
-# pragma mark -- lifecycle
-
+# pragma mark -- LifeCycle
 - (id)initWithFrame:(CGRect)frame andStyle:(YZMoviePlayerControlsStyle)style mediasourceDefinitionDict:(NSDictionary *)mediasourceDefinitionDict hostObject:(X1PlayerView *)hostObject{
     if ( (self = [super init]) ) {
 
         self.fatherView = hostObject;
         self.view.frame = frame;
         self.view.backgroundColor = [UIColor blackColor];
-        
-        //核心模块
-        [self initIPlayerSDK];
-        
+        _retryPlayPos = -1;
+        _isCompletion = NO;
         _movieFullscreen = NO;
+
+        //初始化X1PlayerSDK
+        [self initX1PlayerSDK];
+     
+        //初始化控制层
+        [self initMovieControlsWithStyle:style mediasourceDefinitionDict:(NSDictionary *)mediasourceDefinitionDict];
+        
+        //展示封面层
+        [self showCoverView];
+        
+        //抗锯齿背景视图
         if (!_movieBackgroundView) {
             _movieBackgroundView = [[UIView alloc] init];
             [_movieBackgroundView setBackgroundColor:[UIColor blackColor]];
         }
-        //初始化控制层
-        [self initMovieControlsWithStyle:style mediasourceDefinitionDict:(NSDictionary *)mediasourceDefinitionDict];
         
-        [self initReplayView];
-
-        [self initPlayView];
-        
-        
-        _retryPlayPos = -1;
-        _isCompletion = NO;
+       
     }
     return self;
 }
@@ -110,77 +111,30 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-
-# pragma mark - Setter && Getter
-- (void)setFrame:(CGRect)frame {
-    [self.view setFrame:frame];
-    [self.controls setFrame:CGRectMake(0, 0, frame.size.width, frame.size.height)];
-    [self.coverView setFrame:CGRectMake(0, 0, frame.size.width, frame.size.height)];
-    [self.replayView setFrame:CGRectMake(0, 0, frame.size.width, frame.size.height)];
-    [_glkView setFrame:self.controls.frame];
-    [self resetNoNetViewFrame:self.controls.frame];
-    [self resetLodingViewFrame:self.controls.frame];
-}
-
-- (BOOL)isFullscreen {
-    return _movieFullscreen;
-}
-
-- (void)setFullscreen:(BOOL)fullscreen{
-    
-    _movieFullscreen = fullscreen;
-}
-
-
-- (void)setControls:(YZMoviePlayerControls *)controls {
-    if (_controls != controls) {
-        [_controls removeFromSuperview];
-        _controls=nil;
-        _controls = controls;
-        _controls.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
-        [self.view addSubview:_controls];
-    }
-}
-
--(void)setControlsStyle:(YZMoviePlayerControlsStyle )controlsStyle{
-    if (!_controls) {
-        return;
-    }
-    
-    [_controls setStyle:controlsStyle];
-    
-}
--(void)setCoverimage:(UIImage *)coverimage{
-    
-    _coverimage = coverimage;
-    [self.coverView setupCoverImage:coverimage];
-    
-}
-
-- (void)setPlayerMediaState:(X1PlayerState)state
+#pragma mark -- Internal Method
+// !!!:核心模块 初始化X1PlayerSDK
+- (void)initX1PlayerSDK
 {
-    if (_playerMediaState != state) {
-        
-        _playerMediaState = state;
-        dispatch_async(dispatch_get_main_queue(), ^{
-            
-            [[NSNotificationCenter defaultCenter] postNotificationName:YZMoviePlayerMediaStateChangedNotification object:nil];
-        });
-    }
-}
+    _playerSDK = [[X1Player alloc] initX1PlayerInstance:self];
 
--(void)setIsNeedShowBackBtn:(BOOL)isNeedShowBackBtn{
+    [_playerSDK Init];
+    _playerMediaState = PS_NONE;
+    _context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
+    _glkView = [[GLKView alloc] initWithFrame:self.view.bounds context:_context];
+    [self.view addSubview:_glkView];
+    [self.view sendSubviewToBack:_glkView];
     
-    _isNeedShowBackBtn = isNeedShowBackBtn;
+    [_playerSDK setDisplay:_glkView];
     
-    self.controls.isNeedShowBackBtn = isNeedShowBackBtn;
-    [self.coverView setIsNeedShowBackBtn:_isNeedShowBackBtn];
-    [self.replayView setIsNeedShowBackBtn:_isNeedShowBackBtn];
-
 }
-
--(void)setBarGradientColor:(UIColor *)barGradientColor{
-    [self.controls setBarGradientColor:barGradientColor];
+//初始化播放控制层
+- (void)initMovieControlsWithStyle:(YZMoviePlayerControlsStyle)style mediasourceDefinitionDict:(NSDictionary *)mediasourceDefinitionDict
+{
+    self.mediasourceDefinitionDict = mediasourceDefinitionDict;
+    YZMoviePlayerControls *movieControls = [[YZMoviePlayerControls alloc] initWithMoviePlayer:self style:style mediasourceDefinitionDict:mediasourceDefinitionDict];
+    
+    [movieControls setTimeRemainingDecrements:NO];
+    [self setControls:movieControls];
 }
 
 // !!!:视频播放关键代码
@@ -202,83 +156,27 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
     
 }
 
-
-/**
- *  获取可播放时长
- */
-- (NSTimeInterval)playableDuration
-{
-    
-    return _playableDuration/1000.0;
-    
-}
-
-/**
- 获取当前时长
- */
-- (NSTimeInterval)currentPlaybackTime
-{
-    return _currentPos / 1000.0;
-}
-
-/**
- *  获取视频时长
- */
-- (NSTimeInterval)duration
-{
-    _movieDuration = [_playerSDK getDuration] /1000.0;
-    
-    return _movieDuration;
-}
-
-#pragma mark -- Internal Method
-// !!!:初始化X1PlayerSDK 核心模块
-- (void)initIPlayerSDK
-{
-    _playerSDK = [[X1Player alloc] initX1PlayerInstance:self];
-
-    [_playerSDK Init];
-    NSLog(@"YZ X1PlayerSDK=%@ YZMoviePlayerController=%@",_playerSDK,self);
-    _playerMediaState = PS_NONE;
-    _context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
-    _glkView = [[GLKView alloc] initWithFrame:self.view.bounds context:_context];
-    [self.view addSubview:_glkView];
-    [self.view sendSubviewToBack:_glkView];
-    
-    [_playerSDK setDisplay:_glkView];
-    
-}
-//初始化播放控制层
-- (void)initMovieControlsWithStyle:(YZMoviePlayerControlsStyle)style mediasourceDefinitionDict:(NSDictionary *)mediasourceDefinitionDict
-{
-    self.mediasourceDefinitionDict = mediasourceDefinitionDict;
-    YZMoviePlayerControls *movieControls = [[YZMoviePlayerControls alloc] initWithMoviePlayer:self style:style mediasourceDefinitionDict:mediasourceDefinitionDict];
-    //    [movieControls  setBarColor:[UIColor colorWithRed:0/255.0 green:0/255.0 blue:0/255.0 alpha:0.1]];
-    //    [movieControls setBarGradientColor:[UIColor redColor]];
-    
-    [movieControls setTimeRemainingDecrements:NO];
-    [self setControls:movieControls];
-}
-//初始化封面视图
--(void)initPlayView{
+//展示封面视图
+-(void)showCoverView{
     
     [_coverView removeFromSuperview];
     
     _coverView =[[YZMoivePlayerCoverView alloc] initWithMoviePlayer:self];
+
     [self.view addSubview:_coverView];
     
 }
-
--(void)initReplayView{
+//展示重播视图
+-(void)showReplayView{
     
-    if (!_replayView) {
-        _replayView =[[YZMoivePlayerReplayView alloc] init];
-        _replayView.moviePlayer = self;
-        [self.view addSubview:_replayView];
-    }
+    [_replayView removeFromSuperview];
+    
+    _replayView =[[YZMoivePlayerReplayView alloc] initWithMoviePlayer:self];
+    _replayView.frame = self.view.bounds;
+    [self.view addSubview:_replayView];
+    
+    [_replayView showReplayViewWithBackBtn:_isNeedShowBackBtn];
 }
-
-
 
 - (void)changeTitle:(NSString*)title;
 {
@@ -290,20 +188,18 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
         return 0.f;
     else if ([UIApplication sharedApplication].statusBarHidden)
         return 0.f;
-    return 20.f;
+    return [[UIApplication sharedApplication] statusBarFrame].size.height;
 }
 
 
-
 #pragma mark  -- Public Method
-
-//重设无网络视图 frame
+//重设NoNetView frame
 -(void)resetNoNetViewFrame:(CGRect)frame
 {
-    UIImageView *netImageView = (UIImageView *)[noNetView viewWithTag:1];
-    UILabel *tintLabel = (UILabel *)[noNetView viewWithTag:2];
-    UILabel *setLabel = (UILabel *) [noNetView viewWithTag:3];
-    [noNetView setFrame:frame];
+    UIImageView *netImageView = (UIImageView *)[_noNetView viewWithTag:1];
+    UILabel *tintLabel = (UILabel *)[_noNetView viewWithTag:2];
+    UILabel *setLabel = (UILabel *) [_noNetView viewWithTag:3];
+    [_noNetView setFrame:frame];
     if (_movieFullscreen) {
         [netImageView setFrame:CGRectMake((self.view.bounds.size.width - 110)/2, 85, 110, 75)];
         [tintLabel setFrame:CGRectMake((self.view.bounds.size.width - 120)/2 , netImageView.frame.origin.y + 75 + 25, 120, 20)];
@@ -315,45 +211,41 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
     }
     
 }
-//重设loadingView frame
+//重设LoadingView frame
 -(void)resetLodingViewFrame:(CGRect)frame {
-    NSLog(@"YZYZMoviePlayerControllerResetLodingViewFrame isFullscreen=%d frame=%@",_movieFullscreen,NSStringFromCGRect(frame));
-    UIImageView *loadImg = (UIImageView *)[loadView viewWithTag:0];
-    UILabel *percentLabel = (UILabel *)[loadView viewWithTag:1];
-    UILabel *loadLabel = (UILabel *) [loadView viewWithTag:2];
-    [loadView setFrame:frame];
+    UIImageView *loadImg = (UIImageView *)[_loadView viewWithTag:0];
+    UILabel *percentLabel = (UILabel *)[_loadView viewWithTag:1];
+    UILabel *loadLabel = (UILabel *) [_loadView viewWithTag:2];
+    [_loadView setFrame:frame];
     if (_movieFullscreen) {
         [loadImg setFrame:CGRectMake((self.view.bounds.size.width - 90)/2, (self.view.bounds.size.height - 100)/2, 90, 100)];
         [percentLabel setFrame:CGRectMake(15, 30, 60, 20)];
         [loadLabel setFrame:CGRectMake(15, 70, 60, 20)];
-        NSLog(@"YZYZMoviePlayerControllerResetLodingViewFrame loadImg=%@ percentLabel=%@ loadLabel=%@",NSStringFromCGRect(loadImg.frame),NSStringFromCGRect(percentLabel.frame),NSStringFromCGRect(loadLabel.frame));
     } else {
         [loadImg setFrame:CGRectMake((self.view.bounds.size.width - 90)/2, (self.view.bounds.size.height - 100)/2, 90, 100)];
         [percentLabel setFrame:CGRectMake(15, 30, 60, 20)];
         [loadLabel setFrame:CGRectMake(15, 70, 60, 20)];
-        NSLog(@"YZYZMoviePlayerControllerResetLodingViewFrame loadImg=%@ percentLabel=%@ loadLabel=%@",NSStringFromCGRect(loadImg.frame),NSStringFromCGRect(percentLabel.frame),NSStringFromCGRect(loadLabel.frame));
     }
 }
 
-//加载视图动画
+//LoadingView动画
 -(void)lodingView:(int) percent
 {
-    if (noNetView != nil) {
+    if (_noNetView != nil) {
         NSLog(@"YZYZMovieplayerController has show noNetView");
         return;
     }
     [self.controls removeDataTimeOutView];
-    if(loadView == nil){
+    if(_loadView == nil){
         //初始化loadview 及其子view
-        //loadView = [[UIView alloc] initWithFrame:CGRectMake((self.view.bounds.size.width - 90)/2, (self.view.bounds.size.height - 100)/2, 90, 100)];
-        loadView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 90, 100)];
-        loadView.userInteractionEnabled = NO;
-        loadView.center = self.controls.center;
+        _loadView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 90, 100)];
+        _loadView.userInteractionEnabled = NO;
+        _loadView.center = self.controls.center;
         //        loadView.backgroundColor = [UIColor colorWithRed:10/255 green:10/255 blue:10/255 alpha:0.9];
-        loadView.backgroundColor = [UIColor clearColor];
+        _loadView.backgroundColor = [UIColor clearColor];
         UIImageView *loadImg = [[UIImageView alloc] initWithFrame:CGRectMake(15, 10, 60, 60)];
         [loadImg setImage:[UIImage imageNamed:X1BUNDLE_Image(@"yz_ic_movie_loding")]];
-        [loadView addSubview:loadImg];
+        [_loadView addSubview:loadImg];
         //图片旋转
         CABasicAnimation* rotationAnimation;
         rotationAnimation = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
@@ -370,29 +262,30 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
         percentLabel.font = [UIFont systemFontOfSize:13.0f];
         percentLabel.textAlignment = NSTextAlignmentCenter;
         percentLabel.tag = 1;
-        [loadView addSubview:percentLabel];
+        [_loadView addSubview:percentLabel];
         
         UILabel *loadLabel = [[UILabel alloc] initWithFrame:CGRectMake(15, 70, 60, 20)];
         loadLabel.textColor = YZColorFromRGB(0xb3b7ba);
         loadLabel.font = [UIFont systemFontOfSize:13.0f];
         loadLabel.textAlignment = NSTextAlignmentCenter;
         loadLabel.text = @"正在缓冲";
-        [loadView addSubview:loadLabel];
-        [self.view addSubview:loadView];
+        [_loadView addSubview:loadLabel];
+        [self.view addSubview:_loadView];
     }
     //通过tag拿到percentLabel
-    UILabel *percentLabel = [loadView viewWithTag:1];
+    UILabel *percentLabel = [_loadView viewWithTag:1];
     percentLabel.text = [[NSString stringWithFormat:@"%d",percent] stringByAppendingString:@"%"];
 }
 
-//移除加载视图
+//移除LoadingView
 -(void)removeloadview
 {
     dispatch_async(dispatch_get_main_queue(), ^{
-        if (loadView != nil && loadView.superview != nil)
+        if (_loadView != nil && _loadView.superview != nil)
         {
-            [loadView removeFromSuperview];
-            loadView = nil;
+            
+            [_loadView removeFromSuperview];
+            _loadView = nil;
         }
     });
 }
@@ -400,18 +293,18 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
 //显示无网络视图
 -(void)showNoNetView
 {
-    if (loadView) {
-        [loadView removeFromSuperview];
-        loadView = nil;
+    if (_loadView) {
+        [_loadView removeFromSuperview];
+        _loadView = nil;
     }
     [self.controls removeDataTimeOutView];
-    noNetView = [[UIView alloc] initWithFrame:self.view.bounds];
-    noNetView.backgroundColor = [UIColor colorWithRed:10/255 green:10/255 blue:10/255 alpha:0.75];
+    _noNetView = [[UIView alloc] initWithFrame:self.view.bounds];
+    _noNetView.backgroundColor = [UIColor colorWithRed:10/255 green:10/255 blue:10/255 alpha:0.75];
     if (_movieFullscreen) {
         UIImageView *netImageView = [[UIImageView alloc] initWithFrame:CGRectMake((self.view.bounds.size.width - 110)/2, 85, 110, 75)];
         [netImageView setImage:[UIImage imageNamed:X1BUNDLE_Image(@"yz_ic_movie_no_network")]];
         netImageView.tag = 1;
-        [noNetView addSubview:netImageView];
+        [_noNetView addSubview:netImageView];
         
         UILabel *tintLabel = [[UILabel alloc] initWithFrame:CGRectMake((self.view.bounds.size.width - 120)/2 , netImageView.frame.origin.y + 75 + 25, 120, 20)];
         tintLabel.text = @"哦哦~播放出错了";
@@ -419,7 +312,7 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
         tintLabel.font = [UIFont systemFontOfSize:14.0f];
         tintLabel.textColor = YZColorFromRGB(0xb3b7ba);
         tintLabel.tag = 2;
-        [noNetView addSubview: tintLabel];
+        [_noNetView addSubview: tintLabel];
         
         UILabel *setLabel = [[UILabel alloc] initWithFrame:CGRectMake((self.view.frame.size.width - 180)/2, tintLabel.frame.origin.y + 20 + 10, 180, 20)];
         setLabel.font= [UIFont systemFontOfSize:11.f];
@@ -433,12 +326,12 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
         setLabel.userInteractionEnabled = YES;
         [setLabel addGestureRecognizer:tapRecognizer];
         setLabel.tag = 3;
-        [noNetView addSubview:setLabel];
+        [_noNetView addSubview:setLabel];
     }else{
         UIImageView *netImageView = [[UIImageView alloc] initWithFrame:CGRectMake((self.view.bounds.size.width - 110)/2, 30, 110, 75)];
         [netImageView setImage:[UIImage imageNamed:X1BUNDLE_Image(@"yz_ic_movie_no_network")]];
         netImageView.tag = 1;
-        [noNetView addSubview:netImageView];
+        [_noNetView addSubview:netImageView];
         
         UILabel *tintLabel = [[UILabel alloc] initWithFrame:CGRectMake((self.view.bounds.size.width - 100)/2 , netImageView.frame.origin.y + 75 + 15, 100, 20)];
         tintLabel.text = @"哦哦~播放出错了";
@@ -446,7 +339,7 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
         tintLabel.font = [UIFont systemFontOfSize:11.0f];
         tintLabel.textColor = YZColorFromRGB(0xb3b7ba);
         tintLabel.tag = 2;
-        [noNetView addSubview: tintLabel];
+        [_noNetView addSubview: tintLabel];
         
         UILabel *setLabel = [[UILabel alloc] initWithFrame:CGRectMake((self.view.frame.size.width - 180)/2, tintLabel.frame.origin.y + 20 + 7, 180, 20)];
         setLabel.font= [UIFont systemFontOfSize:11.f];
@@ -460,16 +353,16 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
         setLabel.userInteractionEnabled = YES;
         [setLabel addGestureRecognizer:tapRecognizer];
         setLabel.tag = 3;
-        [noNetView addSubview:setLabel];
+        [_noNetView addSubview:setLabel];
     }
-    [self.view addSubview:noNetView];
+    [self.view addSubview:_noNetView];
 }
 
 //无网络视图点击"刷新看看"
 -(void)refreshMoviePlayer{
     NSLog(@"YZYZMoviePlayerController 点击刷新看看");
-    [noNetView removeFromSuperview];
-    noNetView = nil;
+    [_noNetView removeFromSuperview];
+    _noNetView = nil;
     [self retryPlay];
 }
 
@@ -797,9 +690,9 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
     } else {
         [self setPlayerMediaState:PS_LOADING];
         
-        WEAKSELF
+        WEAKSELF(self);
         dispatch_async(dispatch_get_main_queue(), ^{
-            [weakSelf lodingView:0];
+            [weak_self lodingView:0];
         });
         
     }
@@ -812,10 +705,10 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
 - (void) onBufferingUpdate:(int) percent
 {
 //    NSLog(@"onBufferingUpdate, percent:%d", percent);
-    WEAKSELF
+    WEAKSELF(self)
     if (percent < 100) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            [weakSelf lodingView:percent];
+            [weak_self lodingView:percent];
         });
     } else {
         [self removeloadview];
@@ -863,22 +756,21 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
 {
     _isCompletion = YES;
     
-    WEAKSELF
+    WEAKSELF(self)
     dispatch_async(dispatch_get_main_queue(), ^{
 
         _currentPos=0;
         _playableDuration=0;
         
-        [weakSelf stop];
+        [weak_self stop];
      
         //重设进度条及播放时间
-        [weakSelf.controls resetMoveiPlayback:NO];
+        [weak_self.controls resetMoveiPlayback:NO];
         
+        [weak_self.controls monitorMoviePlayableDuration];
         
-        [weakSelf.controls monitorMoviePlayableDuration];
-        
-    
-        
+       //展示重播视图
+        [weak_self showReplayView];
 
 //        //防止重播时视频显示最后一帧
 //        [_glkView removeFromSuperview];
@@ -914,7 +806,7 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
  */
 - (BOOL) onError:(int) what extra:(int) extra
 {
-    NSLog(@"YZYZMoviePlayerController***************  onError:%d, extra:%d", what, extra);
+    NSLog(@"YZMoviePlayerController***************  onError:%d, extra:%d", what, extra);
     [self setPlayerMediaState:PS_ERROR];
     
     switch (what) {
@@ -1006,30 +898,6 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
     }
 }
 
-/** 交互数据回调
- @param data 交互数据。
- state 交互数据开始和结束状态，1=开始，0=结束。
- type 数据类型
- data_length 数据长度
- time_stamp 数据的时间戳
- */
-- (void) onExtraData:(char*) data state:(int) state type:(short) type data_length:(short) data_length time_stamp:(int) time_stamp
-{
-    
-}
-
-/** 交互数据回调2
- @param state 交互数据开始和结束状态，1=开始，0=结束。
- type 数据类型
- data_length 数据长度
- time_stamp 数据的时间戳
- ADDatas 广告数据
- @return void
- */
-- (void) onExtraData2:(int) state type:(short) type data_length:(short) data_length time_stamp:(int) time_stamp addatas:(X1ADDatas *) addatas{
-    
-    
-}
 
 /** 可播放时长回调
  @param playableDuration 可播放时长，单位ms
@@ -1052,7 +920,107 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
 
 
 
+# pragma mark - Setter && Getter
 
+- (void)setFrame:(CGRect)frame {
+    [self.view setFrame:frame];
+    [self.controls setFrame:CGRectMake(0, 0, frame.size.width, frame.size.height)];
+    [self.coverView setFrame:CGRectMake(0, 0, frame.size.width, frame.size.height)];
+    [self.replayView setFrame:CGRectMake(0, 0, frame.size.width, frame.size.height)];
+    [_glkView setFrame:self.controls.frame];
+    [self resetNoNetViewFrame:self.controls.frame];
+    [self resetLodingViewFrame:self.controls.frame];
+}
+
+- (BOOL)isFullscreen {
+    return _movieFullscreen;
+}
+
+- (void)setFullscreen:(BOOL)fullscreen{
+    
+    _movieFullscreen = fullscreen;
+}
+
+
+- (void)setControls:(YZMoviePlayerControls *)controls {
+    if (_controls != controls) {
+        [_controls removeFromSuperview];
+        _controls=nil;
+        _controls = controls;
+        _controls.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
+        [self.view addSubview:_controls];
+    }
+}
+
+-(void)setControlsStyle:(YZMoviePlayerControlsStyle )controlsStyle{
+    if (!_controls) {
+        return;
+    }
+    
+    [_controls setStyle:controlsStyle];
+    
+}
+-(void)setCoverimage:(UIImage *)coverimage{
+    
+    _coverimage = coverimage;
+    [self.coverView setupCoverImage:coverimage];
+    
+}
+
+- (void)setPlayerMediaState:(X1PlayerState)state
+{
+    if (_playerMediaState != state) {
+        
+        _playerMediaState = state;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            [[NSNotificationCenter defaultCenter] postNotificationName:YZMoviePlayerMediaStateChangedNotification object:nil];
+        });
+    }
+}
+
+-(void)setIsNeedShowBackBtn:(BOOL)isNeedShowBackBtn{
+    
+    _isNeedShowBackBtn = isNeedShowBackBtn;
+    
+    self.controls.isNeedShowBackBtn = isNeedShowBackBtn;
+    [self.coverView setIsNeedShowBackBtn:_isNeedShowBackBtn];
+    [self.replayView setIsNeedShowBackBtn:_isNeedShowBackBtn];
+    
+}
+
+-(void)setBarGradientColor:(UIColor *)barGradientColor{
+    [self.controls setBarGradientColor:barGradientColor];
+}
+
+
+/**
+ *  获取可播放时长
+ */
+- (NSTimeInterval)playableDuration
+{
+    
+    return _playableDuration/1000.0;
+    
+}
+
+/**
+ 获取当前时长
+ */
+- (NSTimeInterval)currentPlaybackTime
+{
+    return _currentPos / 1000.0;
+}
+
+/**
+ *  获取视频时长
+ */
+- (NSTimeInterval)duration
+{
+    _movieDuration = [_playerSDK getDuration] /1000.0;
+    
+    return _movieDuration;
+}
 
 
 @end

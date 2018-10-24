@@ -16,9 +16,11 @@
 @implementation YZMoivePlayerReplayView
 
 #pragma mark -- Lifecycle
--(instancetype)initWithFrame:(CGRect)frame{
-    if (self = [super initWithFrame:frame]) {
+-(instancetype)initWithMoviePlayer:(YZMoviePlayerController *)moviePlayer{
+    if (self = [super init]) {
        
+        self.moviePlayer = moviePlayer;
+        
         [self initUI];
         [self registerNotification];
 
@@ -31,10 +33,10 @@
 -(void)layoutSubviews{
     [super layoutSubviews];
     
-    self.backBtn.frame = CGRectMake(10, 10+YZStateBarHeight, 20, 20);
+    self.backBtn.frame = CGRectMake(10, 5+YZStateBarHeight, 20, 20);
     
-    self.replayBtn.frame = CGRectMake((self.frame.size.width-30)/2, (self.frame.size.height-45)/2, 30, 45);
-//    self.replayLabel.frame = CGRectMake(self.replayBtn.frame.origin.x, self.replayBtn.frame.origin.y+44+5, 44, 20);
+    self.replayBtn.frame = CGRectMake((self.frame.size.width-32)/2, (self.frame.size.height-48)/2- 8, 32, 48);
+    self.replayLabel.frame = CGRectMake((self.frame.size.width-40)/2, self.replayBtn.frame.origin.y+40, 40, 20);
     
     self.floatViewCloseBtn.frame = CGRectMake(self.frame.size.width -30, 0, 30, 30);
     
@@ -57,7 +59,7 @@
     self.backBtn =[[YZMoviePlayerControlButton alloc] init];
     [self.backBtn setImage:[UIImage imageNamed:X1BUNDLE_Image(@"yz_ic_movie_back_nor")] forState:UIControlStateNormal];
     [self.backBtn setImage:[UIImage imageNamed:X1BUNDLE_Image(@"yz_ic_movie_back_nor")] forState:UIControlStateHighlighted];
-    [self.backBtn addTarget:self action:@selector(qnReplayViewClickBackBtn:) forControlEvents:UIControlEventTouchUpInside];
+    [self.backBtn addTarget:self action:@selector(yzReplayViewClickBackBtn:) forControlEvents:UIControlEventTouchUpInside];
 
     [self addSubview:self.backBtn];
     
@@ -68,16 +70,16 @@
     _replayBtn = [[YZMoviePlayerControlButton alloc] init];
     [_replayBtn setImage:[UIImage imageNamed:X1BUNDLE_Image(@"yz_ic_video_repeat_video")] forState:UIControlStateNormal];
     [_replayBtn setImage:[UIImage imageNamed:X1BUNDLE_Image(@"yz_ic_video_repeat_video")] forState:UIControlStateHighlighted];
-    [_replayBtn addTarget:self action:@selector(qnReplayViewClickReplayBtn:) forControlEvents:UIControlEventTouchUpInside];
+    [_replayBtn addTarget:self action:@selector(yzReplayViewClickReplayBtn:) forControlEvents:UIControlEventTouchUpInside];
     [self addSubview:_replayBtn];
     
-//    // 重播按钮
-//    _replayLabel = [[UILabel alloc]init];
-//    _replayLabel.font = [UIFont systemFontOfSize:12];
-//    _replayLabel.textColor = [QNColorUtil hexStringToColor:@"#FFFFFF"];
-//    _replayLabel.text = @"重播";
-//    _replayLabel.textAlignment = NSTextAlignmentCenter;
-//    [self addSubview:_replayLabel];
+    // 重播按钮
+    _replayLabel = [[UILabel alloc]init];
+    _replayLabel.font = [UIFont systemFontOfSize:14];
+    _replayLabel.textColor = [UIColor whiteColor];
+    _replayLabel.text = @"重播";
+    _replayLabel.textAlignment = NSTextAlignmentCenter;
+    [self addSubview:_replayLabel];
 
 }
 
@@ -105,21 +107,17 @@
 
 
 #pragma mark -- Public Method
--(void)showReplayView:(BOOL)isNeedShow backBtn:(BOOL)showBackBtn{
+-(void)showReplayViewWithBackBtn:(BOOL)isNeedShow{
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [UIView animateWithDuration:0.25f animations:^{
+            self.alpha = 1.0f;
+        } completion:^(BOOL finished) {
+            
+        }];
+    });
     
     if (isNeedShow) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [UIView animateWithDuration:0.25f animations:^{
-                self.alpha = 0.7f;
-            } completion:^(BOOL finished) {
-                
-            }];
-        });
-    } else {
-        self.alpha = 0.0f;
-    }
-    
-    if (showBackBtn) {
         self.backBtn.alpha = 1;
     }else{
         self.backBtn.alpha = 0;
@@ -132,112 +130,39 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moviePlayerWillEnterFullScreen:) name:YZMoviePlayerWillEnterFullscreenNotification object:nil];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moviePlayerWillExitFullScreen:) name:YZMoviePlayerWillExitFullscreenNotification object:nil];
-    
-      [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(stateChangeCauseControlsUIChange) name:YZMoviePlayerMediaStateChangedNotification object:nil];
+
 
 }
 
 -(void)moviePlayerWillEnterFullScreen:(NSNotification *)sender{
     
-    [self.backBtn removeTarget:self action:@selector(qnReplayViewClickBackBtn:) forControlEvents:UIControlEventTouchUpInside];
-    [self.backBtn addTarget:self action:@selector(qnReplayViewClickFullScreenBtn:) forControlEvents:UIControlEventTouchUpInside];
+    [self.backBtn removeTarget:self action:@selector(yzReplayViewClickBackBtn:) forControlEvents:UIControlEventTouchUpInside];
+    [self.backBtn addTarget:self action:@selector(yzReplayViewClickFullScreenBtn:) forControlEvents:UIControlEventTouchUpInside];
     
 }
 -(void)moviePlayerWillExitFullScreen:(NSNotification *)sender{
     
-    [self.backBtn removeTarget:self action:@selector(qnReplayViewClickFullScreenBtn:) forControlEvents:UIControlEventTouchUpInside];
-    [self.backBtn addTarget:self action:@selector(qnReplayViewClickBackBtn:) forControlEvents:UIControlEventTouchUpInside];
+    [self.backBtn removeTarget:self action:@selector(yzReplayViewClickFullScreenBtn:) forControlEvents:UIControlEventTouchUpInside];
+    [self.backBtn addTarget:self action:@selector(yzReplayViewClickBackBtn:) forControlEvents:UIControlEventTouchUpInside];
 }
-
-// !!!:播放状态改变时的回调(全屏旋转也触发此回调，因为涉及UI的显示隐藏)
-- (void)stateChangeCauseControlsUIChange
-{
-    int state = [self.moviePlayer getPlaybackState];
-    NSLog(@"QNYZMovieControls stateChangeCauseControlsUIChange = %d", state);
-    switch (state) {
-        case PS_NONE:
-
-            break;
-        case PS_PLAYING:
-  
-            [self showReplayView:NO backBtn:NO];//隐藏重播视图
-            
-
-            break;
-        case PS_SEEKTO:
-            
-            break;
-        case PS_LOADING:
-   
-            [self showReplayView:NO backBtn:NO];
-
-            
-            break;
-        case PS_PAUSED:
-
-            [self showReplayView:NO backBtn:NO];//隐藏重播视图
-            
-            break;
-            //视频的开始和结束
-        case PS_STOPED:
-            if (self.moviePlayer.isCompletion) {
-                
-                //展示重播视图,隐藏播放视图
-                if (self.moviePlayer.fullscreen) {
-                    [self showReplayView:YES backBtn:YES];
-                    
-                }else{
-                    
-                    if (self.moviePlayer.controls.style == YZMoviePlayerControlsStyleFloatView) {
-                        [self showReplayView:YES backBtn:NO];
-
-                        [self showFloatViewCloseBtn:YES];
-
-                    }else{
-                        
-                        [self showReplayView:YES backBtn:_isNeedShowBackBtn ?YES :NO];
-
-                        [self showFloatViewCloseBtn:NO];
-                    }
-   
-                    
-                }
-                
-            }else{
-                //隐藏重播视图,展示播放视图
-                [self showReplayView:NO backBtn:NO];
-                
-            }
-            
-            break;
-        case PS_BUFFERING:
-
-            [self showReplayView:NO backBtn:NO];
-            
-            break;
-        default:
-            break;
-    }
-    
-}
-
 
 
 #pragma mark -- Action
--(void)qnReplayViewClickBackBtn:(UIButton *)sender{
+-(void)yzReplayViewClickBackBtn:(UIButton *)sender{
     
     [self.moviePlayer clickBackBtn];
 
 }
 
--(void)qnReplayViewClickFullScreenBtn:(UIButton *)sender{
+-(void)yzReplayViewClickFullScreenBtn:(UIButton *)sender{
     
     [self.moviePlayer clickFullScreenBtn];
 
 }
 
--(void)qnReplayViewClickReplayBtn:(UIButton *)sender{
-    
+-(void)yzReplayViewClickReplayBtn:(UIButton *)sender{
+    [self removeFromSuperview];
+
     [self.moviePlayer clickPlayPauseBtn];
 }
 

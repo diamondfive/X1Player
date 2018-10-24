@@ -40,10 +40,6 @@
 -(void)showPlayViewWithBackBtn:(BOOL)showBackBtn coverImagePlayBtn:(BOOL)showCoverImagePlayBtn;
 
 
-/**
- 隐藏封面层
- */
--(void)hideCoverView;
 
 //设置封面
 -(void)setupCoverImage:(UIImage *)image;

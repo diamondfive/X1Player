@@ -98,7 +98,7 @@ static X1PlayerView  *GlobalPlayerView;
     
 }
 
-#pragma mark -- public method
+#pragma mark -- Public Method
 //普通播放视频 无清晰度切换
 -(void)playWithUrl:(NSString *)url playerTitle:(NSString *)title coverImage:(UIImage *)coverImage autoPlay:(BOOL)autoplay style:(YZMoviePlayerControlsStyle)style{
     
@@ -245,7 +245,7 @@ static X1PlayerView  *GlobalPlayerView;
 }
 
 
-#pragma mark -- internal method
+#pragma mark -- Internal Method
 
 -(void)setupConfig{
     
@@ -321,7 +321,7 @@ static X1PlayerView  *GlobalPlayerView;
 }
 
 
-#pragma mark  --  notification
+#pragma mark  --  Notification
 //注册通知,设置通知回调
 - (void)registerNotification
 {
@@ -402,7 +402,7 @@ static X1PlayerView  *GlobalPlayerView;
 }
 
 
-#pragma mark -- mediaplayer control
+#pragma mark -- Mediaplayer Control
 //播放
 - (void)play{
     
@@ -461,7 +461,6 @@ static X1PlayerView  *GlobalPlayerView;
 #pragma mark - YZMoviePlayerControllerDelegate
 
 - (void)yzMoviePlayerControllerMovieTimedOut {
-    NSLog(@"X1PlayerView MOVIE TIMED OUT");
     
     //FIXME:网络连接失败
 //    if (![QNAlertUtil connectedToNetwork]) {
@@ -533,7 +532,7 @@ static X1PlayerView  *GlobalPlayerView;
 
 
 
-#pragma mark --  setter && getter
+#pragma mark --  Setter && Getter
 - (void)setFrame:(CGRect)frame
 {
     [super setFrame:frame];

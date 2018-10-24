@@ -15,10 +15,14 @@
 #import "YZMoviePlayerGestureRecognizerView.h"
 #import "X1PlayerView.h"
 
-
 #define YZStateBarHeight [[UIApplication sharedApplication] statusBarFrame].size.height
 
-@implementation UIDevice (QNSystemVersion)
+static const inline BOOL isIpad() {
+    return UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad;
+}
+
+
+@implementation UIDevice (YZSystemVersion)
 
 + (float)iOSVersion {
     static float version = 0.f;
@@ -30,11 +34,6 @@
 }
 
 @end
-
-
-static const inline BOOL isIpad() {
-    return UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad;
-}
 
 
 @interface YZMoviePlayerControls () <YZButtonDelegate> {
@@ -89,27 +88,9 @@ static const inline BOOL isIpad() {
     return self;
 }
 
--(void)initParam{
-    
-    _showing = YES;
-    _fadeDelay = 5.0;
-    _timeRemainingDecrements = NO;
-    if (!_barColor) {
-        _barColor = [UIColor colorWithRed:0/255 green:0/255 blue:0/255 alpha:0.25];
-
-    }
-    
-    if (!_barGradientColor) {
-        _barGradientColor =[UIColor blackColor];
-    }
-    
-    _barHeight = 40.f;
-   
-}
 
 
 - (void)dealloc {
-    NSLog(@"QN YZMoviePlayerControls dealloc");
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [self nilDelegates];
 }
@@ -237,95 +218,28 @@ static const inline BOOL isIpad() {
     
 }
 
-#pragma mark  -- setter && getter
-
--(void)setProgramTitle:(NSString*)programTitle
-{
-    title = programTitle;
-    self.titleLabel.text = programTitle;
-}
-
--(void)setIsNeedShowBackBtn:(BOOL)isNeedShowBackBtn{
-    
-    _isNeedShowBackBtn = isNeedShowBackBtn;
-    
-    
-    [self setNeedsLayout];
-    [self layoutIfNeeded];
-    
-}
-
-- (void)setDurationSliderMaxMinValues {
-    self.durationSlider.value = 0.0f;
-    //    CGFloat duration = self.moviePlayer.duration;
-    //    self.durationSlider.slider.maximumValue = duration;
-}
-
-
-- (void)setBarColor:(UIColor *)barColor {
-    _barColor = barColor;
-    
-    [self.topBar setColor:barColor];
-    [self.bottomBar setColor:barColor];
-    
-    
-}
-
--(void)setBarGradientColor:(UIColor *)barGradientColor{
-    
-    _barGradientColor = barGradientColor;
-    
-    [self configBarGradientLayer];
-    
-}
-
-
-// 重设风格,改变控制层样式和横竖屏旋转时触发
-- (void)setStyle:(YZMoviePlayerControlsStyle)style {
-    if (_style != style) {
-        YZMoviePlayerControlsStyle lastStyle;
-        if (
-            (_style == YZMoviePlayerControlsStyleDefault && (style == YZMoviePlayerControlsStyleEmbedded || style == YZMoviePlayerControlsStyleFullscreen))
-            ||
-            (_style == YZMoviePlayerControlsStyleLive && (style == YZMoviePlayerControlsStyleLivePortrait || style == YZMoviePlayerControlsStyleLiveLandscape))
-            ) {
-            
-            lastStyle = _style;
-            
-        }else{
-            lastStyle = YZMoviePlayerControlsStyleNone;
-        }
-        
-        _style = style;
-        
-        [self initParam];
-        // 移除旧界面 添加新界面
-        [self resetViews];
-        [self setup];
-        
-        if (_style != YZMoviePlayerControlsStyleNone) {
-            [self setDurationSliderMaxMinValues];
-            [self monitorMoviePlayback]; //resume values
-            double delayInSeconds = 0.1;
-            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
-            dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-                
-                if (lastStyle) {
-                    //put style back to default
-                    _style = lastStyle;
-                }
-            });
-        } else {
-            if (lastStyle) {
-                //put style back to default
-                _style = lastStyle;
-            }
-        }
-    }
-}
 
 
 #pragma mark -- Internal Method
+//初始化参数
+-(void)initParam{
+    
+    _showing = YES;
+    _fadeDelay = 5.0;
+    _timeRemainingDecrements = NO;
+    if (!_barColor) {
+        _barColor = [UIColor colorWithRed:0/255 green:0/255 blue:0/255 alpha:0.25];
+        
+    }
+    
+    if (!_barGradientColor) {
+        _barGradientColor =[UIColor blackColor];
+    }
+    
+    _barHeight = 40.f;
+    
+}
+
 //设置UI
 - (void)setup {
 
@@ -625,8 +539,8 @@ static const inline BOOL isIpad() {
     [_bottomBar removeFromSuperview];
     [_floatView removeFromSuperview];
     
-    [self.moviePlayer.coverView showPlayViewWithBackBtn:NO coverImagePlayBtn:NO];
-    [self.moviePlayer.replayView showReplayView:NO backBtn:NO];
+//    [self.moviePlayer.coverView showPlayViewWithBackBtn:NO coverImagePlayBtn:NO];
+//    [self.moviePlayer.replayView showReplayViewWithBackBtn:NO];
 
     
 }
@@ -713,7 +627,7 @@ static const inline BOOL isIpad() {
 //点击了开始暂停按钮
 - (void)playPausePressed:(UIButton *)button {
     
-    if (!self.moviePlayer.contentURL) {
+    if (!self.moviePlayer.mediasource) {
         
         return;
     }
@@ -885,7 +799,7 @@ static const inline BOOL isIpad() {
 # pragma mark -- Timer
 //启动计时器
 - (void)startDurationTimer {
-    if (self.moviePlayer.contentURL != nil) {
+    if (self.moviePlayer.mediasource != nil) {
         if (self.durationTimer) {
             [self.durationTimer invalidate];
         }
@@ -1140,6 +1054,93 @@ static const inline BOOL isIpad() {
 //    if (self.moviePlayer.playerMediaState == PS_PLAYING || self.moviePlayer.playerMediaState == PS_SEEKTO) {
 //        self.isShowing ? [self hideControls:nil] : [self showControls:nil autoHide:YES];
 //    }
+}
+
+#pragma mark  -- setter && getter
+
+-(void)setProgramTitle:(NSString*)programTitle
+{
+    title = programTitle;
+    self.titleLabel.text = programTitle;
+}
+
+-(void)setIsNeedShowBackBtn:(BOOL)isNeedShowBackBtn{
+    
+    _isNeedShowBackBtn = isNeedShowBackBtn;
+    
+    
+    [self setNeedsLayout];
+    [self layoutIfNeeded];
+    
+}
+
+- (void)setDurationSliderMaxMinValues {
+    self.durationSlider.value = 0.0f;
+    //    CGFloat duration = self.moviePlayer.duration;
+    //    self.durationSlider.slider.maximumValue = duration;
+}
+
+
+- (void)setBarColor:(UIColor *)barColor {
+    _barColor = barColor;
+    
+    [self.topBar setColor:barColor];
+    [self.bottomBar setColor:barColor];
+    
+    
+}
+
+-(void)setBarGradientColor:(UIColor *)barGradientColor{
+    
+    _barGradientColor = barGradientColor;
+    
+    [self configBarGradientLayer];
+    
+}
+
+
+// 重设风格,改变控制层样式和横竖屏旋转时触发
+- (void)setStyle:(YZMoviePlayerControlsStyle)style {
+    if (_style != style) {
+        YZMoviePlayerControlsStyle lastStyle;
+        if (
+            (_style == YZMoviePlayerControlsStyleDefault && (style == YZMoviePlayerControlsStyleEmbedded || style == YZMoviePlayerControlsStyleFullscreen))
+            ||
+            (_style == YZMoviePlayerControlsStyleLive && (style == YZMoviePlayerControlsStyleLivePortrait || style == YZMoviePlayerControlsStyleLiveLandscape))
+            ) {
+            
+            lastStyle = _style;
+            
+        }else{
+            lastStyle = YZMoviePlayerControlsStyleNone;
+        }
+        
+        _style = style;
+        
+        [self initParam];
+        // 移除旧界面 添加新界面
+        [self resetViews];
+        [self setup];
+        
+        if (_style != YZMoviePlayerControlsStyleNone) {
+            [self setDurationSliderMaxMinValues];
+            [self monitorMoviePlayback]; //resume values
+            double delayInSeconds = 0.1;
+            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+            dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+                
+                if (lastStyle) {
+                    //put style back to default
+                    _style = lastStyle;
+                }
+            });
+        } else {
+            if (lastStyle) {
+                //put style back to default
+                _style = lastStyle;
+            }
+        }
+    }
 }
 
 

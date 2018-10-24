@@ -37,14 +37,6 @@
     return self;
 }
 
--(void)willMoveToSuperview:(UIView *)newSuperview{
-    
-    if (newSuperview == nil) {
-        
-        NSLog(@"xxx");
-    }
-    
-}
 
 -(void)layoutSubviews{
     
@@ -80,6 +72,13 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+
+-(void)willMoveToSuperview:(UIView *)newSuperview{
+    
+    if (newSuperview == nil) {
+        NSLog(@"dddd");
+    }
+}
 
 
 #pragma mark -- Internal Method
