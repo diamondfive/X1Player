@@ -196,7 +196,6 @@ static const inline BOOL isIpad() {
         
         self.floatView.frame = CGRectMake(0, 0, self.frame.size.width, self.frame.size.height);
     }
-
     
     //手势层
     self.gestureView.frame = CGRectMake(0, 0, self.frame.size.width, self.frame.size.height);
@@ -287,14 +286,9 @@ static const inline BOOL isIpad() {
     _timeRemainingLabel.textAlignment = NSTextAlignmentCenter;
     _timeRemainingLabel.adjustsFontSizeToFitWidth = YES;
     NSMutableAttributedString *attriString;
-//    if (_moviePlayer.isLive) {
-        attriString = [[NSMutableAttributedString alloc]initWithString:@"00:00"];
-        [attriString addAttribute:NSForegroundColorAttributeName value:YZColorFromRGB(0xffffff) range:NSMakeRange(0, 5)];
-//        _timeRemainingLabel.textAlignment = NSTextAlignmentLeft;
-//    } else {
-//        attriString = [[NSMutableAttributedString alloc]initWithString:@"00:00/00:00"];
-//        [attriString addAttribute:NSForegroundColorAttributeName value:YZColorFromRGB(0xffffff) range:NSMakeRange(0, 11)];
-//    }
+    attriString = [[NSMutableAttributedString alloc]initWithString:@"00:00"];
+    [attriString addAttribute:NSForegroundColorAttributeName value:YZColorFromRGB(0xffffff) range:NSMakeRange(0, 5)];
+
     _timeRemainingLabel.attributedText = attriString;
     _timeRemainingLabel.minimumScaleFactor = 0.5;
     
@@ -311,15 +305,13 @@ static const inline BOOL isIpad() {
     _timeTotalLabel.minimumScaleFactor = 0.5;
     
     
-    
-    
     //slider bar
     _durationSlider = [[YZMoviePlayerSlider alloc] init];
     _durationSlider.value = 0.0f;
     _durationSlider.middleValue = 0.0f;
     _durationSlider.thumbTintColor = [UIColor clearColor];
     _durationSlider.minimumTrackTintColor = YZColorFromRGB(0x0080ff);
-    _durationSlider.middleTrackTintColor = [YZColorFromRGB(0xd0d1d1) colorWithAlphaComponent:0.26];
+    _durationSlider.middleTrackTintColor = [YZColorFromRGB(0xd0d1d1) colorWithAlphaComponent:0.6];
     _durationSlider.maximumTrackTintColor = [YZColorFromRGB(0xffffff) colorWithAlphaComponent:0.26];
     _durationSlider.slider.continuous = YES;
     _durationSlider.slider.userInteractionEnabled = YES;
@@ -632,7 +624,7 @@ static const inline BOOL isIpad() {
         return;
     }
     
-    if (self.moviePlayer.getPlaybackState == PS_PLAYING) {
+    if (self.moviePlayer.playerMediaState == PS_PLAYING) {
         
         [self.moviePlayer pause];
         
@@ -718,7 +710,7 @@ static const inline BOOL isIpad() {
 // !!!:播放状态改变时的回调(全屏旋转也触发此回调，因为涉及UI的显示隐藏)
 - (void)stateChangeCauseControlsUIChange
 {
-    int state = [self.moviePlayer getPlaybackState];
+    int state = [self.moviePlayer playerMediaState];
     NSLog(@"QNYZMovieControls stateChangeCauseControlsUIChange = %d", state);
     switch (state) {
         case PS_NONE:
@@ -968,7 +960,7 @@ static const inline BOOL isIpad() {
 
 
 //数据接收超时：加载时3秒没加载到数据
--(void)setDataTimeOutView
+-(void)showDataTimeOutView
 {
     if (_timeOutView_3S) {
         [_timeOutView_3S removeFromSuperview];

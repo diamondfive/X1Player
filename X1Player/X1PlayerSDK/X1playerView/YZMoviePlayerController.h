@@ -57,26 +57,24 @@ extern NSString * const YZMoviePlayerContentURLDidChangeNotification;
 @property (nonatomic, strong) YZMoivePlayerCoverView *coverView;
 //重播层
 @property (nonatomic, strong) YZMoivePlayerReplayView *replayView;
-
+//控制层风格
 @property (nonatomic, assign) YZMoviePlayerControlsStyle controlsStyle;
 //由SDK判断的直播标识
 @property (nonatomic, assign) BOOL isLive;
-//接受到的是否是直播的标识
+//外界传入的是否是直播的标识
 @property (nonatomic, assign) BOOL isReceiveLive;
-
-@property (nonatomic, assign) BOOL isMultiPlay;
 //是否自动播放
 @property (nonatomic, assign) BOOL isAutoPlay;
 //竖屏大窗时的父视图 用于横竖屏切换
 @property (nonatomic, weak) X1PlayerView *fatherView;
-
-//是否真的点击了全屏按钮,因为触发全屏可能是因为旋转屏幕
+//是否真的点击了全屏按钮,因为触发全屏旋转操作的可能是手机横置
 @property (nonatomic, assign) BOOL isRealFullScreenBtnPress;
-
 //播放器SDK
 @property (nonatomic, strong) X1Player *playerSDK;
 //播放器状态
 @property (nonatomic, assign) X1PlayerState playerMediaState;
+//保存上一次播放状态 (用于应用前后台切换)
+@property (nonatomic, assign) X1PlayerState lastPlayerMediaState;
 
 @property (nonatomic, strong) GLKView *glkView;
 //是否是全屏
@@ -85,13 +83,14 @@ extern NSString * const YZMoviePlayerContentURLDidChangeNotification;
 @property (nonatomic, assign) BOOL isCountdownView;
 //是否需要竖屏情况下展示返回按钮
 @property (nonatomic, assign) BOOL isNeedShowBackBtn;
-//是否完成的标识
+//播放器播放完成的标识
 @property (nonatomic, assign) BOOL isCompletion;
 
 @property (nonatomic, assign) BOOL isHitBackBtn;
-
 //封面图片
 @property (nonatomic, strong) UIImage *coverimage;
+
+
 
 
 /**
@@ -103,9 +102,30 @@ extern NSString * const YZMoviePlayerContentURLDidChangeNotification;
 
  */
 - (id)initWithFrame:(CGRect)frame andStyle:(YZMoviePlayerControlsStyle)style mediasourceDefinitionDict:(NSDictionary *)mediasourceDefinitionDict hostObject:(X1PlayerView *)hostObject;
+
 - (void)setFrame:(CGRect)frame;
+
 -(void)setMovieCoverImage:(UIImage*)image;
 
+- (void)changeTitle:(NSString*)title;
+
+-(void)resetNoNetViewFrame:(CGRect)frame;
+
+-(void)resetLodingViewFrame:(CGRect)frame;
+//设置遮罩层颜色
+-(void)setBarGradientColor:(UIColor *)color;
+
+/*********************** 设备旋转相关  ************************/
+//设备旋转时调用
+-(void)rorateToOrientation:(UIInterfaceOrientation)orientation animated:(BOOL)animated;
+//全屏按钮点击时调用
+- (void)setFullscreen:(BOOL)fullscreen animated:(BOOL)animated;
+// 强制屏幕转屏
+- (void)interfaceOrientation:(UIInterfaceOrientation)orientation;
+//全屏按钮点击时 && 设备旋转时  都会调用的核心方法
+- (void)setFullscreen:(BOOL)fullscreen orientation:(UIInterfaceOrientation)orientation  animated:(BOOL)animated;
+
+/*********************** 控件操作事件  ************************/
 //点击了返回按钮
 - (void)clickBackBtn;
 //点击了全屏按钮
@@ -117,28 +137,6 @@ extern NSString * const YZMoviePlayerContentURLDidChangeNotification;
 //点击了悬浮小窗关闭按钮
 -(void)clickCloseFloatViewBtn;
 
-- (void)changeTitle:(NSString*)title;
-
-//设备旋转时调用
--(void)rorateToOrientation:(UIInterfaceOrientation)orientation animated:(BOOL)animated;
-
-//全屏按钮点击时调用
-- (void)setFullscreen:(BOOL)fullscreen animated:(BOOL)animated;
-
-// 强制屏幕转屏
-- (void)interfaceOrientation:(UIInterfaceOrientation)orientation;
-
-//全屏按钮点击时 && 设备旋转时  都会调用的方法
-- (void)setFullscreen:(BOOL)fullscreen orientation:(UIInterfaceOrientation)orientation  animated:(BOOL)animated;
-
-
--(void)resetNoNetViewFrame:(CGRect)frame;
-
--(void)resetLodingViewFrame:(CGRect)frame;
-//设置遮罩层颜色
--(void)setBarGradientColor:(UIColor *)color;
-
-
 /*********************** 播放控制模块  ************************/
 //播放
 - (void)play;
@@ -146,7 +144,7 @@ extern NSString * const YZMoviePlayerContentURLDidChangeNotification;
 - (void)pause;
 //停止，不再缓冲
 - (void)stop;
-//继续播放
+//直播断点续播  录播继续播放
 - (void)resume;
 //播放出错进行的重连(刷新，点播调用会从断点继续播)
 -(void)retryPlay;
@@ -154,8 +152,7 @@ extern NSString * const YZMoviePlayerContentURLDidChangeNotification;
 - (void)restart;
 //定点播放
 - (void)setCurrentPlaybackTime:(NSTimeInterval)currentPlaybackTime;
-//获得当前播放状态
-- (X1PlayerState)getPlaybackState;
+
 //设置当前播放状态
 - (void)setPlayerMediaState:(X1PlayerState)state;
 //关键代码 设置播放地址
@@ -164,8 +161,6 @@ extern NSString * const YZMoviePlayerContentURLDidChangeNotification;
 - (NSTimeInterval)playableDuration;
 //获取当前时长
 - (NSTimeInterval)currentPlaybackTime;
-
-
 
 
 

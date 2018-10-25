@@ -10,7 +10,6 @@
 #import <AVFoundation/AVFoundation.h>
 #import "X1PlayerView.h"
 
-
 NSString * const YZMoviePlayerWillEnterFullscreenNotification = @"YZMoviePlayerWillEnterFullscreenNotification";
 NSString * const YZMoviePlayerDidEnterFullscreenNotification = @"YZMoviePlayerDidEnterFullscreenNotification";
 NSString * const YZMoviePlayerWillExitFullscreenNotification = @"YZMoviePlayerWillExitFullscreenNotification";
@@ -51,7 +50,6 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
 
 @end
 
-
 @interface YZMoviePlayerController () <X1PlayerAgentDelegate> {
     
     EAGLContext *_context;
@@ -61,16 +59,17 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
     int _movieDuration;
     int _playableDuration;
     
-    UIView *_noNetView;
+    UIView *_noNetworkView;
     UIView *_loadView;
-    
     UIView *_tmpView;
 }
 //横屏情况下 self.view是它的子视图，因为视频旋转的时候可能出现锯齿边缘，填充视图用于抗锯齿
 @property (nonatomic, strong) UIView *movieBackgroundView;
 
-@end
+//缓冲超时计时器
+@property (nonatomic, strong) NSTimer *timeoutTimer;
 
+@end
 
 @implementation YZMoviePlayerController
 
@@ -99,11 +98,11 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
             _movieBackgroundView = [[UIView alloc] init];
             [_movieBackgroundView setBackgroundColor:[UIColor blackColor]];
         }
-        
        
     }
     return self;
 }
+
 
 - (void)dealloc {
     
@@ -149,13 +148,12 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
     self.mediasource = contentURL;
     [_playerSDK setDataSource:contentURL];
     
-    if (self.isAutoPlay&& !self.isCountdownView) { //自动播放并且并非倒计时视图
+    if (self.isAutoPlay&& !self.isCountdownView && self.fatherView.networkMonitor.currentReachabilityStatus != ReachableViaWWAN) { //自动播放标识 非倒计时视图 非流量环境
         [_playerSDK prepareAsync];
         [self setPlayerMediaState:PS_LOADING];
     }
     
 }
-
 //展示封面视图
 -(void)showCoverView{
     
@@ -184,10 +182,14 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
 }
 
 - (CGFloat)statusBarHeightInOrientation:(UIInterfaceOrientation)orientation {
-    if (IOSVERSION >= 7.0)
+    if (IOSVERSION <= 7.0){
         return 0.f;
-    else if ([UIApplication sharedApplication].statusBarHidden)
+
+    }
+    else if ([UIApplication sharedApplication].statusBarHidden){
         return 0.f;
+
+    }
     return [[UIApplication sharedApplication] statusBarFrame].size.height;
 }
 
@@ -196,10 +198,10 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
 //重设NoNetView frame
 -(void)resetNoNetViewFrame:(CGRect)frame
 {
-    UIImageView *netImageView = (UIImageView *)[_noNetView viewWithTag:1];
-    UILabel *tintLabel = (UILabel *)[_noNetView viewWithTag:2];
-    UILabel *setLabel = (UILabel *) [_noNetView viewWithTag:3];
-    [_noNetView setFrame:frame];
+    UIImageView *netImageView = (UIImageView *)[_noNetworkView viewWithTag:1];
+    UILabel *tintLabel = (UILabel *)[_noNetworkView viewWithTag:2];
+    UILabel *setLabel = (UILabel *) [_noNetworkView viewWithTag:3];
+    [_noNetworkView setFrame:frame];
     if (_movieFullscreen) {
         [netImageView setFrame:CGRectMake((self.view.bounds.size.width - 110)/2, 85, 110, 75)];
         [tintLabel setFrame:CGRectMake((self.view.bounds.size.width - 120)/2 , netImageView.frame.origin.y + 75 + 25, 120, 20)];
@@ -231,7 +233,7 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
 //LoadingView动画
 -(void)lodingView:(int) percent
 {
-    if (_noNetView != nil) {
+    if (_noNetworkView != nil) {
         NSLog(@"YZYZMovieplayerController has show noNetView");
         return;
     }
@@ -297,14 +299,15 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
         [_loadView removeFromSuperview];
         _loadView = nil;
     }
+    //移除3S超时提示视图
     [self.controls removeDataTimeOutView];
-    _noNetView = [[UIView alloc] initWithFrame:self.view.bounds];
-    _noNetView.backgroundColor = [UIColor colorWithRed:10/255 green:10/255 blue:10/255 alpha:0.75];
+    _noNetworkView = [[UIView alloc] initWithFrame:self.view.bounds];
+    _noNetworkView.backgroundColor = [UIColor colorWithRed:10/255 green:10/255 blue:10/255 alpha:0.75];
     if (_movieFullscreen) {
         UIImageView *netImageView = [[UIImageView alloc] initWithFrame:CGRectMake((self.view.bounds.size.width - 110)/2, 85, 110, 75)];
         [netImageView setImage:[UIImage imageNamed:X1BUNDLE_Image(@"yz_ic_movie_no_network")]];
         netImageView.tag = 1;
-        [_noNetView addSubview:netImageView];
+        [_noNetworkView addSubview:netImageView];
         
         UILabel *tintLabel = [[UILabel alloc] initWithFrame:CGRectMake((self.view.bounds.size.width - 120)/2 , netImageView.frame.origin.y + 75 + 25, 120, 20)];
         tintLabel.text = @"哦哦~播放出错了";
@@ -312,7 +315,7 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
         tintLabel.font = [UIFont systemFontOfSize:14.0f];
         tintLabel.textColor = YZColorFromRGB(0xb3b7ba);
         tintLabel.tag = 2;
-        [_noNetView addSubview: tintLabel];
+        [_noNetworkView addSubview: tintLabel];
         
         UILabel *setLabel = [[UILabel alloc] initWithFrame:CGRectMake((self.view.frame.size.width - 180)/2, tintLabel.frame.origin.y + 20 + 10, 180, 20)];
         setLabel.font= [UIFont systemFontOfSize:11.f];
@@ -326,12 +329,12 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
         setLabel.userInteractionEnabled = YES;
         [setLabel addGestureRecognizer:tapRecognizer];
         setLabel.tag = 3;
-        [_noNetView addSubview:setLabel];
+        [_noNetworkView addSubview:setLabel];
     }else{
         UIImageView *netImageView = [[UIImageView alloc] initWithFrame:CGRectMake((self.view.bounds.size.width - 110)/2, 30, 110, 75)];
         [netImageView setImage:[UIImage imageNamed:X1BUNDLE_Image(@"yz_ic_movie_no_network")]];
         netImageView.tag = 1;
-        [_noNetView addSubview:netImageView];
+        [_noNetworkView addSubview:netImageView];
         
         UILabel *tintLabel = [[UILabel alloc] initWithFrame:CGRectMake((self.view.bounds.size.width - 100)/2 , netImageView.frame.origin.y + 75 + 15, 100, 20)];
         tintLabel.text = @"哦哦~播放出错了";
@@ -339,7 +342,7 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
         tintLabel.font = [UIFont systemFontOfSize:11.0f];
         tintLabel.textColor = YZColorFromRGB(0xb3b7ba);
         tintLabel.tag = 2;
-        [_noNetView addSubview: tintLabel];
+        [_noNetworkView addSubview: tintLabel];
         
         UILabel *setLabel = [[UILabel alloc] initWithFrame:CGRectMake((self.view.frame.size.width - 180)/2, tintLabel.frame.origin.y + 20 + 7, 180, 20)];
         setLabel.font= [UIFont systemFontOfSize:11.f];
@@ -353,23 +356,23 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
         setLabel.userInteractionEnabled = YES;
         [setLabel addGestureRecognizer:tapRecognizer];
         setLabel.tag = 3;
-        [_noNetView addSubview:setLabel];
+        [_noNetworkView addSubview:setLabel];
     }
-    [self.view addSubview:_noNetView];
+    [self.view addSubview:_noNetworkView];
 }
 
 //无网络视图点击"刷新看看"
 -(void)refreshMoviePlayer{
-    NSLog(@"YZYZMoviePlayerController 点击刷新看看");
-    [_noNetView removeFromSuperview];
-    _noNetView = nil;
+    
+    [_noNetworkView removeFromSuperview];
+    _noNetworkView = nil;
     [self retryPlay];
+    [self startTimeoutTimer];
 }
 
 #pragma mark -- 设备旋转相关处理
 //设备旋转时调用
 -(void)rorateToOrientation:(UIInterfaceOrientation)orientation animated:(BOOL)animated{
-    NSLog(@"YZYZMoviePlayerController 设备旋转时调用 interfaceOrientation=%ld animated=%d",(long)orientation,animated);
     //弹回键盘
     [self.view endEditing:YES];
     
@@ -382,8 +385,7 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
 
 //全屏按钮点击时 && 设备旋转时  都会调用的方法
 - (void)setFullscreen:(BOOL)fullscreen orientation:(UIInterfaceOrientation)orientation  animated:(BOOL)animated{
-    NSLog(@"YZYZMoviePlayerController 全屏按钮点击时 && 设备旋转时 调用 setFullscreen fullscreen=%d animated=%d",fullscreen,animated);
-  
+    
     //弹回键盘
     [self.view endEditing:YES];
 
@@ -416,7 +418,6 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
                 self.isRealFullScreenBtnPress = NO;
             
         }];
-
         
     } else {
         
@@ -438,11 +439,8 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
     }
     
     //控制层UI改变
-//    dispatch_async(dispatch_get_main_queue(), ^{
-    
-        [[NSNotificationCenter defaultCenter] postNotificationName:YZMoviePlayerMediaStateChangedNotification object:nil];
-//    });
-    
+    [[NSNotificationCenter defaultCenter] postNotificationName:YZMoviePlayerMediaStateChangedNotification object:nil];
+
  
 }
 // !!!:屏幕旋转核心代码
@@ -514,14 +512,38 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
     
 }
 
-#pragma mark --  Action
--(void)movieTimedOut {
-    if (!self.loadState  || !self.loadState) {
-        if ([self.delegate respondsToSelector:@selector(yzMoviePlayerControllerMovieTimedOut)]) {
-            [self.delegate performSelector:@selector(yzMoviePlayerControllerMovieTimedOut)];
-        }
+#pragma mark -- Timer
+//启动缓冲超时计时器
+-(void)startTimeoutTimer{
+    if (self.timeoutTimer) {
+        [self.timeoutTimer invalidate];
+        self.timeoutTimer = nil;
     }
+    
+    self.timeoutTimer = [NSTimer scheduledTimerWithTimeInterval:30.0f target:self selector:@selector(trigTimeoutAction) userInfo:nil repeats:NO];
+    [[NSRunLoop mainRunLoop] addTimer:self.timeoutTimer forMode:NSRunLoopCommonModes];
+
 }
+//停止缓冲超时计时器
+-(void)stopTimeoutTimer{
+    
+    [self.timeoutTimer invalidate];
+    self.timeoutTimer = nil;
+    
+}
+//缓冲超时action
+-(void)trigTimeoutAction{
+    
+    [self stopTimeoutTimer];
+
+    [self showNoNetView];
+    
+    [self movieTimedOut];
+}
+
+
+
+#pragma mark --  Action
 -(void)clickBackBtn{
     
     _isHitBackBtn = YES;
@@ -575,12 +597,20 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
     }
 }
 
-#pragma mark -- mediaplayer control
+#pragma mark -- Mediaplayer Control
 //播放 直播重连 录播继续
 - (void)play
 {
     if ([_playerSDK isLive]) {
-        [self restart];
+        
+        if (_currentPos == 0) {
+            [_playerSDK prepareAsync];
+        }else{
+            
+            [_playerSDK restart];
+
+        }
+
     } else {
         if (_currentPos==0) {
             //重新初始化并启动播放
@@ -608,7 +638,7 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
     }
     [self setPlayerMediaState:PS_PAUSED];
 }
-//直播录播 继续播放
+//直播断点续播  录播继续播放
 - (void)resume
 {
     if (_currentPos==0) {
@@ -641,10 +671,13 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
 //播放出错进行的重连(直播刷新，点播调用会从断点继续播)
 - (void)retryPlay
 {
-    NSLog(@"YZMoviePlayerController retryPlay");
+    NSLog(@"X1player retryPlay");
     [_playerSDK RetryPlay];
+//    [self play];
+    
     _retryPlayPos = _currentPos;
     [self setPlayerMediaState:PS_RECONNECTION];
+//    [self setPlayerMediaState:PS_LOADING];
 }
 //重新开始播放操作 (直播刷新，点播调用会从头开始播)
 - (void)restart
@@ -656,9 +689,14 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
 //定点播放
 - (void)setCurrentPlaybackTime:(NSTimeInterval)currentPlaybackTime
 {
-    NSLog(@"YZYZMoviePlayerController setCurrentPlaybackTime _playerMediaState=%ld",(long)_playerMediaState);
     [_playerSDK seekTo:currentPlaybackTime * 1000.0];
     [self setPlayerMediaState:PS_SEEKTO];
+}
+//超时
+-(void)movieTimedOut {
+    if ([self.delegate respondsToSelector:@selector(yzMoviePlayerControllerMovieTimedOut)]) {
+        [self.delegate performSelector:@selector(yzMoviePlayerControllerMovieTimedOut)];
+    }
 }
 
 - (X1PlayerState)getPlaybackState
@@ -670,7 +708,8 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
 #pragma mark - X1PlayerAgentDelegate回调
 
 /** 播放加载回调
- 这个方法只会在加载url的媒体资源的时候触发 所以url不变 loadingflag:0 MediaState:PS_LOADING 调用一次
+ 这个方法只会在加载url的媒体资源的时候触发
+ 所以url不变 loadingflag:0 MediaState:PS_LOADING 调用一次
  loadingflag:1 MediaState:PS_BUFFERING 调用一次
  @param loadingflag 为1时表示媒体格式信息加载完成
  
@@ -684,8 +723,6 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
         NSLog(@"onLoading duration=%d",[_playerSDK getDuration]);
         
         [self removeloadview];
-        
-        
 
     } else {
         [self setPlayerMediaState:PS_LOADING];
@@ -693,6 +730,8 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
         WEAKSELF(self);
         dispatch_async(dispatch_get_main_queue(), ^{
             [weak_self lodingView:0];
+            
+            
         });
         
     }
@@ -704,11 +743,10 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
  */
 - (void) onBufferingUpdate:(int) percent
 {
-//    NSLog(@"onBufferingUpdate, percent:%d", percent);
-    WEAKSELF(self)
+    
     if (percent < 100) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            [weak_self lodingView:percent];
+            [self lodingView:percent];
         });
     } else {
         [self removeloadview];
@@ -720,7 +758,7 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
 
 /** 播放开始回调
  在媒体预处理完成后调用
-
+ 同一个视频可能调用多次 每次缓冲100%调用一次
  */
 - (void) onPrepared
 {
@@ -730,6 +768,8 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
     _isCompletion = NO;
     [self setPlayerMediaState:PS_PLAYING];
     [self removeloadview];
+    
+    [self stopTimeoutTimer];
 }
 
 
@@ -741,7 +781,7 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
 {
 //    NSLog(@"onPlayingUpdate currentPos=%d",currentPos);
 
-    [self removeloadview];
+//    [self removeloadview];
     _currentPos = currentPos;
     if (!_isCompletion) {
         [self setPlayerMediaState:PS_PLAYING];
@@ -772,17 +812,17 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
        //展示重播视图
         [weak_self showReplayView];
 
-//        //防止重播时视频显示最后一帧
-//        [_glkView removeFromSuperview];
-//        _glkView = nil;
-//        _context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
-//        _glkView = [[GLKView alloc] initWithFrame:self.view.bounds context:_context];
-//        [self.view addSubview:_glkView];
-//        [self.view sendSubviewToBack:_glkView];
-//        [_playerSDK setDisplay:_glkView];
-       
-        
         [[NSNotificationCenter defaultCenter] postNotificationName:YZMoviePlayerOnCompletionNotification object:nil];
+        
+        
+        //        //防止重播时视频显示最后一帧
+        //        [_glkView removeFromSuperview];
+        //        _glkView = nil;
+        //        _context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
+        //        _glkView = [[GLKView alloc] initWithFrame:self.view.bounds context:_context];
+        //        [self.view addSubview:_glkView];
+        //        [self.view sendSubviewToBack:_glkView];
+        //        [_playerSDK setDisplay:_glkView];
         
 
     });
@@ -907,14 +947,25 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
     _playableDuration = playableDuration;
 }
 
-/** 播放器通知回调
+/** 播放器通知回调 onLoading的回调 =1时激活此回调
  @param NotifyID notify消息ID
  */
 - (void)onNotify:(int)NotifyID {
-    NSLog(@"onNotify NotifyID=%d",NotifyID);
+    NSLog(@"X1Player onNotify NotifyID=%d",NotifyID);
+    
     if (NotifyID == NOTIFY_DATA_TIMEDOUT)
-    {   //数据接收超时：加载时3秒没加载到数据
-        [self.controls setDataTimeOutView];
+    {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            //启动超时计时器
+            if (self.playerMediaState != PS_PLAYING && !self.timeoutTimer) {
+                [self  startTimeoutTimer];
+            }
+//            //数据接收超时：加载3秒没加载到数据
+//            [self.controls showDataTimeOutView];
+            
+        });
+     
     }
 }
 

@@ -59,7 +59,7 @@
         //http://mirror.aarnet.edu.au/pub/TED-talks/911Mothers_2010W-480p.mp4
         //http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4
         //http://mirror.aarnet.edu.au/pub/TED-talks/911Mothers_2010W-480p.mp4
-        [self.playerView playWithUrl:@"http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4" playerTitle:@"直播测试标题" coverImage:self.image autoPlay:NO style:YZMoviePlayerControlsStyleDefault];
+        [self.playerView playWithUrl:@"http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4" playerTitle:@"直播测试标题" coverImage:self.image autoPlay:YES style:YZMoviePlayerControlsStyleDefault];
 //        [self.playerView setBarGradientColor:[UIColor redColor]];
 //        self.playerView.isNeedShowBackBtn = YES;
 
@@ -154,7 +154,7 @@
 
 -(UIStatusBarStyle)preferredStatusBarStyle
 {
-    return UIStatusBarStyleLightContent;
+    return UIStatusBarStyleDefault;
 }
 
 #pragma mark --导航栏返回按钮被点击

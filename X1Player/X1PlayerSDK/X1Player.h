@@ -3,7 +3,9 @@
 //
 //  Created by 付彦彰 on 2018/7/2.
 //  Copyright © 2018年 channelsoft. All rights reserved.
-//
+//  Email : fyz333501@163.com
+//  GitHub: https://github.com/diamondfive/X1Player
+//  如有问题或建议请给我发Email, 或在该项目的GitHub主页lssues我, 谢谢:)
 
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>

@@ -73,13 +73,6 @@
 }
 
 
--(void)willMoveToSuperview:(UIView *)newSuperview{
-    
-    if (newSuperview == nil) {
-        NSLog(@"dddd");
-    }
-}
-
 
 #pragma mark -- Internal Method
 
@@ -205,7 +198,7 @@
 // !!!:播放状态改变时的回调(全屏旋转也触发此回调，因为涉及UI的显示隐藏)
 - (void)stateChangeCauseControlsUIChange
 {
-    int state = [self.moviePlayer getPlaybackState];
+    int state = self.moviePlayer.playerMediaState;
     NSLog(@"yzYZMovieControls stateChangeCauseControlsUIChange = %d", state);
     switch (state) {
         case PS_NONE:
@@ -325,6 +318,8 @@
 
 -(void)yzPlayViewClickPlayPauseBtn:(UIButton *)sender{
     
+    [self showPlayViewWithBackBtn:_isNeedShowBackBtn coverImagePlayBtn:NO];
+
     [self.moviePlayer clickPlayPauseBtn];
 }
 

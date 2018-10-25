@@ -38,7 +38,7 @@
 }
 @end
 
-#pragma mark - QNSlider
+#pragma mark - YZSlider
     
 @interface YZMoviePlayerSlider () {
     //UISlider*       _slider;

@@ -67,13 +67,13 @@ typedef enum {
 @property (nonatomic, strong) NSDictionary *mediasourceDefinitionDict;
 
 /**
- 上下横幅颜色
+ 上下横幅颜色,默认无色
  */
 @property (nonatomic, strong) UIColor *barColor;
 
 
 /**
- 上下横幅渐变遮罩层颜色
+ 上下横幅渐变遮罩层颜色,默认渐变黑色
  */
 @property (nonatomic, strong) UIColor *barGradientColor;
 
@@ -86,7 +86,6 @@ typedef enum {
  控制层无操作时自动隐藏时间
  */
 @property (nonatomic, assign) NSTimeInterval fadeDelay;
-
 
 /** 
  当视频播放时，剩余时间递减
@@ -102,10 +101,8 @@ typedef enum {
 //是否是直播
 @property (nonatomic, assign) BOOL isLive;
 
-
 // 标题
 @property (nonatomic, strong) NSString *programTitle;
-
 
 //是否需要展示重播视图
 @property (nonatomic, assign) BOOL isNeedShowReplayView;
@@ -130,7 +127,7 @@ typedef enum {
 - (void)resetMoveiPlayback:(BOOL) changeURL;
 - (void)monitorMoviePlayableDuration;
 
--(void)setDataTimeOutView;
+-(void)showDataTimeOutView;
 -(void)removeDataTimeOutView;
 
 -(void)fullscreenPressedWithOrientation:(UIInterfaceOrientation)orientation;
