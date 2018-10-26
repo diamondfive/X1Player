@@ -31,9 +31,14 @@
 /** 是否在调节音量 */
 @property (nonatomic, assign) BOOL isVolume;
 
+//直播不展示快进快退 录播展示
+@property (nonatomic, assign) BOOL isNeedShowFastforward;
+
 /**
  创建手势
  */
 - (void)createGesture;
+
+
 
 @end

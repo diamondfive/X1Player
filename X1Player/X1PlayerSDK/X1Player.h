@@ -143,7 +143,7 @@ typedef NS_ENUM(NSInteger, X1PlayerNotifyID) {
  */
 - (void) pause;
 /**
- * 播放停止[直播和点播]
+ * 播放停止[直播和点播],停止后无法断点续播
  */
 - (void) stop;
 /**

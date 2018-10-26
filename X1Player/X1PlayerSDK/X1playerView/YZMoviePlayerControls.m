@@ -14,6 +14,8 @@
 #import "X1Player.h"
 #import "YZMoviePlayerGestureRecognizerView.h"
 #import "X1PlayerView.h"
+#import "YZMutipleDefinitionModel.h"
+
 
 #define YZStateBarHeight [[UIApplication sharedApplication] statusBarFrame].size.height
 
@@ -71,14 +73,14 @@ static const inline BOOL isIpad() {
 
 # pragma mark -- Lifecycle
 
-- (id)initWithMoviePlayer:(YZMoviePlayerController *)moviePlayer style:(YZMoviePlayerControlsStyle)style mediasourceDefinitionDict:(NSDictionary *)mediasourceDefinitionDict
+- (id)initWithMoviePlayer:(YZMoviePlayerController *)moviePlayer style:(YZMoviePlayerControlsStyle)style definitionUrlArr:(NSArray *)definitionUrlArr
 {
     self = [super init];
     if (self) {
         self.backgroundColor = [UIColor clearColor];
         _moviePlayer = moviePlayer;
         _style = style;
-        _mediasourceDefinitionDict = mediasourceDefinitionDict;
+        _mediasourceDefinitionArr = definitionUrlArr;
     
         [self initParam];
         [self setupGestureView];
@@ -126,16 +128,15 @@ static const inline BOOL isIpad() {
         //top bar
         if (_isNeedShowBackBtn) {
             self.topBar.frame = CGRectMake(0, 0, self.frame.size.width, self.barHeight + YZStateBarHeight);
-            self.backButton.frame = CGRectMake(10, 10+YZStateBarHeight, 20, 20);
+            self.backButton.frame = CGRectMake(10, 5+YZStateBarHeight, 20, 20);
             
             self.titleLabel.frame = CGRectMake(CGRectGetMaxX(self.backButton.frame)+10, self.backButton.frame.origin.y, self.frame.size.width - CGRectGetMaxX(self.backButton.frame)-10-12, 20);
         }else{
             self.topBar.frame = CGRectMake(0, 0, self.frame.size.width, self.barHeight);
             //            self.backButton.frame = CGRectMake(10, 10, 20, 20);
             
-            self.titleLabel.frame = CGRectMake(20 ,10, self.frame.size.width -15-12, 20);
+            self.titleLabel.frame = CGRectMake(20 ,5, self.frame.size.width -15-12, 20);
         }
-        
         
         //bottom bar
         self.bottomBar.frame = CGRectMake(0, self.frame.size.height - self.barHeight, self.frame.size.width, self.barHeight);
@@ -171,14 +172,14 @@ static const inline BOOL isIpad() {
         //top bar
         if (_isNeedShowBackBtn) {
             self.topBar.frame = CGRectMake(0, 0, self.frame.size.width, self.barHeight + YZStateBarHeight);
-            self.backButton.frame = CGRectMake(10, 10+YZStateBarHeight, 20, 20);
+            self.backButton.frame = CGRectMake(10, 5+YZStateBarHeight, 20, 20);
             
             self.titleLabel.frame = CGRectMake(CGRectGetMaxX(self.backButton.frame)+10, self.backButton.frame.origin.y, self.frame.size.width - CGRectGetMaxX(self.backButton.frame)-10-12, 20);
         }else{
             self.topBar.frame = CGRectMake(0, 0, self.frame.size.width, self.barHeight);
             //            self.backButton.frame = CGRectMake(10, 10, 20, 20);
             
-            self.titleLabel.frame = CGRectMake(20, 10, self.frame.size.width -15-12, 20);
+            self.titleLabel.frame = CGRectMake(20, 5, self.frame.size.width -15-12, 20);
         }
         
         
@@ -711,7 +712,6 @@ static const inline BOOL isIpad() {
 - (void)stateChangeCauseControlsUIChange
 {
     int state = [self.moviePlayer playerMediaState];
-    NSLog(@"QNYZMovieControls stateChangeCauseControlsUIChange = %d", state);
     switch (state) {
         case PS_NONE:
             [self stopDurationTimer];
@@ -734,8 +734,14 @@ static const inline BOOL isIpad() {
                 [self showControls:nil autoHide:YES];
                 
             }
-            
+
             self.gestureView.alpha = 1;
+            if (self.moviePlayer.isLive) {
+                self.gestureView.isNeedShowFastforward = NO;
+            }else{
+                self.gestureView.isNeedShowFastforward = YES;
+                
+            }
             
 //            //播放本地文件
 //            if ([self.moviePlayer.contentURL.scheme isEqualToString:@"file"]) {

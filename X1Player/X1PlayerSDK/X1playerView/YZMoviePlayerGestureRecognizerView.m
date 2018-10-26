@@ -52,8 +52,9 @@ typedef NS_ENUM(NSInteger, PanDirection){
         [self configureVolume];
         
         [self createGesture];
-        
+   
         [self createFastForwardView];
+        
         
         [YZMoivePlayerBrightnessView sharedBrightnessView];
     }
@@ -146,12 +147,10 @@ typedef NS_ENUM(NSInteger, PanDirection){
         
         if (proMin) {
             titleStr =[NSString stringWithFormat:@"后退%02ld分%02ld秒",(long)labs(proMin),(long)labs(proSec)];
-            NSLog(@"%@",titleStr);
 
         }else{
             
             titleStr = [NSString stringWithFormat:@"后退%02ld秒",(long)labs(proSec)];
-            NSLog(@"%@",titleStr);
 
         }
         
@@ -330,6 +329,10 @@ typedef NS_ENUM(NSInteger, PanDirection){
 /** pan水平移动ing */
 - (void)panHorizontalBeingMoved:(CGFloat)value {
     
+    if (!self.isNeedShowFastforward) {
+        return;
+    }
+    
     //防止中途切换前进/后退
     if ((self.isForward && value >=0)|| (!self.isForward && value<= 0)) {
         // 每次滑动需要叠加时间
@@ -364,6 +367,11 @@ typedef NS_ENUM(NSInteger, PanDirection){
 
 /** pan结束水平移动 */
 - (void)panHorizontalEndMoved {
+    
+    if (!self.isNeedShowFastforward) {
+        return;
+    }
+    
     // 隐藏快进/快退view
     [self hideFastForwardView];
     
@@ -460,6 +468,16 @@ typedef NS_ENUM(NSInteger, PanDirection){
             NSLog(@"AVAudioSessionRouteChangeReasonCategoryChange");
             break;
     }
+}
+
+
+#pragma mark  -- Setter && Getter
+
+- (void)setIsNeedShowFastforward:(BOOL)isNeedShowFastforward{
+    
+    _isNeedShowFastforward = isNeedShowFastforward;
+
+    
 }
 
 

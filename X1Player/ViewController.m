@@ -47,16 +47,27 @@
 
     self.view.backgroundColor =[UIColor whiteColor];
     
-    UIButton *btn =[UIButton buttonWithType:UIButtonTypeCustom];
-    [btn setTitle:@"点击进入直播页面" forState:UIControlStateNormal];
-    [btn setBackgroundColor:[UIColor greenColor]];
-    btn.titleLabel.font =[UIFont systemFontOfSize:15];
+    //普通直播
+    UIButton *btn1 =[UIButton buttonWithType:UIButtonTypeCustom];
+    [btn1 setTitle:@"进入普通直播" forState:UIControlStateNormal];
+    [btn1 setBackgroundColor:[UIColor greenColor]];
+    btn1.titleLabel.font =[UIFont systemFontOfSize:15];
     
-    [btn addTarget:self action:@selector(clickBtn:) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:btn];
+    [btn1 addTarget:self action:@selector(clickBtn:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:btn1];
 
-    btn.frame = CGRectMake(self.view.frame.size.width/2 - 100, 100, 200, 50);
+    btn1.frame = CGRectMake(self.view.frame.size.width/2 - 100, 100, 200, 50);
 
+    //多清晰度直播
+    UIButton *btn1_1 =[UIButton buttonWithType:UIButtonTypeCustom];
+    [btn1_1 setTitle:@"进入多清晰度直播" forState:UIControlStateNormal];
+    [btn1_1 setBackgroundColor:[UIColor lightGrayColor]];
+    btn1_1.titleLabel.font =[UIFont systemFontOfSize:15];
+    
+    [btn1_1 addTarget:self action:@selector(clickBtn1_1:) forControlEvents:UIControlEventTouchUpInside];
+
+    [self.view addSubview:btn1_1];
+    btn1_1.frame = CGRectMake(self.view.frame.size.width/2 - 100, CGRectGetMaxY(btn1.frame), 200, 50);
     
     
     
@@ -68,7 +79,7 @@
     [btn2 addTarget:self action:@selector(clickBtn2:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:btn2];
     
-    btn2.frame = CGRectMake(self.view.frame.size.width/2 - 100, CGRectGetMaxY(btn.frame), 200, 50);
+    btn2.frame = CGRectMake(self.view.frame.size.width/2 - 100, CGRectGetMaxY(btn1_1.frame), 200, 50);
     
     
     UIButton *btn3 =[UIButton buttonWithType:UIButtonTypeCustom];
@@ -95,7 +106,7 @@
     
 }
 
-#pragma mark --点击进入直播页面
+#pragma mark -- 点击进入普通直播
 -(void)clickBtn:(UIButton *)sender{
 
     
@@ -109,6 +120,18 @@
 
     [self.navigationController pushViewController:test animated:YES];
 
+}
+#pragma mark -- 点击进入多清晰度直播
+-(void)clickBtn1_1:(UIButton *)sender{
+    
+    TestViewController *test =[[TestViewController alloc] init];
+    test.type = 1.1;
+    self.type = 1.1;
+    test.image = self.image1;
+    
+    
+    [self.navigationController pushViewController:test animated:YES];
+    
 }
 
 

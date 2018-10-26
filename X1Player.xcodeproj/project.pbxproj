@@ -36,6 +36,7 @@
 		A325634321796B62009E9DA2 /* TestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A325633F21796B62009E9DA2 /* TestViewController.m */; };
 		A325634421796B62009E9DA2 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A325634121796B62009E9DA2 /* ViewController.m */; };
 		A3256354217EB674009E9DA2 /* YZReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = A3256352217EB674009E9DA2 /* YZReachability.m */; };
+		A350108A2181AF9400FB7111 /* YZMutipleDefinitionModel.m in Sources */ = {isa = PBXBuildFile; fileRef = A35010892181AF9400FB7111 /* YZMutipleDefinitionModel.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -91,6 +92,8 @@
 		A325634221796B62009E9DA2 /* ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
 		A3256352217EB674009E9DA2 /* YZReachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YZReachability.m; sourceTree = "<group>"; };
 		A3256353217EB674009E9DA2 /* YZReachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YZReachability.h; sourceTree = "<group>"; };
+		A35010882181AF9400FB7111 /* YZMutipleDefinitionModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YZMutipleDefinitionModel.h; sourceTree = "<group>"; };
+		A35010892181AF9400FB7111 /* YZMutipleDefinitionModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YZMutipleDefinitionModel.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -189,6 +192,8 @@
 				A325630721787A97009E9DA2 /* YZMoviePlayerControlButton.m */,
 				A3256353217EB674009E9DA2 /* YZReachability.h */,
 				A3256352217EB674009E9DA2 /* YZReachability.m */,
+				A35010882181AF9400FB7111 /* YZMutipleDefinitionModel.h */,
+				A35010892181AF9400FB7111 /* YZMutipleDefinitionModel.m */,
 			);
 			path = X1playerView;
 			sourceTree = "<group>";
@@ -287,6 +292,7 @@
 				A325632121787A98009E9DA2 /* YZMoivePlayerReplayView.m in Sources */,
 				A325632221787A98009E9DA2 /* YZMoivePlayerFloatView.m in Sources */,
 				A325631C21787A98009E9DA2 /* YZMoviePlayerGestureRecognizerView.m in Sources */,
+				A350108A2181AF9400FB7111 /* YZMutipleDefinitionModel.m in Sources */,
 				A325631F21787A98009E9DA2 /* YZMoivePlayerCoverView.m in Sources */,
 				A325633E21796B3C009E9DA2 /* YZRootViewController.m in Sources */,
 				A325631A21787A98009E9DA2 /* YZMoviePlayerSlider.m in Sources */,

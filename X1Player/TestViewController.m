@@ -24,8 +24,6 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
-//    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
 
     self.view.backgroundColor = [UIColor whiteColor];
     
@@ -51,11 +49,40 @@
 //        [self.playerView setBarGradientColor:[UIColor blueColor]];
         self.playerView.isNeedShowBackBtn = YES;
         
-    }else if (self.type == 2){ //录播
+    }else if (self.type == 1.1){//直播多清晰度
+        self.navigationController.navigationBar.hidden = YES;
+        
+        
+        YZMutipleDefinitionModel *model1 = [[YZMutipleDefinitionModel alloc] init];
+        model1.title = @"超清";
+        model1.url = @"http://5815.liveplay.myqcloud.com/live/5815_89aad37e06ff11e892905cb9018cf0d4.flv";
+
+        YZMutipleDefinitionModel *model2 = [[YZMutipleDefinitionModel alloc] init];
+        model2.title = @"高清";
+        model2.url = @"http://5815.liveplay.myqcloud.com/live/5815_89aad37e06ff11e892905cb9018cf0d4_900.flv";
+        
+        YZMutipleDefinitionModel *model3 =[[YZMutipleDefinitionModel alloc] init];
+        model3.title = @"标清";
+        model3.url = @"http://5815.liveplay.myqcloud.com/live/5815_89aad37e06ff11e892905cb9018cf0d4_550.flv";
+        
+        
+        
+        self.playerView =[[X1PlayerView alloc] initWithFrame:CGRectMake(0, 0, 375, 375*9/16)];
+        self.playerView.delegate = self;
+        
+        [self.playerView playWithUrl:@"http://5815.liveplay.myqcloud.com/live/5815_89aad37e06ff11e892905cb9018cf0d4_900.flv" definitionUrlArr:@[model1,model2,model3] playerTitle:@"直播清晰度切换测试" coverImage:self.image autoPlay:YES style:YZMoviePlayerControlsStyleLive];
+        
+        self.playerView.isNeedShowBackBtn =YES;
+    }
+    
+    else if (self.type == 2){ //录播
         self.navigationController.navigationBar.hidden = NO;
         self.playerView =[[X1PlayerView alloc] initWithFrame:CGRectMake(0, 200, 375, 375*9/16)];
         self.playerView.delegate = self;
         [self.view addSubview:self.playerView];
+        
+//        self.playerView.isShowWWANViewInAutoPlay =NO;
+        
         //http://mirror.aarnet.edu.au/pub/TED-talks/911Mothers_2010W-480p.mp4
         //http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4
         //http://mirror.aarnet.edu.au/pub/TED-talks/911Mothers_2010W-480p.mp4

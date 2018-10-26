@@ -10,7 +10,7 @@
 
 @interface TestViewController : UIViewController
 
-@property (nonatomic, assign) NSInteger type;// 1 直播  2 录播  3 距离开始XX
+@property (nonatomic, assign) float type;// 1 直播  2 录播  3 距离开始XX
 
 @property (nonatomic, assign) NSInteger startTime;
 

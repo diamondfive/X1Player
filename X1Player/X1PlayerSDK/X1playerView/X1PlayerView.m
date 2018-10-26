@@ -35,6 +35,7 @@ static X1PlayerView  *GlobalPlayerView;
 @property (nonatomic, weak) UIView *fatherView;
 
 
+
 @end
 
 @implementation X1PlayerView
@@ -103,11 +104,11 @@ static X1PlayerView  *GlobalPlayerView;
 -(void)playWithUrl:(NSString *)url playerTitle:(NSString *)title coverImage:(UIImage *)coverImage autoPlay:(BOOL)autoplay style:(YZMoviePlayerControlsStyle)style{
     
  
-    [self playWithUrl:url definitionUrlDict:nil playerTitle:title coverImage:coverImage autoPlay:autoplay style:style];
+    [self playWithUrl:url definitionUrlArr:nil playerTitle:title coverImage:coverImage autoPlay:autoplay style:style];
     
 }
 // !!!: 播放视频核心方法
--(void)playWithUrl:(NSString *)url definitionUrlDict:(NSDictionary *)definitionUrlDict playerTitle:(NSString *)title coverImage:(UIImage *)coverImage autoPlay:(BOOL)autoplay style:(YZMoviePlayerControlsStyle)style{
+-(void)playWithUrl:(NSString *)url definitionUrlArr:(NSArray *)definitionUrlArr playerTitle:(NSString *)title coverImage:(UIImage *)coverImage autoPlay:(BOOL)autoplay style:(YZMoviePlayerControlsStyle)style;{
     
     //不自动黑屏
     [UIApplication sharedApplication].idleTimerDisabled=YES;
@@ -118,12 +119,16 @@ static X1PlayerView  *GlobalPlayerView;
     if ([GlobalPlayerView.mediasource isEqual:url]) {
         isSameUrl = YES;
     }else{
-        [definitionUrlDict enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
-            if ([obj isEqual:url]) {
+        
+        [definitionUrlArr enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            
+            if ([obj isEqualToString:url]) {
                 *stop = YES;
                 isSameUrl = YES;
             }
+            
         }];
+ 
     }
 
     //网址相同并且小窗存在情况下过来的,需要继续播放
@@ -154,11 +159,8 @@ static X1PlayerView  *GlobalPlayerView;
             self.moviePlayer = nil;
         }
         
-        [self setUpMoviePlayWithStyle:style mediasourceDefinitionDict:definitionUrlDict];
-        
-        self.moviePlayer.isAutoPlay = autoplay; //视频是否自动播放
-        self.moviePlayer.coverimage = coverImage;
-        [self.moviePlayer changeTitle:title];
+        [self setUpMoviePlayWithStyle:style definitionUrlArr:definitionUrlArr coverImage:coverImage playTitle:title autoPlay:autoplay];
+  
         
         //播放视频关键代码
         [self.moviePlayer setContentURL:url];
@@ -171,7 +173,7 @@ static X1PlayerView  *GlobalPlayerView;
     self.mediasource = url;
     self.coverimage = coverImage;
     self.mediasource = url;
-    self.mediasourceDefinitionDict = definitionUrlDict;
+    self.mediasourceDefinitionArr = definitionUrlArr;
     
 }
 
@@ -205,6 +207,9 @@ static X1PlayerView  *GlobalPlayerView;
         GlobalPlayerView  = self;  //绑定全局变量
         
         self.moviePlayer.controls.style = YZMoviePlayerControlsStyleFloatView; //设置小窗悬浮模式
+        
+        //重设控制层UI状态的通知
+        [[NSNotificationCenter defaultCenter] postNotificationName:YZMoviePlayerMediaStateChangedNotification object:nil];
         
     }else{
         
@@ -256,24 +261,27 @@ static X1PlayerView  *GlobalPlayerView;
     [self.networkMonitor startNotifier];
     
     self.isSwitchResumePlay = YES;
+    self.isShowWWANViewInAutoPlay = YES;
+    self.isShowWWANViewInNetworkChange = YES;
 
     
 }
 //设置播放器
--(void)setUpMoviePlayWithStyle:(YZMoviePlayerControlsStyle)style mediasourceDefinitionDict:(NSDictionary *)mediasourceDefinitionDict;
+-(void)setUpMoviePlayWithStyle:(YZMoviePlayerControlsStyle)style definitionUrlArr:(NSArray *)definitionUrlArr coverImage:(UIImage *)image playTitle:(NSString *)title autoPlay:(BOOL)autoplay;
 {
     
-    self.moviePlayer =[[YZMoviePlayerController alloc] initWithFrame:CGRectMake(0, 0, self.originalFrame.size.width, self.originalFrame.size.height) andStyle:style mediasourceDefinitionDict:mediasourceDefinitionDict hostObject:self];
+    self.moviePlayer =[[YZMoviePlayerController alloc] initWithFrame:CGRectMake(0, 0, self.originalFrame.size.width, self.originalFrame.size.height) andStyle:style definitionUrlArr:definitionUrlArr hostObject:self];
     
     self.moviePlayer.view.alpha = 1.0f;
     self.moviePlayer.delegate = self;
     [self addSubview:self.moviePlayer.view];
     
-    
-    [self.moviePlayer changeTitle:self.playerTitle];
-    
+    self.moviePlayer.isAutoPlay = autoplay; //视频是否自动播放
+    self.moviePlayer.coverimage = image;
+    [self.moviePlayer changeTitle:title];
     
     [self.moviePlayer setFrame:CGRectMake(0, 0, self.originalFrame.size.width, self.originalFrame.size.height)];
+
     
 }
 
@@ -340,8 +348,13 @@ static X1PlayerView  *GlobalPlayerView;
     //应用程序进入后台通知
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(appWillResignActiveNotification:) name:UIApplicationWillResignActiveNotification object:nil];
     
+    /***********************  其他通知 *********************/
+
     //直播预告倒计时走完通知
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(countdownTimeout:) name:YZCountdownTimeoutNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(countdownTimeoutNotification:) name:YZCountdownTimeoutNotification object:nil];
+    
+    //网络变化通知
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(networkchangeNotification:) name:kYZReachabilityChangedNotification object:nil];
     
 }
 //移除所有通知
@@ -391,7 +404,7 @@ static X1PlayerView  *GlobalPlayerView;
 }
 
 //倒计时时间结束回调
--(void)countdownTimeout:(NSNotification *)sender{
+-(void)countdownTimeoutNotification:(NSNotification *)sender{
     [self.countdownView.countDownTimer invalidate];
     self.countdownView.countDownTimer = nil;
     
@@ -400,6 +413,29 @@ static X1PlayerView  *GlobalPlayerView;
     
     [self.moviePlayer play];
     self.moviePlayer.controls.style = YZMoviePlayerControlsStyleLivePortrait;
+    
+}
+
+-(void)networkchangeNotification:(NSNotification *)sender{
+    
+    YZReachability *reachability = (YZReachability *)sender.object;
+    if (reachability.currentReachabilityStatus ==ReachableViaWWAN && self.isShowWWANViewInNetworkChange && self.style !=YZMoviePlayerControlsStyleFloatView) {
+        
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [self pause];
+            [self.moviePlayer.coverView removeFromSuperview];
+            YZMoivePlayerCoverView *coverView =[[YZMoivePlayerCoverView alloc] initWithMoviePlayer:self.moviePlayer];
+            coverView.frame = CGRectMake(0, 0, self.moviePlayer.view.frame.size.width, self.moviePlayer.view.frame.size.height);
+            [self.moviePlayer.view addSubview:coverView];
+            
+            self.moviePlayer.coverView  = coverView;
+            
+            [coverView showPlayViewWithBackBtn:_isNeedShowBackBtn coverImagePlayBtn:YES];
+        });
+     
+ 
+    }
+    
     
 }
 
@@ -570,9 +606,23 @@ static X1PlayerView  *GlobalPlayerView;
     
     _isNeedShowBackBtn = isNeedShowBackBtn;
     
-    self.moviePlayer.isNeedShowBackBtn = isNeedShowBackBtn;
     
 }
+
+-(void)setIsShowWWANViewInAutoPlay:(BOOL)isShowWWANViewInAutoPlay{
+    
+    _isShowWWANViewInAutoPlay = isShowWWANViewInAutoPlay;
+    
+    
+}
+
+-(void)setIsShowWWANViewInNetworkChange:(BOOL)isShowWWANViewInNetworkChange{
+    
+    _isShowWWANViewInNetworkChange = isShowWWANViewInNetworkChange;
+    
+    
+}
+
 
 -(void)setBarGradientColor:(UIColor *)color{
     

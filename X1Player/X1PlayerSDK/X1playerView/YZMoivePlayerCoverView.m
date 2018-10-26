@@ -45,7 +45,8 @@
     
     
     self.backBtn.frame = CGRectMake(10, 5+YZStateBarHeight, 20, 20);
-    self.backBtnMaskLayer.frame = self.backBtn.bounds;
+    self.backBtnMaskLayer.frame = CGRectMake(0, 0, self.backBtn.frame.size.width, self.backBtn.frame.size.height);
+ 
     
     
     self.playpauseBtn.frame = CGRectMake(self.bounds.size.width/2 - 38/2, self.bounds.size.height/2 - 38/2, 38, 38);
@@ -92,7 +93,7 @@
     self.backBtn =[[YZMoviePlayerControlButton alloc] init];
     
     self.backBtnMaskLayer = [[CALayer alloc] init];
-    self.backBtnMaskLayer.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.1].CGColor;
+    self.backBtnMaskLayer.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.02].CGColor;
     [self.backBtn.layer addSublayer:self.backBtnMaskLayer];
     
     self.backBtn.showsTouchWhenHighlighted = YES;
@@ -122,6 +123,8 @@
         [self.WWANPlayBtn addTarget:self action:@selector(yzPlayViewClickPlayPauseBtn:) forControlEvents:UIControlEventTouchUpInside];
         
         [self addSubview:self.WWANPlayBtn];
+        
+        self.moviePlayer.isShowedWWANView = YES;
         
     }else{
         

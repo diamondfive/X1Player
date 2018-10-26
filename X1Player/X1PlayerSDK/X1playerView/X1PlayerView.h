@@ -12,6 +12,7 @@
 #import <UIKit/UIKit.h>
 #import "YZMoviePlayerController.h"
 #import "YZReachability.h"
+#import "YZMutipleDefinitionModel.h"
 
 #define X1BUNDLE_NAME   @"X1Player.bundle"
 #define X1BUNDLE_PATH   [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:X1BUNDLE_NAME]
@@ -46,9 +47,8 @@ extern NSString * const X1PlayerVuewOnClickCloseFloatViewBtnNotification;
 @interface X1PlayerView : UIView
 //播放器数据源url
 @property (nonatomic, strong) NSString *mediasource;
-//播放器视频清晰度字典 key对应显示名称 value对应url
-//eg. @{@"超清 720p":@"http://ivi.bupt.edu.cn/hls/cctv1hd.m3u8",@"高清 480p":@"http://ivi.bupt.edu.cn/hls/cctv1.m3u8"}
-@property (nonatomic, strong) NSDictionary *mediasourceDefinitionDict;
+//播放器视频清晰度数组
+@property (nonatomic, strong) NSArray <YZMutipleDefinitionModel *>*mediasourceDefinitionArr;
 //播放器显示标题
 @property (nonatomic, strong) NSString *playerTitle;
 //播放器封面图片
@@ -65,6 +65,11 @@ extern NSString * const X1PlayerVuewOnClickCloseFloatViewBtnNotification;
 @property (nonatomic, assign) BOOL isNeedShowBackBtn;
 //网络监听器
 @property (nonatomic, strong) YZReachability *networkMonitor;
+//autoPlay == YES 时流量环境是否展示流量播放提醒界面,默认YES
+@property (nonatomic, assign) BOOL isShowWWANViewInAutoPlay;
+//网络环境变化为流量环境时是否展示流量播放提醒界面 默认YES
+@property (nonatomic, assign) BOOL isShowWWANViewInNetworkChange;
+
 //是否是直播(外界传入的标识,用于SDK解析视频源成功前的逻辑判断)
 @property (nonatomic, assign) BOOL isReceiveLive;
 //开播时间戳(用于直播视频未开播前遮罩的逻辑判断,简单加入的业务逻辑场景)
@@ -93,14 +98,13 @@ extern NSString * const X1PlayerVuewOnClickCloseFloatViewBtnNotification;
   播放方法二 支持清晰度切换
 
  @param url 优先播放清晰度的url url需要存在于视频清晰度字典中
- @param definitionUrlDict 视频清晰度字典 key对应显示名称 value对应url
- eg. @{@"超清 720p":@"http://ivi.bupt.edu.cn/hls/cctv1hd.m3u8",@"高清 480p":@"http://ivi.bupt.edu.cn/hls/cctv1.m3u8"}
+ @param definitionUrlArr 视频清晰度数组
  @param title 视频标题
  @param coverImage 封面图片 也可通过coverImageView/coverImage设置图片
  @param autoplay 是否自动播放
  @param style  参考X1PlayerViewStyle
  */
--(void)playWithUrl:(NSString *)url definitionUrlDict:(NSDictionary *)definitionUrlDict playerTitle:(NSString *)title coverImage:(UIImage *)coverImage autoPlay:(BOOL)autoplay style:(YZMoviePlayerControlsStyle)style;
+-(void)playWithUrl:(NSString *)url definitionUrlArr:(NSArray *)definitionUrlArr playerTitle:(NSString *)title coverImage:(UIImage *)coverImage autoPlay:(BOOL)autoplay style:(YZMoviePlayerControlsStyle)style;
 
 
 /**

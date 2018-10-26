@@ -61,10 +61,8 @@ typedef enum {
  */
 @property (nonatomic, assign) YZMoviePlayerControlsStyle style;
 
-
-//视频清晰度字典 key对应显示名称 value对应url
-//eg. @{@"超清 720p":@"http://ivi.bupt.edu.cn/hls/cctv1hd.m3u8",@"高清 480p":@"http://ivi.bupt.edu.cn/hls/cctv1.m3u8"}
-@property (nonatomic, strong) NSDictionary *mediasourceDefinitionDict;
+//视频清晰度数组
+@property (nonatomic, strong) NSArray *mediasourceDefinitionArr;
 
 /**
  上下横幅颜色,默认无色
@@ -120,7 +118,7 @@ typedef enum {
 /** 
  默认的初始化方法
  */
-- (id)initWithMoviePlayer:(YZMoviePlayerController *)moviePlayer style:(YZMoviePlayerControlsStyle)style mediasourceDefinitionDict:(NSDictionary *)mediasourceDefinitionDict;
+- (id)initWithMoviePlayer:(YZMoviePlayerController *)moviePlayer style:(YZMoviePlayerControlsStyle)style definitionUrlArr:(NSArray *)definitionUrlArr;
 
 - (void)setTimeLabelValues:(double)currentTime totalTime:(double)totalTime;
 

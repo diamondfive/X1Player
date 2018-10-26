@@ -9,6 +9,8 @@
 #import "YZMoviePlayerController.h"
 #import <AVFoundation/AVFoundation.h>
 #import "X1PlayerView.h"
+#import "YZMutipleDefinitionModel.h"
+
 
 NSString * const YZMoviePlayerWillEnterFullscreenNotification = @"YZMoviePlayerWillEnterFullscreenNotification";
 NSString * const YZMoviePlayerDidEnterFullscreenNotification = @"YZMoviePlayerDidEnterFullscreenNotification";
@@ -69,12 +71,13 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
 //缓冲超时计时器
 @property (nonatomic, strong) NSTimer *timeoutTimer;
 
+
 @end
 
 @implementation YZMoviePlayerController
 
 # pragma mark -- LifeCycle
-- (id)initWithFrame:(CGRect)frame andStyle:(YZMoviePlayerControlsStyle)style mediasourceDefinitionDict:(NSDictionary *)mediasourceDefinitionDict hostObject:(X1PlayerView *)hostObject{
+- (id)initWithFrame:(CGRect)frame andStyle:(YZMoviePlayerControlsStyle)style definitionUrlArr:(NSArray *)definitionUrlArr hostObject:(X1PlayerView *)hostObject{
     if ( (self = [super init]) ) {
 
         self.fatherView = hostObject;
@@ -88,7 +91,7 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
         [self initX1PlayerSDK];
      
         //初始化控制层
-        [self initMovieControlsWithStyle:style mediasourceDefinitionDict:(NSDictionary *)mediasourceDefinitionDict];
+        [self initMovieControlsWithStyle:style definitionUrlArr:definitionUrlArr];
         
         //展示封面层
         [self showCoverView];
@@ -127,10 +130,10 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
     
 }
 //初始化播放控制层
-- (void)initMovieControlsWithStyle:(YZMoviePlayerControlsStyle)style mediasourceDefinitionDict:(NSDictionary *)mediasourceDefinitionDict
+- (void)initMovieControlsWithStyle:(YZMoviePlayerControlsStyle)style definitionUrlArr:(NSArray *)definitionUrlArr
 {
-    self.mediasourceDefinitionDict = mediasourceDefinitionDict;
-    YZMoviePlayerControls *movieControls = [[YZMoviePlayerControls alloc] initWithMoviePlayer:self style:style mediasourceDefinitionDict:mediasourceDefinitionDict];
+    self.mediasourceDefinitionArr = definitionUrlArr;
+    YZMoviePlayerControls *movieControls = [[YZMoviePlayerControls alloc] initWithMoviePlayer:self style:style definitionUrlArr:definitionUrlArr];
     
     [movieControls setTimeRemainingDecrements:NO];
     [self setControls:movieControls];
@@ -148,7 +151,12 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
     self.mediasource = contentURL;
     [_playerSDK setDataSource:contentURL];
     
-    if (self.isAutoPlay&& !self.isCountdownView && self.fatherView.networkMonitor.currentReachabilityStatus != ReachableViaWWAN) { //自动播放标识 非倒计时视图 非流量环境
+    if (self.isAutoPlay&& !self.isCountdownView) {//自动播放标识 非倒计时视图
+        
+        if (self.fatherView.networkMonitor.currentReachabilityStatus == ReachableViaWWAN && self.fatherView.isShowWWANViewInAutoPlay) { //流量环境 存在需要展示流量标识
+            return;
+        }
+        
         [_playerSDK prepareAsync];
         [self setPlayerMediaState:PS_LOADING];
     }
@@ -601,52 +609,34 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
 //播放 直播重连 录播继续
 - (void)play
 {
-    if ([_playerSDK isLive]) {
-        
         if (_currentPos == 0) {
             [_playerSDK prepareAsync];
         }else{
-            
-            [_playerSDK restart];
+            if (self.isLive) {
+                [_playerSDK restart];
+                [self setPlayerMediaState:PS_PLAYING];
 
-        }
 
-    } else {
-        if (_currentPos==0) {
-            //重新初始化并启动播放
-            [self stop];
-            [_playerSDK Init];
-            [_playerSDK setDataSource:self.contentURL.absoluteString];
-            [_playerSDK setDisplay:_glkView];
-            [_playerSDK prepareAsync];
-            
-        } else {
-            
-            [self resume];
-            [self setPlayerMediaState:PS_PLAYING];
+            }else{
+                [_playerSDK resume];
+                [self setPlayerMediaState:PS_PLAYING];
 
-        }
-    }
+            }
+      }
+
 }
 // 暂停
 - (void)pause
 {
     [self removeloadview];
     [_playerSDK pause];
-    if ([_playerSDK isLive]) {
-        _retryPlayPos = _currentPos;
-    }
+    _retryPlayPos = _currentPos;
     [self setPlayerMediaState:PS_PAUSED];
 }
 //直播断点续播  录播继续播放
 - (void)resume
 {
     if (_currentPos==0) {
-        //重新初始化并启动播放
-        [self stop];
-        [_playerSDK Init];
-        [_playerSDK setDataSource:self.contentURL.absoluteString];
-        [_playerSDK setDisplay:_glkView];
         [_playerSDK prepareAsync];
         
     } else {
@@ -654,10 +644,10 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
        [_playerSDK resume];
        [self setPlayerMediaState:PS_PLAYING];
 
+
     }
     
 }
-
 //停止，不再缓冲
 - (void)stop
 {
@@ -746,7 +736,13 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
     
     if (percent < 100) {
         dispatch_async(dispatch_get_main_queue(), ^{
+            
             [self lodingView:percent];
+            //启动超时计时器
+            if (!self.timeoutTimer) {
+                [self  startTimeoutTimer];
+            }
+            
         });
     } else {
         [self removeloadview];
@@ -955,16 +951,12 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
     
     if (NotifyID == NOTIFY_DATA_TIMEDOUT)
     {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            
-            //启动超时计时器
-            if (self.playerMediaState != PS_PLAYING && !self.timeoutTimer) {
-                [self  startTimeoutTimer];
-            }
+//        dispatch_async(dispatch_get_main_queue(), ^{
+//
 //            //数据接收超时：加载3秒没加载到数据
 //            [self.controls showDataTimeOutView];
-            
-        });
+//
+//        });
      
     }
 }

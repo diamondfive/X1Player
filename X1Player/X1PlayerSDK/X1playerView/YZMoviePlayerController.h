@@ -23,7 +23,7 @@ extern NSString * const YZMoviePlayerMediaStateChangedNotification;
 //播放地址变更
 extern NSString * const YZMoviePlayerContentURLDidChangeNotification;
 
-@class X1PlayerView;
+@class X1PlayerView,YZMutipleDefinitionModel;
 @protocol YZMoviePlayerControllerDelegate <NSObject>
 @optional
 //缓冲超时
@@ -46,9 +46,8 @@ extern NSString * const YZMoviePlayerContentURLDidChangeNotification;
 
 //视频数据源url
 @property (nonatomic, strong) NSString *mediasource;
-//视频清晰度字典 key对应显示名称 value对应url
-//eg. @{@"超清 720p":@"http://ivi.bupt.edu.cn/hls/cctv1hd.m3u8",@"高清 480p":@"http://ivi.bupt.edu.cn/hls/cctv1.m3u8"}
-@property (nonatomic, strong) NSDictionary *mediasourceDefinitionDict;
+//播放器视频清晰度数组
+@property (nonatomic, strong) NSArray <YZMutipleDefinitionModel *>*mediasourceDefinitionArr;
 
 @property (nonatomic, weak) id<YZMoviePlayerControllerDelegate> delegate;
 //控制层
@@ -89,8 +88,8 @@ extern NSString * const YZMoviePlayerContentURLDidChangeNotification;
 @property (nonatomic, assign) BOOL isHitBackBtn;
 //封面图片
 @property (nonatomic, strong) UIImage *coverimage;
-
-
+//是否已经展示过 流量播放提醒 (如果展示过 autoPlay==YES的情况下 播放续集 不再次展示)
+@property (nonatomic, assign) BOOL isShowedWWANView;
 
 
 /**
@@ -98,10 +97,10 @@ extern NSString * const YZMoviePlayerContentURLDidChangeNotification;
 
  @param frame 坐标
  @param style 控制层风格
- @param mediasourceDefinitionDict 视频清晰度字典
+ @param definitionUrlArr 视频清晰度数组
 
  */
-- (id)initWithFrame:(CGRect)frame andStyle:(YZMoviePlayerControlsStyle)style mediasourceDefinitionDict:(NSDictionary *)mediasourceDefinitionDict hostObject:(X1PlayerView *)hostObject;
+- (id)initWithFrame:(CGRect)frame andStyle:(YZMoviePlayerControlsStyle)style definitionUrlArr:(NSArray *)definitionUrlArr hostObject:(X1PlayerView *)hostObject;
 
 - (void)setFrame:(CGRect)frame;
 
