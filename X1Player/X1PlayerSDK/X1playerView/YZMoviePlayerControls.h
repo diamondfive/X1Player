@@ -12,9 +12,7 @@
 #import "YZMoivePlayerCoverView.h"
 #import "YZMoivePlayerFloatView.h"
 
-
-
-@class YZMoviePlayerController,X1PlayerView;
+@class YZMoviePlayerController,X1PlayerView,YZMutipleDefinitionModel;
 
 typedef enum {
     /** 不显示控制层 */
@@ -49,7 +47,6 @@ typedef enum {
 
 @property (nonatomic, strong) UIColor *color;
 
-
 @end
 
 @interface YZMoviePlayerControls : UIView
@@ -61,14 +58,15 @@ typedef enum {
  */
 @property (nonatomic, assign) YZMoviePlayerControlsStyle style;
 
-//视频清晰度数组
-@property (nonatomic, strong) NSArray *mediasourceDefinitionArr;
+
+@property (nonatomic, strong) YZMoviePlayerControlsBar *topBar;
+@property (nonatomic, strong) YZMoviePlayerControlsBar *bottomBar;
+@property (nonatomic, strong) YZMoivePlayerFloatView *floatView; //悬浮小窗
 
 /**
  上下横幅颜色,默认无色
  */
 @property (nonatomic, strong) UIColor *barColor;
-
 
 /**
  上下横幅渐变遮罩层颜色,默认渐变黑色
@@ -107,33 +105,34 @@ typedef enum {
 
 //是否需要竖屏情况下展示返回按钮
 @property (nonatomic, assign) BOOL isNeedShowBackBtn;
-
-
-@property (nonatomic, strong) YZMoviePlayerControlsBar *topBar;
-@property (nonatomic, strong) YZMoviePlayerControlsBar *bottomBar;
-
-@property (nonatomic, strong) YZMoivePlayerFloatView *floatView; //悬浮小窗
-
+//slider已播放部分颜色
+@property (nonatomic, strong) UIColor *sliderMinimumTrackTintColor;
+//slider缓冲部分颜色
+@property (nonatomic, strong) UIColor *sliderMiddleTrackTintColor;
+//slider未播放部分颜色
+@property (nonatomic, strong) UIColor *sliderMaximumTrackTintColor;
+//slider拖件image
+@property (nonatomic, strong) UIImage *sliderThumbImage;
 
 /** 
  默认的初始化方法
  */
-- (id)initWithMoviePlayer:(YZMoviePlayerController *)moviePlayer style:(YZMoviePlayerControlsStyle)style definitionUrlArr:(NSArray *)definitionUrlArr;
-
+- (id)initWithMoviePlayer:(YZMoviePlayerController *)moviePlayer style:(YZMoviePlayerControlsStyle)style;
+//时间格式处理 显示在timeRemainingLabel上面
 - (void)setTimeLabelValues:(double)currentTime totalTime:(double)totalTime;
-
+//改变播放源,重设进度条及播放时间
 - (void)resetMoveiPlayback:(BOOL) changeURL;
+//playableDurationTimer调用的方法 每0.5S更新缓冲条的进度
 - (void)monitorMoviePlayableDuration;
-
+//3S超时视图
 -(void)showDataTimeOutView;
 -(void)removeDataTimeOutView;
-
+// 设备旋转时调用的方法
 -(void)fullscreenPressedWithOrientation:(UIInterfaceOrientation)orientation;
 
 - (void)backBtnClick:(id)button;//点击返回按钮
 - (void)fullscreenPressed:(id)button;//点击全屏按钮
 - (void)playPausePressed:(id)button;//点击了开始暂停按钮
-
 -(void)floatViewClick:(id)sender;//点击了悬浮小窗
 -(void)closeFloatViewButtonClick:(UIButton *)sender;//点击了悬浮小窗关闭按钮
 
@@ -143,6 +142,8 @@ typedef enum {
 - (void)stateChangeCauseControlsUIChange;
 //停止每秒更新时间label slider
 -(void)stopDurationTimer;
+//设置清晰度按钮
+-(void)setupDefinitionBtn;
 
 @end
 

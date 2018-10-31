@@ -26,7 +26,7 @@
 
 
 
-@property (nonatomic, assign) NSInteger type;// 1 直播  2 录播  3 距离开始XX
+@property (nonatomic, assign) float type;// 1 直播  2 录播  3 距离开始XX
 
 @end
 
@@ -69,10 +69,9 @@
     [self.view addSubview:btn1_1];
     btn1_1.frame = CGRectMake(self.view.frame.size.width/2 - 100, CGRectGetMaxY(btn1.frame), 200, 50);
     
-    
-    
+    //普通录播
     UIButton *btn2 =[UIButton buttonWithType:UIButtonTypeCustom];
-    [btn2 setTitle:@"点击进入录播页面" forState:UIControlStateNormal];
+    [btn2 setTitle:@"进入普通录播" forState:UIControlStateNormal];
     [btn2 setBackgroundColor:[UIColor redColor]];
     btn2.titleLabel.font =[UIFont systemFontOfSize:15];
     
@@ -80,6 +79,20 @@
     [self.view addSubview:btn2];
     
     btn2.frame = CGRectMake(self.view.frame.size.width/2 - 100, CGRectGetMaxY(btn1_1.frame), 200, 50);
+    
+    //多清晰度录播
+    UIButton *btn2_1 =[UIButton buttonWithType:UIButtonTypeCustom];
+    [btn2_1 setTitle:@"进入多清晰度录播" forState:UIControlStateNormal];
+    [btn2_1 setBackgroundColor:[UIColor cyanColor]];
+    btn2_1.titleLabel.font = [UIFont systemFontOfSize:15];
+    
+    [btn2_1 addTarget:self action:@selector(clickBtn2_1:) forControlEvents:UIControlEventTouchUpInside];
+    
+    [self.view addSubview:btn2_1];
+    
+    btn2_1.frame = CGRectMake(self.view.frame.size.width/2 - 100, CGRectGetMaxY(btn2.frame), 200, 50);
+
+    
     
     
     UIButton *btn3 =[UIButton buttonWithType:UIButtonTypeCustom];
@@ -90,7 +103,7 @@
     [btn3 addTarget:self action:@selector(clickBtn3:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:btn3];
     
-    btn3.frame = CGRectMake(self.view.frame.size.width/2 - 100, CGRectGetMaxY(btn2.frame), 200, 50);
+    btn3.frame = CGRectMake(self.view.frame.size.width/2 - 100, CGRectGetMaxY(btn2_1.frame), 200, 50);
 
     
     UIButton *btn4 =[UIButton buttonWithType:UIButtonTypeCustom];
@@ -125,8 +138,8 @@
 -(void)clickBtn1_1:(UIButton *)sender{
     
     TestViewController *test =[[TestViewController alloc] init];
-    test.type = 1.1;
-    self.type = 1.1;
+    test.type = 1.1f;
+    self.type = 1.1f;
     test.image = self.image1;
     
     
@@ -148,6 +161,19 @@
     [self.navigationController pushViewController:test animated:YES];
     
 }
+
+#pragma mark -- 点击进入多清晰度录播
+-(void)clickBtn2_1:(UIButton *)sender{
+   
+    TestViewController *test =[[TestViewController alloc] init];
+    test.type = 2.1f;
+    self.type = 2.1f;
+    test.image = self.image1;
+    
+    [self.navigationController pushViewController:test animated:YES];
+    
+}
+
 
 #pragma mark -- 点击进入未开播之前视频
 -(void)clickBtn3:(UIButton *)sender{

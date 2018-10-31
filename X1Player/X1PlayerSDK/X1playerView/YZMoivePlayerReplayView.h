@@ -25,7 +25,6 @@
 
 @property (nonatomic, strong) YZMoviePlayerControlButton *floatViewCloseBtn;
 
-@property (nonatomic, assign) BOOL isNeedShowBackBtn;
 
 @property (nonatomic, weak) YZMoviePlayerController *moviePlayer;
 

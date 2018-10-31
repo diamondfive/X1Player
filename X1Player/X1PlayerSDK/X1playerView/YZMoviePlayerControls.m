@@ -12,17 +12,15 @@
 #import <QuartzCore/QuartzCore.h>
 #import "YZMoviePlayerSlider.h"
 #import "X1Player.h"
-#import "YZMoviePlayerGestureRecognizerView.h"
+#import "YZMoviePlayerControlAdditionView.h"
 #import "X1PlayerView.h"
 #import "YZMutipleDefinitionModel.h"
-
 
 #define YZStateBarHeight [[UIApplication sharedApplication] statusBarFrame].size.height
 
 static const inline BOOL isIpad() {
     return UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad;
 }
-
 
 @implementation UIDevice (YZSystemVersion)
 
@@ -37,28 +35,27 @@ static const inline BOOL isIpad() {
 
 @end
 
-
 @interface YZMoviePlayerControls () <YZButtonDelegate> {
     
 @private NSString *title;
 
 }
-
 @property (nonatomic, getter = isShowing) BOOL showing;
-@property (nonatomic, strong) YZMoviePlayerGestureRecognizerView *gestureView;//手势层
+@property (nonatomic, strong) YZMoviePlayerControlAdditionView *controlAdditionView;//附加视图层
 @property (nonatomic, strong) NSTimer *durationTimer; //每秒更新时间label slider
-@property (nonatomic, strong) NSTimer *playableDurationTimer; // 每0.2s更新缓冲条
+@property (nonatomic, strong) NSTimer *playableDurationTimer; // 每0.5s更新缓冲条
 @property (nonatomic, strong) YZMoviePlayerSlider *durationSlider; //进度滑动条
 @property (nonatomic, strong) YZMoviePlayerControlButton *playPauseButton;
 @property (nonatomic, strong) YZMoviePlayerControlButton *fullscreenButton;
+@property (nonatomic, strong) YZMoviePlayerControlButton *definitionBtn;//清晰度选择
 @property (nonatomic, strong) UILabel *timeRemainingLabel;//显示为 播放时间
 @property (nonatomic, strong) UILabel *timeTotalLabel; //显示为 总时间
 
 @property (nonatomic, strong) YZMoviePlayerControlButton *backButton;
 
-@property (nonatomic, strong) UILabel *titleLabel;
+@property (nonatomic, strong) UILabel *titleLabel;//标题
 @property (nonatomic, strong) UILabel *timeOutView_3S;//超时3秒
-//当前设备方向,设备旋转时赋值
+//当前设备方向,设备旋转时赋初值
 @property (nonatomic, assign) UIInterfaceOrientation currentOrientation;
 //渐变图层
 @property (nonatomic, strong) UIView *topbarGradientView;
@@ -73,24 +70,20 @@ static const inline BOOL isIpad() {
 
 # pragma mark -- Lifecycle
 
-- (id)initWithMoviePlayer:(YZMoviePlayerController *)moviePlayer style:(YZMoviePlayerControlsStyle)style definitionUrlArr:(NSArray *)definitionUrlArr
-{
+- (id)initWithMoviePlayer:(YZMoviePlayerController *)moviePlayer style:(YZMoviePlayerControlsStyle)style{
     self = [super init];
     if (self) {
         self.backgroundColor = [UIColor clearColor];
         _moviePlayer = moviePlayer;
         _style = style;
-        _mediasourceDefinitionArr = definitionUrlArr;
+
     
         [self initParam];
-        [self setupGestureView];
-        [self setup];
+        [self setupConfigAndUI];
         [self addNotifications];
     }
     return self;
 }
-
-
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -107,8 +100,8 @@ static const inline BOOL isIpad() {
     if (self.style == YZMoviePlayerControlsStyleFullscreen || (self.style == YZMoviePlayerControlsStyleDefault && self.moviePlayer.isFullscreen)) {//录播横屏
         
         //top bar
-        self.topBar.frame = CGRectMake(0, 0, self.frame.size.width,self.barHeight +YZStateBarHeight);
-        self.backButton.frame = CGRectMake(15, 10+YZStateBarHeight, 20, 20);
+        self.topBar.frame = CGRectMake(0, 0, self.frame.size.width,self.barHeight +20);
+        self.backButton.frame = CGRectMake(15, 10+20, 20, 20);
         self.titleLabel.frame = CGRectMake(CGRectGetMaxX(self.backButton.frame)+10, CGRectGetMinY(self.backButton.frame), self.frame.size.width - CGRectGetMaxX(self.backButton.frame)-10-12, 20);
         
         //bottom bar
@@ -117,25 +110,42 @@ static const inline BOOL isIpad() {
         self.timeRemainingLabel.frame = CGRectMake(60, 0, 45, self.barHeight);
         self.fullscreenButton.frame = CGRectMake(self.frame.size.width-20-20, 10, 20, 20);
         
+        CGFloat definitionBtnTotalWidth = 0;
+        if (self.definitionBtn) {
+            
+            CGFloat width = [self.definitionBtn.titleLabel.text boundingRectWithSize:CGSizeMake(MAXFLOAT, 20) options:kNilOptions attributes:@{NSFontAttributeName : self.definitionBtn.titleLabel.font ? : [UIFont systemFontOfSize:13]} context:nil].size.width;
+            
+            if (width > 100.0f || width <= 0) {
+                width = 30;
+            }
+            
+            self.definitionBtn.frame = CGRectMake(CGRectGetMinX(self.fullscreenButton.frame)-width-20, 10, width, 20);
+            definitionBtnTotalWidth = width+20;
+        }
+        
+        
         //slider bar
-        self.durationSlider.frame = CGRectMake(CGRectGetMaxX(self.timeRemainingLabel.frame), 10, self.frame.size.width -CGRectGetMaxX(self.timeRemainingLabel.frame)-45-15-20-20 , 20);
+        self.durationSlider.frame = CGRectMake(CGRectGetMaxX(self.timeRemainingLabel.frame), 10, self.frame.size.width -CGRectGetMaxX(self.timeRemainingLabel.frame)-(45+15)-definitionBtnTotalWidth-(20+20), 20);
         [self.bottomBar bringSubviewToFront:self.durationSlider];
         
         self.timeTotalLabel.frame = CGRectMake(CGRectGetMaxX(self.durationSlider.frame), 0, 45, self.barHeight);
+        
+        
+        
         
     } else if (self.style == YZMoviePlayerControlsStyleEmbedded || (self.style == YZMoviePlayerControlsStyleDefault && !self.moviePlayer.isFullscreen)) {//录播竖屏
         
         //top bar
         if (_isNeedShowBackBtn) {
-            self.topBar.frame = CGRectMake(0, 0, self.frame.size.width, self.barHeight + YZStateBarHeight);
-            self.backButton.frame = CGRectMake(10, 5+YZStateBarHeight, 20, 20);
+            self.topBar.frame = CGRectMake(0, 0, self.frame.size.width, self.barHeight + 20);
+            self.backButton.frame = CGRectMake(10, 20, 20, 20);
             
             self.titleLabel.frame = CGRectMake(CGRectGetMaxX(self.backButton.frame)+10, self.backButton.frame.origin.y, self.frame.size.width - CGRectGetMaxX(self.backButton.frame)-10-12, 20);
         }else{
             self.topBar.frame = CGRectMake(0, 0, self.frame.size.width, self.barHeight);
             //            self.backButton.frame = CGRectMake(10, 10, 20, 20);
             
-            self.titleLabel.frame = CGRectMake(20 ,5, self.frame.size.width -15-12, 20);
+            self.titleLabel.frame = CGRectMake(20 ,10, self.frame.size.width -15-12, 20);
         }
         
         //bottom bar
@@ -155,8 +165,8 @@ static const inline BOOL isIpad() {
         
         
         //top bar
-        self.topBar.frame = CGRectMake(0, 0, self.frame.size.width,self.barHeight+YZStateBarHeight);
-        self.backButton.frame = CGRectMake(15, 10+YZStateBarHeight, 20, 20);
+        self.topBar.frame = CGRectMake(0, 0, self.frame.size.width,self.barHeight+20);
+        self.backButton.frame = CGRectMake(15, 10+20, 20, 20);
         self.titleLabel.frame = CGRectMake(CGRectGetMaxX(self.backButton.frame) + 10, CGRectGetMinY(self.backButton.frame), self.frame.size.width - CGRectGetMaxX(self.backButton.frame) - 10 - 12, 20);
         
         //bottom bar
@@ -164,6 +174,18 @@ static const inline BOOL isIpad() {
         self.playPauseButton.frame = CGRectMake(25, 10, 20, 20);
         self.fullscreenButton.frame = CGRectMake(self.frame.size.width-20-20, 10, 20, 20);
         
+        CGFloat definitionBtnTotalWidth = 0;
+        if (self.definitionBtn) {
+            
+            CGFloat width = [self.definitionBtn.titleLabel.text boundingRectWithSize:CGSizeMake(MAXFLOAT, 20) options:kNilOptions attributes:@{NSFontAttributeName : self.definitionBtn.titleLabel.font ? : [UIFont systemFontOfSize:13]} context:nil].size.width;
+            
+            if (width > 100.0f || width <= 0) {
+                width = 30;
+            }
+            
+            self.definitionBtn.frame = CGRectMake(CGRectGetMinX(self.fullscreenButton.frame)-width-20, 10, width, 20);
+            definitionBtnTotalWidth = width+20;
+        }
         
         
     }else if (self.style == YZMoviePlayerControlsStyleLivePortrait || (self.style == YZMoviePlayerControlsStyleLive && !self.moviePlayer.isFullscreen)){//直播竖屏
@@ -171,15 +193,15 @@ static const inline BOOL isIpad() {
         
         //top bar
         if (_isNeedShowBackBtn) {
-            self.topBar.frame = CGRectMake(0, 0, self.frame.size.width, self.barHeight + YZStateBarHeight);
-            self.backButton.frame = CGRectMake(10, 5+YZStateBarHeight, 20, 20);
+            self.topBar.frame = CGRectMake(0, 0, self.frame.size.width, self.barHeight + 20);
+            self.backButton.frame = CGRectMake(10, 20, 20, 20);
             
             self.titleLabel.frame = CGRectMake(CGRectGetMaxX(self.backButton.frame)+10, self.backButton.frame.origin.y, self.frame.size.width - CGRectGetMaxX(self.backButton.frame)-10-12, 20);
         }else{
             self.topBar.frame = CGRectMake(0, 0, self.frame.size.width, self.barHeight);
             //            self.backButton.frame = CGRectMake(10, 10, 20, 20);
             
-            self.titleLabel.frame = CGRectMake(20, 5, self.frame.size.width -15-12, 20);
+            self.titleLabel.frame = CGRectMake(20, 10, self.frame.size.width -15-12, 20);
         }
         
         
@@ -198,8 +220,8 @@ static const inline BOOL isIpad() {
         self.floatView.frame = CGRectMake(0, 0, self.frame.size.width, self.frame.size.height);
     }
     
-    //手势层
-    self.gestureView.frame = CGRectMake(0, 0, self.frame.size.width, self.frame.size.height);
+    //附加视图层
+    self.controlAdditionView.frame = CGRectMake(0, 0, self.frame.size.width, self.frame.size.height);
     
     if (_timeOutView_3S) {
         _timeOutView_3S.center = CGPointMake(self.frame.size.width/2, self.frame.size.height/2);
@@ -218,14 +240,12 @@ static const inline BOOL isIpad() {
     
 }
 
-
-
 #pragma mark -- Internal Method
 //初始化参数
 -(void)initParam{
     
     _showing = YES;
-    _fadeDelay = 5.0;
+    _fadeDelay = 5.0f;
     _timeRemainingDecrements = NO;
     if (!_barColor) {
         _barColor = [UIColor colorWithRed:0/255 green:0/255 blue:0/255 alpha:0.25];
@@ -240,13 +260,18 @@ static const inline BOOL isIpad() {
     
 }
 
-//设置UI
-- (void)setup {
+//设置配置项和UI
+- (void)setupConfigAndUI{
 
     //设置悬浮小窗
     [self setupFloatView];
-    //设置手势层
-    [self setupGestureView];
+    //设置附加视图层
+    [self setupControlAdditionView];
+    //设置清晰度选择按钮
+    [self setupDefinitionBtn];
+    
+    
+    
     //top bar
     _topBar = [[YZMoviePlayerControlsBar alloc] init];
     //bottom bar
@@ -259,7 +284,6 @@ static const inline BOOL isIpad() {
         [self setBarColor:_barColor];
 
     }
-    
     
     //返回按钮
     _backButton = [[YZMoviePlayerControlButton alloc] init];
@@ -280,8 +304,7 @@ static const inline BOOL isIpad() {
     [_playPauseButton addTarget:self action:@selector(playPausePressed:) forControlEvents:UIControlEventTouchUpInside];
     _playPauseButton.delegate = self;
     
-    
-    //  剩余时间
+    //播放时间
     _timeRemainingLabel = [[UILabel alloc] init];
     _timeRemainingLabel.textColor = YZColorFromRGB(0xffffff);
     _timeRemainingLabel.textAlignment = NSTextAlignmentCenter;
@@ -293,7 +316,7 @@ static const inline BOOL isIpad() {
     _timeRemainingLabel.attributedText = attriString;
     _timeRemainingLabel.minimumScaleFactor = 0.5;
     
-    
+    //总时间
     _timeTotalLabel = [[UILabel alloc] init];
     _timeTotalLabel.textColor = YZColorFromRGB(0xffffff);
     _timeTotalLabel.textAlignment = NSTextAlignmentCenter;
@@ -345,17 +368,19 @@ static const inline BOOL isIpad() {
      
        [_backButton addTarget:self action:@selector(fullscreenPressed:) forControlEvents:UIControlEventTouchUpInside];
         
-        [self addSubview:_gestureView];
+        [self addSubview:_controlAdditionView];
 
         [self addSubview:_topBar];
         [self addSubview:_bottomBar];
         
         [_topBar addSubview:_backButton];
         [_topBar addSubview:_titleLabel];
+        
         [_bottomBar addSubview:_playPauseButton];
         [_bottomBar addSubview:_durationSlider];
         [_bottomBar addSubview:_timeRemainingLabel];
         [_bottomBar addSubview:_timeTotalLabel];
+        [_bottomBar addSubview:_definitionBtn];
         
         [_fullscreenButton setImage:[UIImage imageNamed:X1BUNDLE_Image(@"yz_ic_movie_screen_reduce_nor")] forState:UIControlStateNormal];
         [_fullscreenButton setImage:[UIImage imageNamed:X1BUNDLE_Image(@"yz_ic_movie_screen_reduce_nor")] forState:UIControlStateSelected];
@@ -370,7 +395,7 @@ static const inline BOOL isIpad() {
        
         [_backButton addTarget:self action:@selector(backBtnClick:) forControlEvents:UIControlEventTouchUpInside];
         
-        [self addSubview:_gestureView];
+        [self addSubview:_controlAdditionView];
 
         [self addSubview:_topBar];
         [self addSubview:_bottomBar];
@@ -397,7 +422,7 @@ static const inline BOOL isIpad() {
      
         [_backButton addTarget:self action:@selector(fullscreenPressed:) forControlEvents:UIControlEventTouchUpInside];
 
-        [self addSubview:_gestureView];
+        [self addSubview:_controlAdditionView];
 
         [self addSubview:_topBar];
         [self addSubview:_bottomBar];
@@ -409,6 +434,7 @@ static const inline BOOL isIpad() {
 //        [_bottomBar addSubview:_timeRemainingLabel];
 //        [_bottomBar addSubview:_timeTotalLabel];
 
+        [_bottomBar addSubview:_definitionBtn];
 
         [_fullscreenButton setImage:[UIImage imageNamed:X1BUNDLE_Image(@"yz_ic_movie_screen_reduce_nor")] forState:UIControlStateNormal];
         [_fullscreenButton setImage:[UIImage imageNamed:X1BUNDLE_Image(@"yz_ic_movie_screen_reduce_nor")] forState:UIControlStateSelected];
@@ -422,7 +448,7 @@ static const inline BOOL isIpad() {
    
         [_backButton addTarget:self action:@selector(backBtnClick:) forControlEvents:UIControlEventTouchUpInside];
         
-        [self addSubview:_gestureView];
+        [self addSubview:_controlAdditionView];
 
         [self addSubview:_topBar];
         [self addSubview:_bottomBar];
@@ -448,20 +474,22 @@ static const inline BOOL isIpad() {
 
     //初始化完成之后隐藏控制层
     [self hideControls:nil];
-    //隐藏手势层
-    self.gestureView.alpha = 0;
-    
+    //隐藏附加视图层
+    self.controlAdditionView.alpha = 0;
     
 }
 
 
-//设置手势层
--(void)setupGestureView{
-    
-    if (!self.gestureView) {
-        self.gestureView = [[YZMoviePlayerGestureRecognizerView alloc] init];
-        self.gestureView.controls = self;
+//设置附加视图层
+-(void)setupControlAdditionView{
+    if (self.controlAdditionView) {
+        [self.controlAdditionView removeFromSuperview];
+        self.controlAdditionView = nil;
     }
+    
+        self.controlAdditionView = [[YZMoviePlayerControlAdditionView alloc] init];
+        self.controlAdditionView.controls = self;
+        self.controlAdditionView.mediasourceDefinitionArr = self.moviePlayer.mediasourceDefinitionArr;
     
 }
 
@@ -471,9 +499,33 @@ static const inline BOOL isIpad() {
         //悬浮小窗
         self.floatView =[[YZMoivePlayerFloatView alloc] init];
         self.floatView.controls = self;
-        
     }
-   
+
+}
+
+// 设置清晰度选择按钮
+-(void)setupDefinitionBtn{
+    
+    if (self.moviePlayer.mediasourceDefinitionArr.count) {
+        
+        for (YZMutipleDefinitionModel *model in self.moviePlayer.mediasourceDefinitionArr) {
+            
+            if ([model.url isEqual:self.moviePlayer.mediasource]) {
+                
+                model.isSelected = YES;
+                
+                [self.definitionBtn setTitle:model.title? :@"默认" forState:UIControlStateNormal];
+               
+                
+                break;
+            }
+            
+        }
+    
+    }else{
+        [self.definitionBtn removeFromSuperview];
+        self.definitionBtn = nil;
+    }
     
 }
 
@@ -673,6 +725,13 @@ static const inline BOOL isIpad() {
     }
     
 }
+//点击清晰度选择按钮
+-(void)clickDefinitioBtn:(UIButton *)sender{
+    
+    [self.controlAdditionView clickDefinitioBtn];
+    
+}
+
 
 # pragma mark - slider events
 
@@ -719,7 +778,7 @@ static const inline BOOL isIpad() {
             [self setPlayOrPauseStatus:PS_NONE];
             [self hideControls:nil];
            
-            self.gestureView.alpha = 0;
+            self.controlAdditionView.alpha = 0;
             
             break;
         case PS_PLAYING:
@@ -735,11 +794,11 @@ static const inline BOOL isIpad() {
                 
             }
 
-            self.gestureView.alpha = 1;
+            self.controlAdditionView.alpha = 1;
             if (self.moviePlayer.isLive) {
-                self.gestureView.isNeedShowFastforward = NO;
+                self.controlAdditionView.isNeedShowFastforward = NO;
             }else{
-                self.gestureView.isNeedShowFastforward = YES;
+                self.controlAdditionView.isNeedShowFastforward = YES;
                 
             }
             
@@ -755,7 +814,7 @@ static const inline BOOL isIpad() {
         case PS_LOADING:
        
             [self hideControls:nil];
-            self.gestureView.alpha = 0;
+            self.controlAdditionView.alpha = 0;
             
             break;
         case PS_PAUSED:
@@ -765,7 +824,7 @@ static const inline BOOL isIpad() {
             [self setPlayOrPauseStatus:PS_PAUSED];
             [self stopDurationTimer];
             [self showControls:nil autoHide:NO];
-            self.gestureView.alpha = 1;
+            self.controlAdditionView.alpha = 1;
             
             break;
             //视频的开始和结束
@@ -776,7 +835,7 @@ static const inline BOOL isIpad() {
             [self.durationTimer invalidate];
             
             [self hideControls:nil];
-            self.gestureView.alpha = 0;
+            self.controlAdditionView.alpha = 0;
             
      
             
@@ -785,7 +844,7 @@ static const inline BOOL isIpad() {
             
             
             [self hideControls:nil];
-            self.gestureView.alpha = 0;
+            self.controlAdditionView.alpha = 0;
             
             break;
         default:
@@ -805,7 +864,7 @@ static const inline BOOL isIpad() {
             [self.playableDurationTimer invalidate];
         }
         self.durationTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(monitorMoviePlayback) userInfo:nil repeats:YES];
-        self.playableDurationTimer = [NSTimer scheduledTimerWithTimeInterval:0.2 target:self selector:@selector(monitorMoviePlayableDuration) userInfo:nil repeats:YES];
+        self.playableDurationTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(monitorMoviePlayableDuration) userInfo:nil repeats:YES];
         [[NSRunLoop mainRunLoop] addTimer:self.durationTimer forMode:NSRunLoopCommonModes];
         [[NSRunLoop mainRunLoop] addTimer:self.playableDurationTimer forMode:NSRunLoopCommonModes];
     }
@@ -845,6 +904,7 @@ static const inline BOOL isIpad() {
     if (!self.isShowing) {
         
         _showing = YES;
+        
         
         [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(hideControls:) object:nil];
         
@@ -902,20 +962,6 @@ static const inline BOOL isIpad() {
     
     
 }
-//- (void)hideControlsWithoutAnimated{
-//
-//    if (self.isShowing)
-//    {
-//        _showing = NO;
-//
-//        [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(hideControls:) object:nil];
-//
-//            self.topBar.alpha = 0.f;
-//            self.bottomBar.alpha = 0.f;
-//
-//    }
-//
-//}
 
 #pragma mark  --时间格式处理 显示在timeRemainingLabel上面
 - (void)setTimeLabelValues:(double)currentTime totalTime:(double)totalTime {
@@ -1008,7 +1054,7 @@ static const inline BOOL isIpad() {
 //        [self.replayView showReplayView:NO backBtn:NO];
     }
 }
-#pragma mark --playableDurationTimer调用的方法 每0.2S更新缓冲条的进度
+#pragma mark --playableDurationTimer调用的方法 每0.5S更新缓冲条的进度
 - (void)monitorMoviePlayableDuration {
     double playableDuration = floor(self.moviePlayer.playableDuration);
     if (self.moviePlayer.duration > 0) {
@@ -1020,7 +1066,7 @@ static const inline BOOL isIpad() {
 }
 
 
-#pragma mark --  QNButtonDelegate
+#pragma mark --  YZButtonDelegate
 - (void)buttonTouchedDown:(UIButton *)button {
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(hideControls:) object:nil];
 }
@@ -1048,10 +1094,7 @@ static const inline BOOL isIpad() {
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
 
     [super touchesEnded:touches withEvent:event];
-    
-//    if (self.moviePlayer.playerMediaState == PS_PLAYING || self.moviePlayer.playerMediaState == PS_SEEKTO) {
-//        self.isShowing ? [self hideControls:nil] : [self showControls:nil autoHide:YES];
-//    }
+
 }
 
 #pragma mark  -- setter && getter
@@ -1065,7 +1108,6 @@ static const inline BOOL isIpad() {
 -(void)setIsNeedShowBackBtn:(BOOL)isNeedShowBackBtn{
     
     _isNeedShowBackBtn = isNeedShowBackBtn;
-    
     
     [self setNeedsLayout];
     [self layoutIfNeeded];
@@ -1096,6 +1138,43 @@ static const inline BOOL isIpad() {
     
 }
 
+-(void)setSliderMinimumTrackTintColor:(UIColor *)sliderMinimumTrackTintColor{
+    _sliderMinimumTrackTintColor = sliderMinimumTrackTintColor;
+    _durationSlider.minimumTrackTintColor = sliderMinimumTrackTintColor;
+}
+
+- (void)setSliderMiddleTrackTintColor:(UIColor *)sliderMiddleTrackTintColor{
+    _sliderMiddleTrackTintColor = sliderMiddleTrackTintColor;
+    _durationSlider.middleTrackTintColor = sliderMiddleTrackTintColor;
+}
+
+-(void)setSliderMaximumTrackTintColor:(UIColor *)sliderMaximumTrackTintColor{
+    _sliderMaximumTrackTintColor = sliderMaximumTrackTintColor;
+    _durationSlider.maximumTrackTintColor = sliderMaximumTrackTintColor;
+}
+
+-(void)setSliderThumbImage:(UIImage *)sliderThumbImage{
+    
+    _sliderThumbImage = sliderThumbImage;
+    [_durationSlider.slider setThumbImage:sliderThumbImage forState:UIControlStateHighlighted];
+    [_durationSlider.slider setThumbImage:sliderThumbImage forState:UIControlStateNormal];
+    
+}
+
+-(YZMoviePlayerControlButton *)definitionBtn{
+    
+    if (!_definitionBtn) {
+        _definitionBtn = [[YZMoviePlayerControlButton alloc] init];
+        
+        [_definitionBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        _definitionBtn.titleLabel.font = [UIFont systemFontOfSize:14];
+        
+        [_definitionBtn addTarget:self action:@selector(clickDefinitioBtn:) forControlEvents:UIControlEventTouchUpInside];
+        _definitionBtn.delegate = self;
+    }
+    return _definitionBtn;
+}
+
 
 // 重设风格,改变控制层样式和横竖屏旋转时触发
 - (void)setStyle:(YZMoviePlayerControlsStyle)style {
@@ -1118,7 +1197,7 @@ static const inline BOOL isIpad() {
         [self initParam];
         // 移除旧界面 添加新界面
         [self resetViews];
-        [self setup];
+        [self setupConfigAndUI];
         
         if (_style != YZMoviePlayerControlsStyleNone) {
             [self setDurationSliderMaxMinValues];

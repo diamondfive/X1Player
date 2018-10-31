@@ -25,7 +25,6 @@
 
 @property (nonatomic, strong) UIImageView *coverImageView;
 
-@property (nonatomic, assign) BOOL isNeedShowBackBtn;
 
 @property (nonatomic, weak) YZMoviePlayerController *moviePlayer;
 

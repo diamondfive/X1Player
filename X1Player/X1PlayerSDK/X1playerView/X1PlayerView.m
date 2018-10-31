@@ -34,7 +34,8 @@ static X1PlayerView  *GlobalPlayerView;
 //父视图(大窗状态时的父视图 由悬浮小窗切换到大窗时 由横屏切换到竖屏时使用)
 @property (nonatomic, weak) UIView *fatherView;
 
-
+//播放器视频清晰度数组
+@property (nonatomic, strong) NSArray <YZMutipleDefinitionModel *>*mediasourceDefinitionArr;
 
 @end
 
@@ -52,6 +53,7 @@ static X1PlayerView  *GlobalPlayerView;
 
         //注册通知
         [self registerNotification];
+        
         
         
     }
@@ -122,7 +124,7 @@ static X1PlayerView  *GlobalPlayerView;
         
         [definitionUrlArr enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             
-            if ([obj isEqualToString:url]) {
+            if ([obj isEqual:url]) {
                 *stop = YES;
                 isSameUrl = YES;
             }
@@ -155,15 +157,12 @@ static X1PlayerView  *GlobalPlayerView;
         
         if (self.moviePlayer) {
             [self.moviePlayer stop];
-            [self.moviePlayer.view removeFromSuperview];
-            self.moviePlayer = nil;
+
         }
         
-        [self setUpMoviePlayWithStyle:style definitionUrlArr:definitionUrlArr coverImage:coverImage playTitle:title autoPlay:autoplay];
+        [self setUpMoviePlayWithStyle:style playUrl:url definitionUrlArr:definitionUrlArr coverImage:coverImage playTitle:title autoPlay:autoplay];
   
-        
-        //播放视频关键代码
-        [self.moviePlayer setContentURL:url];
+
         
     }
     
@@ -241,6 +240,13 @@ static X1PlayerView  *GlobalPlayerView;
     
 }
 
+//展示重播视图
+-(void)showReplayView{
+    
+    [self.moviePlayer showReplayView];
+}
+
+
 //屏幕旋转时调用
 -(void)rorateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation animated:(BOOL)animated{
     
@@ -263,24 +269,30 @@ static X1PlayerView  *GlobalPlayerView;
     self.isSwitchResumePlay = YES;
     self.isShowWWANViewInAutoPlay = YES;
     self.isShowWWANViewInNetworkChange = YES;
-
     
+    
+   //初始化播放器
+    self.moviePlayer = [[YZMoviePlayerController alloc] initWithFrame:CGRectMake(0, 0, self.originalFrame.size.width, self.originalFrame.size.height)];
+    [self.moviePlayer setFrame:CGRectMake(0, 0, self.originalFrame.size.width, self.originalFrame.size.height)];
+
+    self.moviePlayer.delegate = self;
+    self.moviePlayer.fatherView = self;
+    [self addSubview:self.moviePlayer.view];
 }
 //设置播放器
--(void)setUpMoviePlayWithStyle:(YZMoviePlayerControlsStyle)style definitionUrlArr:(NSArray *)definitionUrlArr coverImage:(UIImage *)image playTitle:(NSString *)title autoPlay:(BOOL)autoplay;
+-(void)setUpMoviePlayWithStyle:(YZMoviePlayerControlsStyle)style playUrl:(NSString *)url definitionUrlArr:(NSArray *)definitionUrlArr coverImage:(UIImage *)image playTitle:(NSString *)title autoPlay:(BOOL)autoplay;
 {
-    
-    self.moviePlayer =[[YZMoviePlayerController alloc] initWithFrame:CGRectMake(0, 0, self.originalFrame.size.width, self.originalFrame.size.height) andStyle:style definitionUrlArr:definitionUrlArr hostObject:self];
-    
-    self.moviePlayer.view.alpha = 1.0f;
-    self.moviePlayer.delegate = self;
-    [self addSubview:self.moviePlayer.view];
-    
+    self.moviePlayer.mediasource = url;
+    self.moviePlayer.mediasourceDefinitionArr = definitionUrlArr;
     self.moviePlayer.isAutoPlay = autoplay; //视频是否自动播放
     self.moviePlayer.coverimage = image;
     [self.moviePlayer changeTitle:title];
     
-    [self.moviePlayer setFrame:CGRectMake(0, 0, self.originalFrame.size.width, self.originalFrame.size.height)];
+    [self.moviePlayer setupControlWithStyle:style];
+
+    [self.moviePlayer setContentURL:url];
+
+
 
     
 }
@@ -379,8 +391,8 @@ static X1PlayerView  *GlobalPlayerView;
 //视频播放完毕的回调
 -(void)movieplayerFinish:(NSNotification *)sender{
     
-    if ([self.delegate respondsToSelector:@selector(x1PlayerViewOnPlayFinish:)]) {
-        [self.delegate x1PlayerViewOnPlayFinish:self];
+    if ([self.delegate respondsToSelector:@selector(x1PlayerViewOnPlayComplete:)]) {
+        [self.delegate x1PlayerViewOnPlayComplete:self];
     }
 }
 
@@ -498,12 +510,18 @@ static X1PlayerView  *GlobalPlayerView;
 
 #pragma mark - YZMoviePlayerControllerDelegate
 
-- (void)yzMoviePlayerControllerMovieTimedOut {
+-(void)yzMoviePlayerControllerPlayComplete{
     
-    //FIXME:网络连接失败
-//    if (![QNAlertUtil connectedToNetwork]) {
-//        [QNAlertUtil showNoneNetWorkAlert];
-//    }
+    if ([self.delegate respondsToSelector:@selector(x1PlayerViewOnPlayComplete:)]) {
+        [self.delegate x1PlayerViewOnPlayComplete:self];
+    }
+}
+
+- (void)yzMoviePlayerControllerMovieTimedOut {
+ 
+    if ([self.delegate respondsToSelector:@selector(x1PlayerViewOnPlayTimeout:)]) {
+        [self.delegate x1PlayerViewOnPlayTimeout:self];
+    }
 }
 
 //悬浮小窗被点击
@@ -605,7 +623,8 @@ static X1PlayerView  *GlobalPlayerView;
 -(void)setIsNeedShowBackBtn:(BOOL)isNeedShowBackBtn{
     
     _isNeedShowBackBtn = isNeedShowBackBtn;
-    
+    self.moviePlayer.isNeedShowBackBtn = self.isNeedShowBackBtn;
+
     
 }
 

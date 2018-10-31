@@ -50,10 +50,5 @@
     return UIInterfaceOrientationMaskPortrait;
 }
 
--(UIViewController *)childViewControllerForStatusBarStyle{
-    
-    return self.visibleViewController;
-}
-
 
 @end

@@ -33,7 +33,7 @@
 -(void)layoutSubviews{
     [super layoutSubviews];
     
-    self.backBtn.frame = CGRectMake(10, 5+YZStateBarHeight, 20, 20);
+    self.backBtn.frame = CGRectMake(10, 20, 20, 20);
     
     self.replayBtn.frame = CGRectMake((self.frame.size.width-32)/2, (self.frame.size.height-48)/2- 8, 32, 48);
     self.replayLabel.frame = CGRectMake((self.frame.size.width-40)/2, self.replayBtn.frame.origin.y+40, 40, 20);
@@ -41,12 +41,6 @@
     self.floatViewCloseBtn.frame = CGRectMake(self.frame.size.width -30, 0, 30, 30);
     
     
-}
-#pragma mark setter && getter
--(void)setIsNeedShowBackBtn:(BOOL)isNeedShowBackBtn{
-    
-    _isNeedShowBackBtn = isNeedShowBackBtn;
-
 }
 
 

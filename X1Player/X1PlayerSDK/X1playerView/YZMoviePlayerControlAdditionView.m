@@ -1,12 +1,12 @@
 //
-//  QNGestureRecognizerView.m
+//  YZMoviePlayerControlAdditionView.m
 //  X1PlayerSDK
 //
 //  Created by 付彦彰 on 2018/7/2.
 //  Copyright © 2018年 channelsoft. All rights reserved.
 //  
 
-#import "YZMoviePlayerGestureRecognizerView.h"
+#import "YZMoviePlayerControlAdditionView.h"
 #import "YZMoviePlayerControls.h"
 #import "YZMoviePlayerControlButton.h"
 #import "YZMoviePlayerController.h"
@@ -20,7 +20,7 @@ typedef NS_ENUM(NSInteger, PanDirection){
     PanDirectionVerticalMoved    // 纵向移动
 };
 
-@interface YZMoviePlayerGestureRecognizerView()<UIGestureRecognizerDelegate>
+@interface YZMoviePlayerControlAdditionView()<UIGestureRecognizerDelegate,UITableViewDelegate,UITableViewDataSource>
 
 /**快进快退视图*/
 @property (nonatomic, strong)UIView *fastForwardView;
@@ -32,16 +32,18 @@ typedef NS_ENUM(NSInteger, PanDirection){
 /** 定义一个实例变量，保存枚举值 */
 @property (nonatomic, assign) PanDirection panDirection;
 
-//是否是快进
+/** 是否是快进 */
 @property (nonatomic, assign) BOOL isForward;
 
 /** 声音滑杆 */
 @property (nonatomic, strong) UISlider *volumeViewSlider;
 
+
+
 @end
 
 
-@implementation YZMoviePlayerGestureRecognizerView
+@implementation YZMoviePlayerControlAdditionView
 
 
 #pragma mark -- lifecycle
@@ -75,7 +77,74 @@ typedef NS_ENUM(NSInteger, PanDirection){
     
 }
 
-#pragma mark -- Internal method
+#pragma mark -- Public Method
+/**
+ *  创建手势
+ */
+- (void)createGesture {
+    if (self.singleTap || self.doubleTap || self.panRecognizer) {
+        [self removeGestureRecognizer:self.singleTap];
+        [self removeGestureRecognizer:self.doubleTap];
+        [self removeGestureRecognizer:self.panRecognizer];
+    }
+    
+    // 单击
+    self.singleTap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(singleTapAction:)];
+    self.singleTap.delegate                = self;
+    self.singleTap.numberOfTouchesRequired = 1; //手指数
+    self.singleTap.numberOfTapsRequired    = 1;
+    [self addGestureRecognizer:self.singleTap];
+    
+    // 双击(播放/暂停)
+    self.doubleTap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(doubleTapAction:)];
+    self.doubleTap.delegate                = self;
+    self.doubleTap.numberOfTouchesRequired = 1; //手指数
+    self.doubleTap.numberOfTapsRequired    = 2;
+    
+    [self addGestureRecognizer:self.doubleTap];
+    
+    // 解决点击当前view时候响应其他控件事件
+    //    [self.singleTap setDelaysTouchesBegan:YES];
+    //    [self.doubleTap setDelaysTouchesBegan:YES];
+    // 双击失败响应单击事件
+    [self.singleTap requireGestureRecognizerToFail:self.doubleTap];
+    
+    //    // 添加平移手势，用来控制音量、亮度、快进快退
+    self.panRecognizer = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(panDirection:)];
+    self.panRecognizer.delegate = self;
+    [self.panRecognizer setMaximumNumberOfTouches:1];
+    //    [self.panRecognizer setDelaysTouchesBegan:YES];
+    //    [self.panRecognizer setDelaysTouchesEnded:YES];
+    //    [self.panRecognizer setCancelsTouchesInView:NO];
+    [self addGestureRecognizer:self.panRecognizer];
+    
+    
+}
+
+-(void)clickDefinitioBtn{
+    
+    [self.controls hideControls:nil];
+
+    
+    [self addSubview:self.definitionView];
+    self.definitionView.frame = self.bounds;
+    
+    [self.definitionView addSubview:self.definitionTableView];
+
+    self.definitionTableView.backgroundColor =[[UIColor blackColor] colorWithAlphaComponent:0.7];
+    //初始化在屏幕外
+    self.definitionTableView.frame = CGRectMake(self.bounds.size.width, 0, 150, self.bounds.size.height);
+    
+    [UIView animateWithDuration:0.3 animations:^{
+        self.definitionTableView.transform = CGAffineTransformMakeTranslation(-150, 0);
+    }];
+    
+    [self.definitionTableView reloadData];
+}
+
+
+
+#pragma mark -- Internal Method
 
 /**
  创建快进快退视图
@@ -167,49 +236,6 @@ typedef NS_ENUM(NSInteger, PanDirection){
 }
 
 
-/**
- *  创建手势
- */
-- (void)createGesture {
-    if (self.singleTap || self.doubleTap || self.panRecognizer) {
-        [self removeGestureRecognizer:self.singleTap];
-        [self removeGestureRecognizer:self.doubleTap];
-        [self removeGestureRecognizer:self.panRecognizer];
-    }
-    
-    // 单击
-    self.singleTap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(singleTapAction:)];
-    self.singleTap.delegate                = self;
-    self.singleTap.numberOfTouchesRequired = 1; //手指数
-    self.singleTap.numberOfTapsRequired    = 1;
-    [self addGestureRecognizer:self.singleTap];
-    
-    // 双击(播放/暂停)
-    self.doubleTap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(doubleTapAction:)];
-    self.doubleTap.delegate                = self;
-    self.doubleTap.numberOfTouchesRequired = 1; //手指数
-    self.doubleTap.numberOfTapsRequired    = 2;
-    
-    [self addGestureRecognizer:self.doubleTap];
-    
-    // 解决点击当前view时候响应其他控件事件
-    //    [self.singleTap setDelaysTouchesBegan:YES];
-    //    [self.doubleTap setDelaysTouchesBegan:YES];
-    // 双击失败响应单击事件
-    [self.singleTap requireGestureRecognizerToFail:self.doubleTap];
-    
-    //    // 添加平移手势，用来控制音量、亮度、快进快退
-    self.panRecognizer = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(panDirection:)];
-    self.panRecognizer.delegate = self;
-    [self.panRecognizer setMaximumNumberOfTouches:1];
-    //    [self.panRecognizer setDelaysTouchesBegan:YES];
-    //    [self.panRecognizer setDelaysTouchesEnded:YES];
-    //    [self.panRecognizer setCancelsTouchesInView:NO];
-    [self addGestureRecognizer:self.panRecognizer];
-    
-    
-    
-}
 
 /**
  *  改变音量
@@ -319,6 +345,15 @@ typedef NS_ENUM(NSInteger, PanDirection){
 }
 
 
+/** 点击了清晰度视图的返回手势 */
+-(void)clickDefinitionBackGesture{
+    
+    [self.definitionView removeFromSuperview];
+    
+    self.definitionTableView.transform = CGAffineTransformIdentity;
+    
+}
+
 #pragma mark -- pan手势具体处理
 /** pan开始水平移动 */
 - (void)panHorizontalBeginMoved {
@@ -403,19 +438,6 @@ typedef NS_ENUM(NSInteger, PanDirection){
     }
 }
 
-//#pragma mark --UIGestureRecognizerDelegate
-//
-//-(BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch{
-//
-//    if ([touch.view isDescendantOfView:self.controls.topBar] || [touch.view isDescendantOfView:self.controls.bottomBar] || [touch.view isKindOfClass:[QNButton class]]) {
-//        return NO;
-//    }
-//
-//    return YES;
-//
-//}
-
-
 #pragma mark - 系统音量相关
 /**
  *  获取系统音量
@@ -471,6 +493,105 @@ typedef NS_ENUM(NSInteger, PanDirection){
 }
 
 
+#pragma mark --UIGestureRecognizerDelegate
+-(BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch{
+    
+    //
+    //    if ([touch.view isDescendantOfView:self.controls.topBar] || [touch.view isDescendantOfView:self.controls.bottomBar] || [touch.view isKindOfClass:[QNButton class]]) {
+    //        return NO;
+    //    }
+    //
+    //    return YES;
+    //
+    
+    //如果点击视图为uitableview 则忽略手势
+    //  NSLog(@"view class:%@",[touch.view class]);
+    if ([NSStringFromClass([touch.view class]) isEqualToString:@"UITableViewCellContentView"]){
+        return NO;
+    }
+    return YES;
+}
+
+
+
+#pragma mark  -- UITableViewDataSource && UITableViewDelegate
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
+    
+    
+    return self.mediasourceDefinitionArr.count;
+}
+
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
+    
+    YZMutipleDefinitionModel *definitionModel = self.mediasourceDefinitionArr[indexPath.row];
+    
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"UITableViewCell"];
+    if (!cell) {
+        cell =[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"UITableViewCell"];
+    }
+    
+    cell.backgroundColor =[UIColor clearColor];
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    
+    cell.textLabel.font =[UIFont systemFontOfSize:15];
+    cell.textLabel.textAlignment = NSTextAlignmentCenter;
+    cell.textLabel.text = definitionModel.title;
+    if (definitionModel.isSelected) {
+        cell.textLabel.textColor = YZColorFromRGB(0xcf5b50);
+    }else{
+        
+        cell.textLabel.textColor = [UIColor whiteColor];
+
+    }
+
+    
+    return cell;
+    
+}
+
+-(UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
+    
+    UIView *emptyView =[[UIView alloc] init];
+    emptyView.backgroundColor =[UIColor clearColor];
+    
+    return emptyView;
+}
+
+-(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
+    
+    
+    CGFloat headerHeight = (tableView.frame.size.height - tableView.rowHeight * [tableView numberOfRowsInSection:0] )  / 2  - tableView.tableHeaderView.frame.size.height;
+
+    
+    return headerHeight > 0 ? headerHeight:0;
+}
+
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    YZMutipleDefinitionModel *definitionModel = self.mediasourceDefinitionArr[indexPath.row];
+    
+    if (definitionModel.isSelected) {
+        return;
+    }
+
+    for (YZMutipleDefinitionModel *model in self.mediasourceDefinitionArr) {
+        model.isSelected = NO;
+    }
+    
+    definitionModel.isSelected = YES;
+    
+    if (definitionModel.url) {
+        
+        [self.controls.moviePlayer changeContentURL:definitionModel.url];
+    }
+    
+    [self clickDefinitionBackGesture];
+    [self.controls setupDefinitionBtn];
+
+}
+
+
+
 #pragma mark  -- Setter && Getter
 
 - (void)setIsNeedShowFastforward:(BOOL)isNeedShowFastforward{
@@ -479,6 +600,54 @@ typedef NS_ENUM(NSInteger, PanDirection){
 
     
 }
+
+-(UIView *)definitionView{
+    
+    if (!_definitionView) {
+        
+        _definitionView =[[UIView alloc] init];
+        
+        // 单击返回
+        UITapGestureRecognizer *backGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(clickDefinitionBackGesture)];
+        backGesture.delegate                = self;
+        backGesture.numberOfTouchesRequired = 1; //手指数
+        backGesture.numberOfTapsRequired    = 1;
+//        backGesture.cancelsTouchesInView = NO;
+        [_definitionView addGestureRecognizer:backGesture];
+    }
+    
+    return _definitionView;
+}
+
+-(UITableView *)definitionTableView{
+    
+    if (!_definitionTableView) {
+        
+        _definitionTableView =[[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
+        
+        _definitionTableView.delegate = self;
+        
+        _definitionTableView.dataSource = self;
+        
+        _definitionTableView.rowHeight = 45;
+        
+        _definitionTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+
+        UILabel *headerLabel =[[UILabel alloc] initWithFrame:CGRectMake(0, 0, 0, 70)];
+        headerLabel.font =[UIFont systemFontOfSize:15];
+        headerLabel.textAlignment = NSTextAlignmentCenter;
+        headerLabel.text = @"请选择清晰度";
+        headerLabel.textColor = [UIColor whiteColor];
+        
+        _definitionTableView.tableHeaderView = headerLabel;
+        
+    }
+    
+    return _definitionTableView;
+    
+}
+
+
 
 
 @end

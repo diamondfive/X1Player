@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 //播放地址
 @property (nonatomic, strong) NSString *url;
 
-
+@property (nonatomic, assign) BOOL isSelected;
 
 @end
 

@@ -151,7 +151,7 @@ typedef NS_ENUM(NSInteger, X1PlayerNotifyID) {
  */
 - (void) resume;
 /**
- * 重连[直播]
+ * 重连[直播],直播刷新，点播会从头开始播
  */
 - (void) restart;
 /**
@@ -197,7 +197,7 @@ typedef NS_ENUM(NSInteger, X1PlayerNotifyID) {
  */
 - (void) UIViewDidChange:(GLKView *) view;
 /**
- * 出错时进行重连[直播和点播]
+ * 出错时进行重连[直播和点播],直播刷新，点播会从断点继续播
  */
 - (void) RetryPlay;
 /**

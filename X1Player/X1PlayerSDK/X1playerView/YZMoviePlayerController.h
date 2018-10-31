@@ -26,6 +26,8 @@ extern NSString * const YZMoviePlayerContentURLDidChangeNotification;
 @class X1PlayerView,YZMutipleDefinitionModel;
 @protocol YZMoviePlayerControllerDelegate <NSObject>
 @optional
+//播放完成
+- (void)yzMoviePlayerControllerPlayComplete;
 //缓冲超时
 - (void)yzMoviePlayerControllerMovieTimedOut;
 //竖屏情况下点击返回按钮
@@ -96,13 +98,22 @@ extern NSString * const YZMoviePlayerContentURLDidChangeNotification;
  初始化方法
 
  @param frame 坐标
- @param style 控制层风格
- @param definitionUrlArr 视频清晰度数组
-
+ @return 实例
  */
-- (id)initWithFrame:(CGRect)frame andStyle:(YZMoviePlayerControlsStyle)style definitionUrlArr:(NSArray *)definitionUrlArr hostObject:(X1PlayerView *)hostObject;
+-(instancetype)initWithFrame:(CGRect)frame;
+
+/**
+ 设置控制层
+
+ @param style 控制层风格
+ */
+- (void)setupControlWithStyle:(YZMoviePlayerControlsStyle)style;
+
 
 - (void)setFrame:(CGRect)frame;
+
+
+
 
 -(void)setMovieCoverImage:(UIImage*)image;
 
@@ -113,6 +124,8 @@ extern NSString * const YZMoviePlayerContentURLDidChangeNotification;
 -(void)resetLodingViewFrame:(CGRect)frame;
 //设置遮罩层颜色
 -(void)setBarGradientColor:(UIColor *)color;
+//展示重播视图
+-(void)showReplayView;
 
 /*********************** 设备旋转相关  ************************/
 //设备旋转时调用
@@ -151,11 +164,16 @@ extern NSString * const YZMoviePlayerContentURLDidChangeNotification;
 - (void)restart;
 //定点播放
 - (void)setCurrentPlaybackTime:(NSTimeInterval)currentPlaybackTime;
+//释放资源
+-(void)releasePlayer;
 
 //设置当前播放状态
 - (void)setPlayerMediaState:(X1PlayerState)state;
 //关键代码 设置播放地址
 - (void)setContentURL:(NSString *)contentURL;
+//改变播放源
+- (void)changeContentURL:(NSString *)contentURL;
+
 //获取可播放时长
 - (NSTimeInterval)playableDuration;
 //获取当前时长

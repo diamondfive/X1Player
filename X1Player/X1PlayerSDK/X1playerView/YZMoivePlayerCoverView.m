@@ -44,7 +44,7 @@
     self.coverImageViewMaskLayer.frame = self.coverImageView.bounds;
     
     
-    self.backBtn.frame = CGRectMake(10, 5+YZStateBarHeight, 20, 20);
+    self.backBtn.frame = CGRectMake(10, 20, 20, 20);
     self.backBtnMaskLayer.frame = CGRectMake(0, 0, self.backBtn.frame.size.width, self.backBtn.frame.size.height);
  
     
@@ -217,7 +217,7 @@
                      [self showPlayViewWithBackBtn:NO coverImagePlayBtn:NO];
                 }else{
                     
-                    [self showPlayViewWithBackBtn:_isNeedShowBackBtn coverImagePlayBtn:NO];
+                    [self showPlayViewWithBackBtn:self.moviePlayer.isNeedShowBackBtn coverImagePlayBtn:NO];
                 }
                 
             }
@@ -235,7 +235,7 @@
                     [self showPlayViewWithBackBtn:NO coverImagePlayBtn:NO];
                 }else{
                     
-                    [self showPlayViewWithBackBtn:_isNeedShowBackBtn coverImagePlayBtn:NO];
+                    [self showPlayViewWithBackBtn:self.moviePlayer.isNeedShowBackBtn coverImagePlayBtn:NO];
                 }
                 
                 
@@ -253,7 +253,7 @@
                     [self showPlayViewWithBackBtn:NO coverImagePlayBtn:NO];
                 }else{
                     
-                    [self showPlayViewWithBackBtn:_isNeedShowBackBtn coverImagePlayBtn:NO];
+                    [self showPlayViewWithBackBtn:self.moviePlayer.isNeedShowBackBtn coverImagePlayBtn:NO];
                 }
                 
             }
@@ -280,7 +280,7 @@
                         [self showPlayViewWithBackBtn:NO coverImagePlayBtn:NO];
                     }else{
                         
-                        [self showPlayViewWithBackBtn:_isNeedShowBackBtn coverImagePlayBtn:YES];
+                        [self showPlayViewWithBackBtn:self.moviePlayer.isNeedShowBackBtn coverImagePlayBtn:YES];
                     }
                     
                 }
@@ -298,7 +298,7 @@
                     [self showPlayViewWithBackBtn:NO coverImagePlayBtn:NO];
                 }else{
                     
-                    [self showPlayViewWithBackBtn:_isNeedShowBackBtn coverImagePlayBtn:NO];
+                    [self showPlayViewWithBackBtn:self.moviePlayer.isNeedShowBackBtn coverImagePlayBtn:NO];
                 }
                 
             }
@@ -321,7 +321,7 @@
 
 -(void)yzPlayViewClickPlayPauseBtn:(UIButton *)sender{
     
-    [self showPlayViewWithBackBtn:_isNeedShowBackBtn coverImagePlayBtn:NO];
+    [self showPlayViewWithBackBtn:self.moviePlayer.isNeedShowBackBtn coverImagePlayBtn:NO];
 
     [self.moviePlayer clickPlayPauseBtn];
 }
@@ -335,11 +335,6 @@
 
 
 #pragma mark setter && getter
--(void)setIsNeedShowBackBtn:(BOOL)isNeedShowBackBtn{
-    _isNeedShowBackBtn = isNeedShowBackBtn;
-    
-}
-
 
 -(void)setupCoverImage:(UIImage *)image{
     

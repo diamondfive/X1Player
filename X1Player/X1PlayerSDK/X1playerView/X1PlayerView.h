@@ -40,15 +40,16 @@ extern NSString * const X1PlayerVuewOnClickCloseFloatViewBtnNotification;
 //点击竖屏返回按钮的回调
 -(void)x1PlayerViewOnClickBackBtn:(X1PlayerView *)x1PlayerView;
 //播放完成回调
--(void)x1PlayerViewOnPlayFinish:(X1PlayerView *)x1PlayerView;
+-(void)x1PlayerViewOnPlayComplete:(X1PlayerView *)x1PlayerView;
+
+-(void)x1PlayerViewOnPlayTimeout:(X1PlayerView *)x1PlayerView;
+
 
 @end
 
 @interface X1PlayerView : UIView
 //播放器数据源url
 @property (nonatomic, strong) NSString *mediasource;
-//播放器视频清晰度数组
-@property (nonatomic, strong) NSArray <YZMutipleDefinitionModel *>*mediasourceDefinitionArr;
 //播放器显示标题
 @property (nonatomic, strong) NSString *playerTitle;
 //播放器封面图片
@@ -70,6 +71,7 @@ extern NSString * const X1PlayerVuewOnClickCloseFloatViewBtnNotification;
 //网络环境变化为流量环境时是否展示流量播放提醒界面 默认YES
 @property (nonatomic, assign) BOOL isShowWWANViewInNetworkChange;
 
+/**********************  简单业务逻辑场景:直播预告倒计时 ****************************/
 //是否是直播(外界传入的标识,用于SDK解析视频源成功前的逻辑判断)
 @property (nonatomic, assign) BOOL isReceiveLive;
 //开播时间戳(用于直播视频未开播前遮罩的逻辑判断,简单加入的业务逻辑场景)
@@ -146,10 +148,17 @@ extern NSString * const X1PlayerVuewOnClickCloseFloatViewBtnNotification;
 -(void)showCountdownViewWithIsLive:(BOOL)isLive startTime:(NSTimeInterval)startTime;
 
 
-/**
- 设置控制层渐变遮罩颜色
- */
+/************************** 个性化定制 *********************************/
+
+//设置播放器标题
+-(void)setPlayerTitle:(NSString *)playerTitle;
+//设置封面图片
+-(void)setCoverimage:(UIImage *)coverimage;
+//设置控制层渐变遮罩颜色
 -(void)setBarGradientColor:(UIColor *)color;
+//展示重播视图
+-(void)showReplayView;
+
 
 
 /************************** 播放控制模块 *********************************/
@@ -161,7 +170,6 @@ extern NSString * const X1PlayerVuewOnClickCloseFloatViewBtnNotification;
 - (void)stop;
 //直播断点续播 录播继续播放
 -(void)resume;
-
 //播放出错进行的重连(刷新，点播调用会从断点继续播)
 -(void)retryPlay;
 //直播重连操作(相当于刷新，点播调用会从头开始播)
@@ -174,6 +182,8 @@ extern NSString * const X1PlayerVuewOnClickCloseFloatViewBtnNotification;
 - (NSTimeInterval)playableDuration;
 //获取当前时长
 - (NSTimeInterval)currentPlaybackTime;
+//释放资源
+-(void)releasePlayer;
 
 
 
