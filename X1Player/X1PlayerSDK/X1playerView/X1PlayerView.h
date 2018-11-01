@@ -96,7 +96,7 @@ extern NSString * const X1PlayerVuewOnClickCloseFloatViewBtnNotification;
  @param title 视频标题
  @param coverImage 封面图片 也可通过coverImageView/coverImage设置图片
  @param autoplay 是否自动播放
- @param style  参考X1PlayerViewStyle
+ @param style 控制层风格 参考X1PlayerViewStyle
  */
 -(void)playWithUrl:(NSString *)url playerTitle:(NSString *)title coverImage:(UIImage *)coverImage autoPlay:(BOOL)autoplay style:(YZMoviePlayerControlsStyle)style;
 
@@ -108,7 +108,7 @@ extern NSString * const X1PlayerVuewOnClickCloseFloatViewBtnNotification;
  @param title 视频标题
  @param coverImage 封面图片 也可通过coverImageView/coverImage设置图片
  @param autoplay 是否自动播放
- @param style  参考X1PlayerViewStyle
+ @param style 控制层风格 参考X1PlayerViewStyle
  */
 -(void)playWithUrl:(NSString *)url definitionUrlArr:(NSArray *)definitionUrlArr playerTitle:(NSString *)title coverImage:(UIImage *)coverImage autoPlay:(BOOL)autoplay style:(YZMoviePlayerControlsStyle)style;
 
