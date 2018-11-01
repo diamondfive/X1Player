@@ -80,11 +80,13 @@ self.playerView.delegate = self;
 [self.playerView playWithUrl:@"http://5815.liveplay.myqcloud.com/live/5815_89aad37e06ff11e892905cb9018cf0d4_900.flv" definitionUrlArr:@[model1,model2,model3] playerTitle:@"直播清晰度切换测试" coverImage:self.image autoPlay:YES style:YZMoviePlayerControlsStyleLive];
 ```
 
-###切换视频
+
+### 切换视频
 
 在播放中可以随时切换到另一个视频，无需停止当前播放。只需要再次调用上一步的play方法传入新的url
 
-###小窗播放
+
+### 小窗播放
 小窗播是指在App内，悬浮在主window上的播放器。使用小窗播放非常简单，只需要在适当位置调用下面代码即可：
 
 ```
