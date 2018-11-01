@@ -11,7 +11,7 @@
 
 @class YZMoviePlayerController;
 
-@interface YZMoivePlayerCoverView : UIView
+@interface YZMoviePlayerCoverView : UIView
 
 @property (nonatomic, strong) YZMoviePlayerControlButton *backBtn;
 

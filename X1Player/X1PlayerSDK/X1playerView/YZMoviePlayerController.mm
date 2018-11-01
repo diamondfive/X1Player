@@ -193,7 +193,7 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
     
     [_coverView removeFromSuperview];
     
-    _coverView =[[YZMoivePlayerCoverView alloc] initWithMoviePlayer:self];
+    _coverView =[[YZMoviePlayerCoverView alloc] initWithMoviePlayer:self];
     _coverView.frame = self.view.bounds;
 
     [self.view addSubview:_coverView];
@@ -204,7 +204,7 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
     
     [_replayView removeFromSuperview];
     
-    _replayView =[[YZMoivePlayerReplayView alloc] initWithMoviePlayer:self];
+    _replayView =[[YZMoviePlayerReplayView alloc] initWithMoviePlayer:self];
     _replayView.frame = self.view.bounds;
     [self.view addSubview:_replayView];
     

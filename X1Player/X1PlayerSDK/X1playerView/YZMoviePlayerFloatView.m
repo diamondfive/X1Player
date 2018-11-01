@@ -6,13 +6,13 @@
 //  Copyright © 2018年 channelsoft. All rights reserved.
 //
 
-#import "YZMoivePlayerFloatView.h"
+#import "YZMoviePlayerFloatView.h"
 #import "YZMoviePlayerControlButton.h"
 #import "YZMoviePlayerControls.h"
 #import "YZMoviePlayerController.h"
 #import "X1PlayerView.h"
 
-@implementation YZMoivePlayerFloatView
+@implementation YZMoviePlayerFloatView
 
 -(instancetype)initWithFrame:(CGRect)frame{
     

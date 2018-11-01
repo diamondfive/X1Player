@@ -8,8 +8,8 @@
 
 #import <UIKit/UIKit.h>
 // 把单例方法定义为宏，使用起来更方便
-#define YZBrightnessViewShared [YZMoivePlayerBrightnessView sharedBrightnessView]
-@interface YZMoivePlayerBrightnessView : UIView
+#define YZBrightnessViewShared [YZMoviePlayerBrightnessView sharedBrightnessView]
+@interface YZMoviePlayerBrightnessView : UIView
 + (instancetype)sharedBrightnessView;
 
 

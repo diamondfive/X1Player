@@ -8,9 +8,9 @@
 
 #import <UIKit/UIKit.h>
 #import "YZMoviePlayerControlButton.h"
-#import "YZMoivePlayerReplayView.h"
-#import "YZMoivePlayerCoverView.h"
-#import "YZMoivePlayerFloatView.h"
+#import "YZMoviePlayerReplayView.h"
+#import "YZMoviePlayerCoverView.h"
+#import "YZMoviePlayerFloatView.h"
 
 @class YZMoviePlayerController,X1PlayerView,YZMutipleDefinitionModel;
 
@@ -61,7 +61,7 @@ typedef enum {
 
 @property (nonatomic, strong) YZMoviePlayerControlsBar *topBar;
 @property (nonatomic, strong) YZMoviePlayerControlsBar *bottomBar;
-@property (nonatomic, strong) YZMoivePlayerFloatView *floatView; //悬浮小窗
+@property (nonatomic, strong) YZMoviePlayerFloatView *floatView; //悬浮小窗
 
 @property (nonatomic, assign) BOOL isLocked; //是否锁屏
 

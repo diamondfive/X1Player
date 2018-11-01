@@ -11,7 +11,7 @@
 #import "YZMoviePlayerControlButton.h"
 #import "YZMoviePlayerController.h"
 #import <MediaPlayer/MediaPlayer.h>
-#import "YZMoivePlayerBrightnessView.h"
+#import "YZMoviePlayerBrightnessView.h"
 #import "X1PlayerView.h"
 #import "YZMoviePlayerControlButton.h"
 
@@ -61,7 +61,7 @@ typedef NS_ENUM(NSInteger, PanDirection){
         [self createFastForwardView];
         
         
-        [YZMoivePlayerBrightnessView sharedBrightnessView];
+        [YZMoviePlayerBrightnessView sharedBrightnessView];
     }
     
     return self;

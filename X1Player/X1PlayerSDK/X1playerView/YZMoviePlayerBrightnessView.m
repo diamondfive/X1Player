@@ -6,7 +6,7 @@
 //  Copyright © 2018年 channelsoft. All rights reserved.
 //  
 
-#import "YZMoivePlayerBrightnessView.h"
+#import "YZMoviePlayerBrightnessView.h"
 #import "X1PlayerView.h"
 
 // 屏幕的宽
@@ -14,7 +14,7 @@
 // 屏幕的高
 #define ScreenHeight [[UIScreen mainScreen] bounds].size.height
 
-@interface YZMoivePlayerBrightnessView ()
+@interface YZMoviePlayerBrightnessView ()
 
 @property (nonatomic, strong) UIImageView		*backImage;
 @property (nonatomic, strong) UILabel			*title;
@@ -24,13 +24,13 @@
 
 @end
 
-@implementation YZMoivePlayerBrightnessView
+@implementation YZMoviePlayerBrightnessView
 
 + (instancetype)sharedBrightnessView {
-    static YZMoivePlayerBrightnessView *instance;
+    static YZMoviePlayerBrightnessView *instance;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        instance = [[YZMoivePlayerBrightnessView alloc] init];
+        instance = [[YZMoviePlayerBrightnessView alloc] init];
         [[UIApplication sharedApplication].keyWindow addSubview:instance];
     });
     return instance;

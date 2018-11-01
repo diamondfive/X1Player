@@ -6,14 +6,14 @@
 //  Copyright © 2018年 channelsoft. All rights reserved.
 //
 
-#import "YZMoivePlayerReplayView.h"
+#import "YZMoviePlayerReplayView.h"
 #import "YZMoviePlayerController.h"
 #import "X1PlayerView.h"
 
 
 #define YZStateBarHeight [[UIApplication sharedApplication] statusBarFrame].size.height
 
-@implementation YZMoivePlayerReplayView
+@implementation YZMoviePlayerReplayView
 
 #pragma mark -- Lifecycle
 -(instancetype)initWithMoviePlayer:(YZMoviePlayerController *)moviePlayer{

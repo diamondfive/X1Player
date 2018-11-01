@@ -13,29 +13,29 @@
 		A32562EF21787A67009E9DA2 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A32562ED21787A67009E9DA2 /* LaunchScreen.storyboard */; };
 		A32562F221787A67009E9DA2 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A32562F121787A67009E9DA2 /* main.m */; };
 		A325631821787A98009E9DA2 /* YZMoviePlayerController.mm in Sources */ = {isa = PBXBuildFile; fileRef = A32562FF21787A97009E9DA2 /* YZMoviePlayerController.mm */; };
-		A325631921787A98009E9DA2 /* YZMoivePlayerBrightnessView.m in Sources */ = {isa = PBXBuildFile; fileRef = A325630021787A97009E9DA2 /* YZMoivePlayerBrightnessView.m */; };
+		A325631921787A98009E9DA2 /* YZMoviePlayerBrightnessView.m in Sources */ = {isa = PBXBuildFile; fileRef = A325630021787A97009E9DA2 /* YZMoviePlayerBrightnessView.m */; };
 		A325631A21787A98009E9DA2 /* YZMoviePlayerSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = A325630121787A97009E9DA2 /* YZMoviePlayerSlider.m */; };
 		A325631B21787A98009E9DA2 /* YZMoviePlayerCountdownView.m in Sources */ = {isa = PBXBuildFile; fileRef = A325630221787A97009E9DA2 /* YZMoviePlayerCountdownView.m */; };
 		A325631C21787A98009E9DA2 /* YZMoviePlayerControlAdditionView.m in Sources */ = {isa = PBXBuildFile; fileRef = A325630321787A97009E9DA2 /* YZMoviePlayerControlAdditionView.m */; };
 		A325631D21787A98009E9DA2 /* YZMoviePlayerControls.m in Sources */ = {isa = PBXBuildFile; fileRef = A325630421787A97009E9DA2 /* YZMoviePlayerControls.m */; };
 		A325631E21787A98009E9DA2 /* YZMoviePlayerControlButton.m in Sources */ = {isa = PBXBuildFile; fileRef = A325630721787A97009E9DA2 /* YZMoviePlayerControlButton.m */; };
-		A325631F21787A98009E9DA2 /* YZMoivePlayerCoverView.m in Sources */ = {isa = PBXBuildFile; fileRef = A325630821787A97009E9DA2 /* YZMoivePlayerCoverView.m */; };
+		A325631F21787A98009E9DA2 /* YZMoviePlayerCoverView.m in Sources */ = {isa = PBXBuildFile; fileRef = A325630821787A97009E9DA2 /* YZMoviePlayerCoverView.m */; };
 		A325632021787A98009E9DA2 /* X1PlayerView.m in Sources */ = {isa = PBXBuildFile; fileRef = A325630921787A97009E9DA2 /* X1PlayerView.m */; };
-		A325632121787A98009E9DA2 /* YZMoivePlayerReplayView.m in Sources */ = {isa = PBXBuildFile; fileRef = A325630E21787A97009E9DA2 /* YZMoivePlayerReplayView.m */; };
-		A325632221787A98009E9DA2 /* YZMoivePlayerFloatView.m in Sources */ = {isa = PBXBuildFile; fileRef = A325631421787A98009E9DA2 /* YZMoivePlayerFloatView.m */; };
+		A325632121787A98009E9DA2 /* YZMoviePlayerReplayView.m in Sources */ = {isa = PBXBuildFile; fileRef = A325630E21787A97009E9DA2 /* YZMoviePlayerReplayView.m */; };
+		A325632221787A98009E9DA2 /* YZMoviePlayerFloatView.m in Sources */ = {isa = PBXBuildFile; fileRef = A325631421787A98009E9DA2 /* YZMoviePlayerFloatView.m */; };
 		A325632321787A98009E9DA2 /* libmediaplayer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A325631521787A98009E9DA2 /* libmediaplayer.a */; };
 		A325632421787A98009E9DA2 /* X1Player.bundle in Resources */ = {isa = PBXBuildFile; fileRef = A325631621787A98009E9DA2 /* X1Player.bundle */; };
 		A3256329217968AE009E9DA2 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = A3256328217968AE009E9DA2 /* libz.tbd */; };
 		A325632B217968BB009E9DA2 /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = A325632A217968BB009E9DA2 /* libiconv.tbd */; };
 		A325632D217968C7009E9DA2 /* libbz2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = A325632C217968C7009E9DA2 /* libbz2.tbd */; };
 		A325632F217968EA009E9DA2 /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A325632E217968EA009E9DA2 /* GLKit.framework */; };
-		A325633921796A8D009E9DA2 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A325633821796A8D009E9DA2 /* CoreTelephony.framework */; };
 		A325633A21796ABC009E9DA2 /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A325633021796940009E9DA2 /* VideoToolbox.framework */; };
 		A325633B21796B0B009E9DA2 /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A325633221796959009E9DA2 /* OpenAL.framework */; };
 		A325633E21796B3C009E9DA2 /* YZRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A325633D21796B3C009E9DA2 /* YZRootViewController.m */; };
 		A325634321796B62009E9DA2 /* TestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A325633F21796B62009E9DA2 /* TestViewController.m */; };
 		A325634421796B62009E9DA2 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A325634121796B62009E9DA2 /* ViewController.m */; };
 		A3256354217EB674009E9DA2 /* YZReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = A3256352217EB674009E9DA2 /* YZReachability.m */; };
+		A347346D218AD3E900F3B67B /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A325633821796A8D009E9DA2 /* CoreTelephony.framework */; };
 		A350108A2181AF9400FB7111 /* YZMutipleDefinitionModel.m in Sources */ = {isa = PBXBuildFile; fileRef = A35010892181AF9400FB7111 /* YZMutipleDefinitionModel.m */; };
 		A350108D2182FF2900FB7111 /* crying@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A350108C2182FF2800FB7111 /* crying@2x.png */; };
 /* End PBXBuildFile section */
@@ -52,27 +52,27 @@
 		A32562FC21787A97009E9DA2 /* X1Player.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = X1Player.h; sourceTree = "<group>"; };
 		A32562FD21787A97009E9DA2 /* X1PlayerCallback.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = X1PlayerCallback.h; sourceTree = "<group>"; };
 		A32562FF21787A97009E9DA2 /* YZMoviePlayerController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = YZMoviePlayerController.mm; sourceTree = "<group>"; };
-		A325630021787A97009E9DA2 /* YZMoivePlayerBrightnessView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YZMoivePlayerBrightnessView.m; sourceTree = "<group>"; };
+		A325630021787A97009E9DA2 /* YZMoviePlayerBrightnessView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YZMoviePlayerBrightnessView.m; sourceTree = "<group>"; };
 		A325630121787A97009E9DA2 /* YZMoviePlayerSlider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YZMoviePlayerSlider.m; sourceTree = "<group>"; };
 		A325630221787A97009E9DA2 /* YZMoviePlayerCountdownView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YZMoviePlayerCountdownView.m; sourceTree = "<group>"; };
 		A325630321787A97009E9DA2 /* YZMoviePlayerControlAdditionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YZMoviePlayerControlAdditionView.m; sourceTree = "<group>"; };
 		A325630421787A97009E9DA2 /* YZMoviePlayerControls.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YZMoviePlayerControls.m; sourceTree = "<group>"; };
-		A325630521787A97009E9DA2 /* YZMoivePlayerReplayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YZMoivePlayerReplayView.h; sourceTree = "<group>"; };
-		A325630621787A97009E9DA2 /* YZMoivePlayerFloatView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YZMoivePlayerFloatView.h; sourceTree = "<group>"; };
+		A325630521787A97009E9DA2 /* YZMoviePlayerReplayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YZMoviePlayerReplayView.h; sourceTree = "<group>"; };
+		A325630621787A97009E9DA2 /* YZMoviePlayerFloatView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YZMoviePlayerFloatView.h; sourceTree = "<group>"; };
 		A325630721787A97009E9DA2 /* YZMoviePlayerControlButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YZMoviePlayerControlButton.m; sourceTree = "<group>"; };
-		A325630821787A97009E9DA2 /* YZMoivePlayerCoverView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YZMoivePlayerCoverView.m; sourceTree = "<group>"; };
+		A325630821787A97009E9DA2 /* YZMoviePlayerCoverView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YZMoviePlayerCoverView.m; sourceTree = "<group>"; };
 		A325630921787A97009E9DA2 /* X1PlayerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = X1PlayerView.m; sourceTree = "<group>"; };
-		A325630A21787A97009E9DA2 /* YZMoivePlayerBrightnessView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YZMoivePlayerBrightnessView.h; sourceTree = "<group>"; };
+		A325630A21787A97009E9DA2 /* YZMoviePlayerBrightnessView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YZMoviePlayerBrightnessView.h; sourceTree = "<group>"; };
 		A325630B21787A97009E9DA2 /* YZMoviePlayerControlAdditionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YZMoviePlayerControlAdditionView.h; sourceTree = "<group>"; };
 		A325630C21787A97009E9DA2 /* YZMoviePlayerCountdownView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YZMoviePlayerCountdownView.h; sourceTree = "<group>"; };
 		A325630D21787A97009E9DA2 /* YZMoviePlayerSlider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YZMoviePlayerSlider.h; sourceTree = "<group>"; };
-		A325630E21787A97009E9DA2 /* YZMoivePlayerReplayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YZMoivePlayerReplayView.m; sourceTree = "<group>"; };
+		A325630E21787A97009E9DA2 /* YZMoviePlayerReplayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YZMoviePlayerReplayView.m; sourceTree = "<group>"; };
 		A325630F21787A97009E9DA2 /* YZMoviePlayerControls.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YZMoviePlayerControls.h; sourceTree = "<group>"; };
 		A325631021787A97009E9DA2 /* YZMoviePlayerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YZMoviePlayerController.h; sourceTree = "<group>"; };
 		A325631121787A97009E9DA2 /* X1PlayerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = X1PlayerView.h; sourceTree = "<group>"; };
-		A325631221787A97009E9DA2 /* YZMoivePlayerCoverView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YZMoivePlayerCoverView.h; sourceTree = "<group>"; };
+		A325631221787A97009E9DA2 /* YZMoviePlayerCoverView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YZMoviePlayerCoverView.h; sourceTree = "<group>"; };
 		A325631321787A97009E9DA2 /* YZMoviePlayerControlButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YZMoviePlayerControlButton.h; sourceTree = "<group>"; };
-		A325631421787A98009E9DA2 /* YZMoivePlayerFloatView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YZMoivePlayerFloatView.m; sourceTree = "<group>"; };
+		A325631421787A98009E9DA2 /* YZMoviePlayerFloatView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YZMoviePlayerFloatView.m; sourceTree = "<group>"; };
 		A325631521787A98009E9DA2 /* libmediaplayer.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libmediaplayer.a; sourceTree = "<group>"; };
 		A325631621787A98009E9DA2 /* X1Player.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = X1Player.bundle; sourceTree = "<group>"; };
 		A325632621796896009E9DA2 /* libiconv.2.4.0.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.2.4.0.tbd; path = usr/lib/libiconv.2.4.0.tbd; sourceTree = SDKROOT; };
@@ -103,9 +103,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A347346D218AD3E900F3B67B /* CoreTelephony.framework in Frameworks */,
 				A325633B21796B0B009E9DA2 /* OpenAL.framework in Frameworks */,
 				A325633A21796ABC009E9DA2 /* VideoToolbox.framework in Frameworks */,
-				A325633921796A8D009E9DA2 /* CoreTelephony.framework in Frameworks */,
 				A325632F217968EA009E9DA2 /* GLKit.framework in Frameworks */,
 				A325632D217968C7009E9DA2 /* libbz2.tbd in Frameworks */,
 				A325632B217968BB009E9DA2 /* libiconv.tbd in Frameworks */,
@@ -179,18 +179,18 @@
 				A325630421787A97009E9DA2 /* YZMoviePlayerControls.m */,
 				A325630B21787A97009E9DA2 /* YZMoviePlayerControlAdditionView.h */,
 				A325630321787A97009E9DA2 /* YZMoviePlayerControlAdditionView.m */,
-				A325631221787A97009E9DA2 /* YZMoivePlayerCoverView.h */,
-				A325630821787A97009E9DA2 /* YZMoivePlayerCoverView.m */,
-				A325630521787A97009E9DA2 /* YZMoivePlayerReplayView.h */,
-				A325630E21787A97009E9DA2 /* YZMoivePlayerReplayView.m */,
+				A325631221787A97009E9DA2 /* YZMoviePlayerCoverView.h */,
+				A325630821787A97009E9DA2 /* YZMoviePlayerCoverView.m */,
+				A325630521787A97009E9DA2 /* YZMoviePlayerReplayView.h */,
+				A325630E21787A97009E9DA2 /* YZMoviePlayerReplayView.m */,
 				A325630C21787A97009E9DA2 /* YZMoviePlayerCountdownView.h */,
 				A325630221787A97009E9DA2 /* YZMoviePlayerCountdownView.m */,
-				A325630621787A97009E9DA2 /* YZMoivePlayerFloatView.h */,
-				A325631421787A98009E9DA2 /* YZMoivePlayerFloatView.m */,
+				A325630621787A97009E9DA2 /* YZMoviePlayerFloatView.h */,
+				A325631421787A98009E9DA2 /* YZMoviePlayerFloatView.m */,
 				A325630D21787A97009E9DA2 /* YZMoviePlayerSlider.h */,
 				A325630121787A97009E9DA2 /* YZMoviePlayerSlider.m */,
-				A325630A21787A97009E9DA2 /* YZMoivePlayerBrightnessView.h */,
-				A325630021787A97009E9DA2 /* YZMoivePlayerBrightnessView.m */,
+				A325630A21787A97009E9DA2 /* YZMoviePlayerBrightnessView.h */,
+				A325630021787A97009E9DA2 /* YZMoviePlayerBrightnessView.m */,
 				A325631321787A97009E9DA2 /* YZMoviePlayerControlButton.h */,
 				A325630721787A97009E9DA2 /* YZMoviePlayerControlButton.m */,
 				A3256353217EB674009E9DA2 /* YZReachability.h */,
@@ -293,16 +293,16 @@
 				A325634421796B62009E9DA2 /* ViewController.m in Sources */,
 				A325631821787A98009E9DA2 /* YZMoviePlayerController.mm in Sources */,
 				A325631E21787A98009E9DA2 /* YZMoviePlayerControlButton.m in Sources */,
-				A325632121787A98009E9DA2 /* YZMoivePlayerReplayView.m in Sources */,
-				A325632221787A98009E9DA2 /* YZMoivePlayerFloatView.m in Sources */,
+				A325632121787A98009E9DA2 /* YZMoviePlayerReplayView.m in Sources */,
+				A325632221787A98009E9DA2 /* YZMoviePlayerFloatView.m in Sources */,
 				A325631C21787A98009E9DA2 /* YZMoviePlayerControlAdditionView.m in Sources */,
 				A350108A2181AF9400FB7111 /* YZMutipleDefinitionModel.m in Sources */,
-				A325631F21787A98009E9DA2 /* YZMoivePlayerCoverView.m in Sources */,
+				A325631F21787A98009E9DA2 /* YZMoviePlayerCoverView.m in Sources */,
 				A325633E21796B3C009E9DA2 /* YZRootViewController.m in Sources */,
 				A325631A21787A98009E9DA2 /* YZMoviePlayerSlider.m in Sources */,
 				A325632021787A98009E9DA2 /* X1PlayerView.m in Sources */,
 				A325631B21787A98009E9DA2 /* YZMoviePlayerCountdownView.m in Sources */,
-				A325631921787A98009E9DA2 /* YZMoivePlayerBrightnessView.m in Sources */,
+				A325631921787A98009E9DA2 /* YZMoviePlayerBrightnessView.m in Sources */,
 				A325631D21787A98009E9DA2 /* YZMoviePlayerControls.m in Sources */,
 				A32562F221787A67009E9DA2 /* main.m in Sources */,
 				A325634321796B62009E9DA2 /* TestViewController.m in Sources */,

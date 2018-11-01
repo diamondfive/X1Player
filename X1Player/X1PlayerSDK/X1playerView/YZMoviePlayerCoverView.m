@@ -6,14 +6,14 @@
 //  Copyright © 2018年 channelsoft. All rights reserved.
 //
 
-#import "YZMoivePlayerCoverView.h"
+#import "YZMoviePlayerCoverView.h"
 #import "YZMoviePlayerController.h"
 #import "X1PlayerView.h"
 
 #define YZStateBarHeight [[UIApplication sharedApplication] statusBarFrame].size.height
 
 
-@interface YZMoivePlayerCoverView ()
+@interface YZMoviePlayerCoverView ()
 
 //封面图片遮罩
 @property (nonatomic, strong) CALayer *coverImageViewMaskLayer;
@@ -24,7 +24,7 @@
 
 @end
 
-@implementation YZMoivePlayerCoverView
+@implementation YZMoviePlayerCoverView
 
 #pragma mark -- lifecycle
 -(instancetype)initWithMoviePlayer:(YZMoviePlayerController *)moviePlayer{

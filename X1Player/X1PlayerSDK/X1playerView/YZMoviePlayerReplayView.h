@@ -12,7 +12,7 @@
 @class YZMoviePlayerController;
 
 
-@interface YZMoivePlayerReplayView : UIView
+@interface YZMoviePlayerReplayView : UIView
 
 @property (nonatomic, strong) YZMoviePlayerControlButton *replayBtn;
 

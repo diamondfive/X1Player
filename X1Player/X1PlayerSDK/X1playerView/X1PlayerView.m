@@ -10,7 +10,7 @@
 #import "YZMoviePlayerControls.h"
 #import "X1Player.h"
 #import "YZMoviePlayerCountdownView.h"
-#import "YZMoivePlayerBrightnessView.h"
+#import "YZMoviePlayerBrightnessView.h"
 
 #define  YZVIDEOHEIGHT      [[UIScreen mainScreen] bounds].size.width*9/16
 #define  YZVIDEOHEIGHT_PAD  535.f
@@ -439,7 +439,7 @@ static X1PlayerView  *GlobalPlayerView;
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             [self pause];
             [self.moviePlayer.coverView removeFromSuperview];
-            YZMoivePlayerCoverView *coverView =[[YZMoivePlayerCoverView alloc] initWithMoviePlayer:self.moviePlayer];
+            YZMoviePlayerCoverView *coverView =[[YZMoviePlayerCoverView alloc] initWithMoviePlayer:self.moviePlayer];
             coverView.frame = CGRectMake(0, 0, self.moviePlayer.view.frame.size.width, self.moviePlayer.view.frame.size.height);
             [self.moviePlayer.view addSubview:coverView];
             

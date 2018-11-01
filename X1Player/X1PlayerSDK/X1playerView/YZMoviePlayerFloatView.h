@@ -12,7 +12,7 @@
 
 @class YZMoviePlayerControls;
 
-@interface YZMoivePlayerFloatView : UIView
+@interface YZMoviePlayerFloatView : UIView
 
 @property (nonatomic, strong) YZMoviePlayerControlButton *floatViewCloseBtn;
 

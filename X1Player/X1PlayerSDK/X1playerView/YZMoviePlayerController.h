@@ -9,8 +9,8 @@
 #import <MediaPlayer/MPMoviePlayerController.h>
 #import "YZMoviePlayerControls.h"
 #import "X1Player.h"
-#import "YZMoivePlayerCoverView.h"
-#import "YZMoivePlayerReplayView.h"
+#import "YZMoviePlayerCoverView.h"
+#import "YZMoviePlayerReplayView.h"
 
 extern NSString * const YZMoviePlayerWillEnterFullscreenNotification;
 extern NSString * const YZMoviePlayerDidEnterFullscreenNotification;
@@ -58,9 +58,9 @@ extern NSString * const YZMoviePlayerContentURLDidChangeNotification;
 //控制层
 @property (nonatomic, strong) YZMoviePlayerControls *controls;
 //封面层
-@property (nonatomic, strong) YZMoivePlayerCoverView *coverView;
+@property (nonatomic, strong) YZMoviePlayerCoverView *coverView;
 //重播层
-@property (nonatomic, strong) YZMoivePlayerReplayView *replayView;
+@property (nonatomic, strong) YZMoviePlayerReplayView *replayView;
 //控制层风格
 @property (nonatomic, assign) YZMoviePlayerControlsStyle controlsStyle;
 //由SDK判断的直播标识

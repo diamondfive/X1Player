@@ -497,7 +497,7 @@ static const inline BOOL isIpad() {
 -(void)setupFloatView{
     if (!self.floatView) {
         //悬浮小窗
-        self.floatView =[[YZMoivePlayerFloatView alloc] init];
+        self.floatView =[[YZMoviePlayerFloatView alloc] init];
         self.floatView.controls = self;
     }
 
