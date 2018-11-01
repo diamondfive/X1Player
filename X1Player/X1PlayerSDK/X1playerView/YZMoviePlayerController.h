@@ -30,6 +30,8 @@ extern NSString * const YZMoviePlayerContentURLDidChangeNotification;
 - (void)yzMoviePlayerControllerPlayComplete;
 //缓冲超时
 - (void)yzMoviePlayerControllerMovieTimedOut;
+//点击锁屏按钮回调
+- (void)yzMoviePlayerControllerOnClickLockBtn:(BOOL)isLocked;
 //竖屏情况下点击返回按钮
 - (void)yzMoviePlayerControllerOnClickBackBtn;
 //悬浮小窗被点击
@@ -41,6 +43,7 @@ extern NSString * const YZMoviePlayerContentURLDidChangeNotification;
 - (void)yzMoviePlayerControllerMoviePlayerWillEnterFullScreen;
 //切换竖屏的回调
 - (void)yzMoviePlayerControllerMoviePlayerWillExitFullScreen;
+
 @end
 
 
@@ -62,6 +65,9 @@ extern NSString * const YZMoviePlayerContentURLDidChangeNotification;
 @property (nonatomic, assign) YZMoviePlayerControlsStyle controlsStyle;
 //由SDK判断的直播标识
 @property (nonatomic, assign) BOOL isLive;
+//是否锁屏
+@property (nonatomic, assign) BOOL isLocked;
+
 //外界传入的是否是直播的标识
 @property (nonatomic, assign) BOOL isReceiveLive;
 //是否自动播放

@@ -41,8 +41,10 @@ extern NSString * const X1PlayerVuewOnClickCloseFloatViewBtnNotification;
 -(void)x1PlayerViewOnClickBackBtn:(X1PlayerView *)x1PlayerView;
 //播放完成回调
 -(void)x1PlayerViewOnPlayComplete:(X1PlayerView *)x1PlayerView;
-
+//超时回调
 -(void)x1PlayerViewOnPlayTimeout:(X1PlayerView *)x1PlayerView;
+//点击锁屏按钮回调
+-(void)x1PlayerViewOnClickLockBtn:(BOOL)isLocked;
 
 
 @end
@@ -60,6 +62,8 @@ extern NSString * const X1PlayerVuewOnClickCloseFloatViewBtnNotification;
 @property (nonatomic, weak) id<X1PlayerViewDelegate> delegate;
 //播放风格
 @property (nonatomic, assign) YZMoviePlayerControlsStyle style;
+//是否锁屏
+@property (nonatomic, assign, readonly) BOOL isLocked;
 //app后台切换到前台需不需要继续播放 默认YES
 @property (nonatomic, assign) BOOL isSwitchResumePlay;
 //播放器竖屏状态下是否需要显示返回按钮
@@ -182,8 +186,6 @@ extern NSString * const X1PlayerVuewOnClickCloseFloatViewBtnNotification;
 - (NSTimeInterval)playableDuration;
 //获取当前时长
 - (NSTimeInterval)currentPlaybackTime;
-//释放资源
--(void)releasePlayer;
 
 
 

@@ -606,14 +606,14 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
 -(void)clickFullScreenBtn{
 
     //改变全屏标识
-    self.fullscreen = !self.isFullscreen;
+    self.movieFullscreen = !self.movieFullscreen;
     
     self.isRealFullScreenBtnPress = YES;
     
     if (self.fullscreen) {
-        [self setFullscreen:self.fullscreen orientation:UIInterfaceOrientationLandscapeRight animated:YES];
+        [self setFullscreen:self.movieFullscreen orientation:UIInterfaceOrientationLandscapeRight animated:YES];
     }else{
-        [self setFullscreen:self.fullscreen orientation:UIInterfaceOrientationPortrait animated:YES];
+        [self setFullscreen:self.movieFullscreen orientation:UIInterfaceOrientationPortrait animated:YES];
 
     }
 }
@@ -1021,13 +1021,18 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
     [self resetLodingViewFrame:CGRectMake(0, 0, frame.size.width, frame.size.height)];
 }
 
-- (BOOL)isFullscreen {
-    return _movieFullscreen;
+-(void)setMovieFullscreen:(BOOL)movieFullscreen{
+    
+    _movieFullscreen = movieFullscreen;
 }
 
-- (void)setFullscreen:(BOOL)fullscreen{
+-(void)setIsLocked:(BOOL)isLocked{
     
-    _movieFullscreen = fullscreen;
+    _isLocked = isLocked;
+    
+    if ([self.delegate respondsToSelector:@selector(yzMoviePlayerControllerOnClickLockBtn:)]) {
+        [self.delegate yzMoviePlayerControllerOnClickLockBtn:isLocked];
+    }
 }
 
 

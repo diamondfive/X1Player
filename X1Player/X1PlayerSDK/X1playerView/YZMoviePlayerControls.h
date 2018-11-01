@@ -63,6 +63,8 @@ typedef enum {
 @property (nonatomic, strong) YZMoviePlayerControlsBar *bottomBar;
 @property (nonatomic, strong) YZMoivePlayerFloatView *floatView; //悬浮小窗
 
+@property (nonatomic, assign) BOOL isLocked; //是否锁屏
+
 /**
  上下横幅颜色,默认无色
  */
@@ -93,9 +95,6 @@ typedef enum {
  是否在显示
  */
 @property (nonatomic, readonly, getter = isShowing) BOOL showing;
-
-//是否是直播
-@property (nonatomic, assign) BOOL isLive;
 
 // 标题
 @property (nonatomic, strong) NSString *programTitle;

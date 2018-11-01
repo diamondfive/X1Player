@@ -11,13 +11,17 @@
 #import <UIKit/UIKit.h>
 #import "YZMutipleDefinitionModel.h"
 
-@class YZMoviePlayerControls;
+
+@class YZMoviePlayerControls,YZMoviePlayerControlButton;
 
 @interface YZMoviePlayerControlAdditionView : UIView
 
 @property (nonatomic, weak)YZMoviePlayerControls *controls;
 
 @property (nonatomic, strong) NSArray<YZMutipleDefinitionModel *>*mediasourceDefinitionArr;
+
+/** 锁屏按钮 */
+@property (nonatomic, strong) YZMoviePlayerControlButton *lockBtn;
 
 /** 单击 */
 @property (nonatomic, strong) UITapGestureRecognizer *singleTap;

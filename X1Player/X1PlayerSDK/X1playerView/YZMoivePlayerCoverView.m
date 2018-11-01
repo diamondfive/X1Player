@@ -208,7 +208,7 @@
 
             break;
         case PS_PLAYING:
-            if (self.moviePlayer.isFullscreen) {
+            if (self.moviePlayer.movieFullscreen) {
                 
                 [self showPlayViewWithBackBtn:NO coverImagePlayBtn:NO];
             }else{
@@ -227,7 +227,7 @@
             
             break;
         case PS_LOADING:
-            if (self.moviePlayer.fullscreen) {
+            if (self.moviePlayer.movieFullscreen) {
                 [self showPlayViewWithBackBtn:YES coverImagePlayBtn:NO];
             }else{
                 
@@ -245,7 +245,7 @@
         case PS_PAUSED:
     
             
-            if (self.moviePlayer.fullscreen) {
+            if (self.moviePlayer.movieFullscreen) {
                 [self showPlayViewWithBackBtn:NO coverImagePlayBtn:NO];
             }else{
                 
@@ -271,7 +271,7 @@
             }else{
                 
 
-                if (self.moviePlayer.fullscreen) {
+                if (self.moviePlayer.movieFullscreen) {
                     [self showPlayViewWithBackBtn:YES coverImagePlayBtn:YES];
                     
                 }else{
@@ -290,7 +290,7 @@
             break;
         case PS_BUFFERING:
             
-            if (self.moviePlayer.fullscreen) {
+            if (self.moviePlayer.movieFullscreen) {
                 [self showPlayViewWithBackBtn:YES coverImagePlayBtn:NO];
             }else{
                 

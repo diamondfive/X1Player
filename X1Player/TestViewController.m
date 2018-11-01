@@ -27,7 +27,8 @@ static inline BOOL IPhoneXSeries() {
 }
 
 #define YZStateBarHeight [[UIApplication sharedApplication] statusBarFrame].size.height
-
+#define YZSCREEN_WIDTH   [UIScreen mainScreen].bounds.size.width
+#define YZSCREEN_HEIGHT  [UIScreen mainScreen].bounds.size.height
 
 
 @interface TestViewController ()<X1PlayerViewDelegate>
@@ -60,10 +61,10 @@ static inline BOOL IPhoneXSeries() {
         self.navigationController.navigationBar.hidden = YES;
         
         if (IPhoneXSeries()) {
-              self.playerView =[[X1PlayerView alloc] initWithFrame:CGRectMake(0, YZStateBarHeight, 375, 375*9/16)];
+              self.playerView =[[X1PlayerView alloc] initWithFrame:CGRectMake(0, YZStateBarHeight, YZSCREEN_WIDTH, YZSCREEN_WIDTH*9/16)];
         }else{
             
-              self.playerView =[[X1PlayerView alloc] initWithFrame:CGRectMake(0, 0, 375, 375*9/16)];
+              self.playerView =[[X1PlayerView alloc] initWithFrame:CGRectMake(0, 0, YZSCREEN_WIDTH, YZSCREEN_WIDTH*9/16)];
         }
       
         self.playerView.delegate = self;
@@ -91,10 +92,10 @@ static inline BOOL IPhoneXSeries() {
         model3.url = @"http://5815.liveplay.myqcloud.com/live/5815_89aad37e06ff11e892905cb9018cf0d4_550.flv";
         
         if (IPhoneXSeries()) {
-            self.playerView =[[X1PlayerView alloc] initWithFrame:CGRectMake(0, YZStateBarHeight, 375, 375*9/16)];
+            self.playerView =[[X1PlayerView alloc] initWithFrame:CGRectMake(0, YZStateBarHeight, YZSCREEN_WIDTH, YZSCREEN_WIDTH*9/16)];
         }else{
             
-            self.playerView =[[X1PlayerView alloc] initWithFrame:CGRectMake(0, 0, 375, 375*9/16)];
+            self.playerView =[[X1PlayerView alloc] initWithFrame:CGRectMake(0, 0, YZSCREEN_WIDTH, YZSCREEN_WIDTH*9/16)];
         }
         self.playerView.delegate = self;
         [self.view addSubview:self.playerView];
@@ -110,10 +111,10 @@ static inline BOOL IPhoneXSeries() {
         self.navigationController.navigationBar.hidden = YES;
         
         if (IPhoneXSeries()) {
-            self.playerView =[[X1PlayerView alloc] initWithFrame:CGRectMake(0, YZStateBarHeight, 375, 375*9/16)];
+            self.playerView =[[X1PlayerView alloc] initWithFrame:CGRectMake(0, YZStateBarHeight, YZSCREEN_WIDTH, YZSCREEN_WIDTH*9/16)];
         }else{
             
-            self.playerView =[[X1PlayerView alloc] initWithFrame:CGRectMake(0, 0, 375, 375*9/16)];
+            self.playerView =[[X1PlayerView alloc] initWithFrame:CGRectMake(0, 0, YZSCREEN_WIDTH, YZSCREEN_WIDTH*9/16)];
         }
         self.playerView.delegate = self;
         [self.view addSubview:self.playerView];
@@ -151,7 +152,7 @@ static inline BOOL IPhoneXSeries() {
         model3.url = @"http://1252463788.vod2.myqcloud.com/95576ef5vodtransgzp1252463788/e1ab85305285890781763144364/v.f10.mp4";
         
         
-        self.playerView =[[X1PlayerView alloc] initWithFrame:CGRectMake(0, topLength, 375, 375*9/16)];
+        self.playerView =[[X1PlayerView alloc] initWithFrame:CGRectMake(0, topLength, YZSCREEN_WIDTH, YZSCREEN_WIDTH*9/16)];
         self.playerView.delegate = self;
         [self.view addSubview:self.playerView];
         
@@ -165,7 +166,7 @@ static inline BOOL IPhoneXSeries() {
     else if (self.type == 3){ //距离直播开始XX
         self.navigationController.navigationBar.hidden = NO;
 
-        self.playerView =[[X1PlayerView alloc] initWithFrame:CGRectMake(0, 200, 375, 375*9/16)];
+        self.playerView =[[X1PlayerView alloc] initWithFrame:CGRectMake(0, 200, YZSCREEN_WIDTH, YZSCREEN_WIDTH*9/16)];
         self.playerView.delegate = self;
         [self.view addSubview:self.playerView];
         
@@ -175,7 +176,7 @@ static inline BOOL IPhoneXSeries() {
     }else if (self.type == 4){//当前页面播放续集
         self.navigationController.navigationBar.hidden = NO;
 
-        self.playerView =[[X1PlayerView alloc] initWithFrame:CGRectMake(0, 200, 375, 375*9/16)];
+        self.playerView =[[X1PlayerView alloc] initWithFrame:CGRectMake(0, 200, YZSCREEN_WIDTH, YZSCREEN_WIDTH*9/16)];
         self.playerView.delegate = self;
         [self.view addSubview:self.playerView];
 
@@ -231,6 +232,13 @@ static inline BOOL IPhoneXSeries() {
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations {
 
     return UIInterfaceOrientationMaskAllButUpsideDown;
+}
+
+-(BOOL)shouldAutorotate{
+    if (self.playerView.isLocked) {
+        return NO;
+    }
+    return YES;
 }
 
 

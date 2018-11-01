@@ -30,8 +30,7 @@
     
     // YZPlayViewController 控制器支持自动转屏
     if ([self.topViewController isKindOfClass:[TestViewController class]]) {
-        // 调用YZBrightnessViewShared单例记录播放状态是否锁定屏幕方向
-        return YES; // 未来功能
+         return [self.topViewController shouldAutorotate];
     }
     return NO;
 }

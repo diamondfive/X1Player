@@ -13,6 +13,7 @@
 #import <MediaPlayer/MediaPlayer.h>
 #import "YZMoivePlayerBrightnessView.h"
 #import "X1PlayerView.h"
+#import "YZMoviePlayerControlButton.h"
 
 // 枚举值，包含水平移动方向和垂直移动方向
 typedef NS_ENUM(NSInteger, PanDirection){
@@ -46,10 +47,12 @@ typedef NS_ENUM(NSInteger, PanDirection){
 @implementation YZMoviePlayerControlAdditionView
 
 
-#pragma mark -- lifecycle
+#pragma mark -- Lifecycle
 - (instancetype)initWithFrame:(CGRect)frame{
     
     if (self =[super initWithFrame:frame]) {
+        
+        [self initUI];
         
         [self configureVolume];
         
@@ -74,8 +77,177 @@ typedef NS_ENUM(NSInteger, PanDirection){
     
     self.fastForwardLabel.frame = CGRectMake(0, self.fastForwardView.frame.size.height-20-10, self.fastForwardView.frame.size.width, 20);
     
+    self.lockBtn.frame = CGRectMake(30, self.frame.size.height/2 - 15, 30, 30);
+}
+
+#pragma mark -- Internal Method
+
+-(void)initUI{
+    
+    self.lockBtn =[[YZMoviePlayerControlButton alloc] init];
+    
+    [self.lockBtn setImage:[UIImage imageNamed:X1BUNDLE_Image(@"yz_ic_moive_unlock")] forState:UIControlStateNormal];
+    [self.lockBtn setImage:[UIImage imageNamed:X1BUNDLE_Image(@"yz_ic_moive_lock")] forState:UIControlStateSelected];
+    [self.lockBtn addTarget:self action:@selector(clickLockBtn:) forControlEvents:UIControlEventTouchUpInside];
+    
+    [self addSubview:self.lockBtn];
+
+}
+
+
+#pragma mark - 系统音量相关
+/**
+ *  获取系统音量
+ */
+- (void)configureVolume {
+    MPVolumeView *volumeView = [[MPVolumeView alloc] init];
+    _volumeViewSlider = nil;
+    for (UIView *view in [volumeView subviews]){
+        if ([view.class.description isEqualToString:@"MPVolumeSlider"]){
+            _volumeViewSlider = (UISlider *)view;
+            break;
+        }
+    }
+    
+    // 使用这个category的应用不会随着手机静音键打开而静音，可在手机静音下播放声音
+    NSError *setCategoryError = nil;
+    BOOL success = [[AVAudioSession sharedInstance]
+                    setCategory: AVAudioSessionCategoryPlayback
+                    error: &setCategoryError];
+    
+    if (!success) { /* handle the error in setCategoryError */ }
+    
+    // 监听耳机插入和拔掉通知
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(audioRouteChangeListenerCallback:) name:AVAudioSessionRouteChangeNotification object:nil];
+}
+
+/**
+ *  改变音量
+ */
+- (void)changeVolume:(CGFloat)value {
+    self.volumeViewSlider.value -= value / 10000;
+}
+
+/**
+ *  耳机插入、拔出事件
+ */
+- (void)audioRouteChangeListenerCallback:(NSNotification*)notification {
+    NSDictionary *interuptionDict = notification.userInfo;
+    
+    NSInteger routeChangeReason = [[interuptionDict valueForKey:AVAudioSessionRouteChangeReasonKey] integerValue];
+    
+    switch (routeChangeReason) {
+            
+        case AVAudioSessionRouteChangeReasonNewDeviceAvailable:
+            // 耳机插入
+            break;
+            
+        case AVAudioSessionRouteChangeReasonOldDeviceUnavailable:
+        {
+            // 耳机拔掉
+            // 拔掉耳机继续播放
+            [self.controls.moviePlayer play];
+        }
+            break;
+            
+        case AVAudioSessionRouteChangeReasonCategoryChange:
+            // called at start - also when other audio wants to play
+            NSLog(@"AVAudioSessionRouteChangeReasonCategoryChange");
+            break;
+    }
+}
+
+#pragma mark - 快进快退相关
+/**
+ 创建快进快退视图
+ */
+-(void)createFastForwardView{
+    
+    if (_fastForwardView) {
+        [_fastForwardView removeFromSuperview];
+        
+    }
+    
+    _fastForwardView                     = [[UIView alloc] init];
+    _fastForwardView.backgroundColor     = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.7];
+    _fastForwardView.layer.cornerRadius  = 4;
+    _fastForwardView.layer.masksToBounds = YES;
+    
+    _fastForwardLabel               = [[UILabel alloc] init];
+    _fastForwardLabel.textColor     = [UIColor whiteColor];
+    _fastForwardLabel.backgroundColor =[UIColor clearColor];
+    _fastForwardLabel.textAlignment = NSTextAlignmentCenter;
+    _fastForwardLabel.font          = [UIFont systemFontOfSize:15.0];
+    [_fastForwardView addSubview:_fastForwardLabel];
+    
+    _fastForwardImgView             = [[UIImageView alloc] init];
+    [_fastForwardView addSubview:_fastForwardImgView];
+    
+    
+    [self addSubview:_fastForwardView];
+    
+    [self hideFastForwardView];
+}
+
+-(void)showFastForwardView:(NSTimeInterval)draggedTime isForward:(BOOL)forawrd{
+    
+    
+    [_fastForwardView setHidden:NO];
+    
+    
+    
+    int draggedTimeInt = (int)(floorf(draggedTime));
+    
+    
+    // 拖拽的时长
+    NSInteger proMin = draggedTimeInt / 60;//当前分钟
+    NSInteger proSec = draggedTimeInt % 60;//当前秒
+    
+    
+    
+    NSString *titleStr;
+    
+    if (forawrd) {
+        self.fastForwardImgView.image = [UIImage imageNamed:X1BUNDLE_Image(@"yz_ic_video_fastforward")];
+        
+        if (proMin ) {
+            titleStr =[NSString stringWithFormat:@"前进%02ld分%02ld秒",(long)proMin,(long)proSec];
+            
+            NSLog(@"%@",titleStr);
+        }else{
+            
+            titleStr = [NSString stringWithFormat:@"前进%02ld秒",(long)proSec];
+            
+            NSLog(@"%@",titleStr);
+            
+        }
+        
+    } else {
+        self.fastForwardImgView.image = [UIImage imageNamed:X1BUNDLE_Image(@"yz_ic_video_fastbackward")];
+        
+        if (proMin) {
+            titleStr =[NSString stringWithFormat:@"后退%02ld分%02ld秒",(long)labs(proMin),(long)labs(proSec)];
+            
+        }else{
+            
+            titleStr = [NSString stringWithFormat:@"后退%02ld秒",(long)labs(proSec)];
+            
+        }
+        
+        
+    }
+    self.fastForwardLabel.text = titleStr;
+    
     
 }
+
+-(void)hideFastForwardView{
+    
+    [_fastForwardView setHidden:YES];
+}
+
+
+
 
 #pragma mark -- Public Method
 /**
@@ -144,110 +316,28 @@ typedef NS_ENUM(NSInteger, PanDirection){
 
 
 
-#pragma mark -- Internal Method
 
-/**
- 创建快进快退视图
- */
--(void)createFastForwardView{
+
+
+
+
+
+
+
+#pragma mark -- Action
+//点击了锁屏按钮
+-(void)clickLockBtn:(YZMoviePlayerControlButton *)sender{
     
-    if (_fastForwardView) {
-        [_fastForwardView removeFromSuperview];
-        
+    sender.selected = !sender.isSelected;
+    
+    if (sender.isSelected) {
+        self.controls.isLocked = YES;
+    }else{
+        self.controls.isLocked = NO;
     }
     
-    _fastForwardView                     = [[UIView alloc] init];
-    _fastForwardView.backgroundColor     = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.7];
-    _fastForwardView.layer.cornerRadius  = 4;
-    _fastForwardView.layer.masksToBounds = YES;
-    
-    _fastForwardLabel               = [[UILabel alloc] init];
-    _fastForwardLabel.textColor     = [UIColor whiteColor];
-    _fastForwardLabel.backgroundColor =[UIColor clearColor];
-    _fastForwardLabel.textAlignment = NSTextAlignmentCenter;
-    _fastForwardLabel.font          = [UIFont systemFontOfSize:15.0];
-    [_fastForwardView addSubview:_fastForwardLabel];
-    
-    _fastForwardImgView             = [[UIImageView alloc] init];
-    [_fastForwardView addSubview:_fastForwardImgView];
-    
-    
-    [self addSubview:_fastForwardView];
-    
-    [self hideFastForwardView];
 }
 
-
--(void)showFastForwardView:(NSTimeInterval)draggedTime isForward:(BOOL)forawrd{
-    
-    
-    [_fastForwardView setHidden:NO];
-    
-    
-    
-    int draggedTimeInt = (int)(floorf(draggedTime));
-    
-    
-    // 拖拽的时长
-    NSInteger proMin = draggedTimeInt / 60;//当前分钟
-    NSInteger proSec = draggedTimeInt % 60;//当前秒
-    
-    
-    
-    NSString *titleStr;
-    
-    if (forawrd) {
-        self.fastForwardImgView.image = [UIImage imageNamed:X1BUNDLE_Image(@"yz_ic_video_fastforward")];
-        
-        if (proMin ) {
-            titleStr =[NSString stringWithFormat:@"前进%02ld分%02ld秒",(long)proMin,(long)proSec];
-            
-            NSLog(@"%@",titleStr);
-        }else{
-            
-            titleStr = [NSString stringWithFormat:@"前进%02ld秒",(long)proSec];
-            
-            NSLog(@"%@",titleStr);
-
-        }
-        
-    } else {
-        self.fastForwardImgView.image = [UIImage imageNamed:X1BUNDLE_Image(@"yz_ic_video_fastbackward")];
-        
-        if (proMin) {
-            titleStr =[NSString stringWithFormat:@"后退%02ld分%02ld秒",(long)labs(proMin),(long)labs(proSec)];
-
-        }else{
-            
-            titleStr = [NSString stringWithFormat:@"后退%02ld秒",(long)labs(proSec)];
-
-        }
-        
-        
-    }
-    self.fastForwardLabel.text = titleStr;
-    
-    
-}
-
--(void)hideFastForwardView{
-    
-    [_fastForwardView setHidden:YES];
-}
-
-
-
-/**
- *  改变音量
- */
-- (void)changeVolume:(CGFloat)value {
-    self.volumeViewSlider.value -= value / 10000;
-}
-
-
-
-
-#pragma mark -- action
 /**
  *   轻拍方法
  *
@@ -438,60 +528,6 @@ typedef NS_ENUM(NSInteger, PanDirection){
     }
 }
 
-#pragma mark - 系统音量相关
-/**
- *  获取系统音量
- */
-- (void)configureVolume {
-    MPVolumeView *volumeView = [[MPVolumeView alloc] init];
-    _volumeViewSlider = nil;
-    for (UIView *view in [volumeView subviews]){
-        if ([view.class.description isEqualToString:@"MPVolumeSlider"]){
-            _volumeViewSlider = (UISlider *)view;
-            break;
-        }
-    }
-    
-    // 使用这个category的应用不会随着手机静音键打开而静音，可在手机静音下播放声音
-    NSError *setCategoryError = nil;
-    BOOL success = [[AVAudioSession sharedInstance]
-                    setCategory: AVAudioSessionCategoryPlayback
-                    error: &setCategoryError];
-    
-    if (!success) { /* handle the error in setCategoryError */ }
-    
-    // 监听耳机插入和拔掉通知
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(audioRouteChangeListenerCallback:) name:AVAudioSessionRouteChangeNotification object:nil];
-}
-/**
- *  耳机插入、拔出事件
- */
-- (void)audioRouteChangeListenerCallback:(NSNotification*)notification {
-    NSDictionary *interuptionDict = notification.userInfo;
-    
-    NSInteger routeChangeReason = [[interuptionDict valueForKey:AVAudioSessionRouteChangeReasonKey] integerValue];
-    
-    switch (routeChangeReason) {
-            
-        case AVAudioSessionRouteChangeReasonNewDeviceAvailable:
-            // 耳机插入
-            break;
-            
-        case AVAudioSessionRouteChangeReasonOldDeviceUnavailable:
-        {
-            // 耳机拔掉
-            // 拔掉耳机继续播放
-            [self.controls.moviePlayer play];
-        }
-            break;
-            
-        case AVAudioSessionRouteChangeReasonCategoryChange:
-            // called at start - also when other audio wants to play
-            NSLog(@"AVAudioSessionRouteChangeReasonCategoryChange");
-            break;
-    }
-}
-
 
 #pragma mark --UIGestureRecognizerDelegate
 -(BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch{
@@ -600,6 +636,21 @@ typedef NS_ENUM(NSInteger, PanDirection){
 
     
 }
+
+-(void)setControls:(YZMoviePlayerControls *)controls{
+    
+    _controls = controls;
+    
+    if (self.controls.moviePlayer.movieFullscreen) {
+        [self addSubview:self.lockBtn];
+        
+    }else{
+        
+        [self.lockBtn removeFromSuperview];
+    }
+    
+}
+
 
 -(UIView *)definitionView{
     

@@ -37,6 +37,9 @@ static X1PlayerView  *GlobalPlayerView;
 //播放器视频清晰度数组
 @property (nonatomic, strong) NSArray <YZMutipleDefinitionModel *>*mediasourceDefinitionArr;
 
+//是否锁屏
+@property (nonatomic, assign, readwrite) BOOL isLocked;
+
 @end
 
 @implementation X1PlayerView
@@ -516,12 +519,22 @@ static X1PlayerView  *GlobalPlayerView;
         [self.delegate x1PlayerViewOnPlayComplete:self];
     }
 }
-
+//缓冲超时回调
 - (void)yzMoviePlayerControllerMovieTimedOut {
  
     if ([self.delegate respondsToSelector:@selector(x1PlayerViewOnPlayTimeout:)]) {
         [self.delegate x1PlayerViewOnPlayTimeout:self];
     }
+}
+//点击锁屏按钮回调
+- (void)yzMoviePlayerControllerOnClickLockBtn:(BOOL)isLocked{
+    
+    _isLocked = isLocked;
+    
+    if ([self.delegate respondsToSelector:@selector(x1PlayerViewOnClickLockBtn:)]) {
+        [self.delegate x1PlayerViewOnClickLockBtn:isLocked];
+    }
+    
 }
 
 //悬浮小窗被点击

@@ -97,7 +97,7 @@ static const inline BOOL isIpad() {
     if (self.style == YZMoviePlayerControlsStyleNone){
         return;
     }
-    if (self.style == YZMoviePlayerControlsStyleFullscreen || (self.style == YZMoviePlayerControlsStyleDefault && self.moviePlayer.isFullscreen)) {//录播横屏
+    if (self.style == YZMoviePlayerControlsStyleFullscreen || (self.style == YZMoviePlayerControlsStyleDefault && self.moviePlayer.movieFullscreen)) {//录播横屏
         
         //top bar
         self.topBar.frame = CGRectMake(0, 0, self.frame.size.width,self.barHeight +20);
@@ -133,7 +133,7 @@ static const inline BOOL isIpad() {
         
         
         
-    } else if (self.style == YZMoviePlayerControlsStyleEmbedded || (self.style == YZMoviePlayerControlsStyleDefault && !self.moviePlayer.isFullscreen)) {//录播竖屏
+    } else if (self.style == YZMoviePlayerControlsStyleEmbedded || (self.style == YZMoviePlayerControlsStyleDefault && !self.moviePlayer.movieFullscreen)) {//录播竖屏
         
         //top bar
         if (_isNeedShowBackBtn) {
@@ -161,7 +161,7 @@ static const inline BOOL isIpad() {
         
         self.timeTotalLabel.frame = CGRectMake(CGRectGetMaxX(self.durationSlider.frame), 0, 40, self.barHeight);
         
-    } else if (self.style == YZMoviePlayerControlsStyleLiveLandscape || (self.style == YZMoviePlayerControlsStyleLive && self.moviePlayer.isFullscreen)){//直播横屏
+    } else if (self.style == YZMoviePlayerControlsStyleLiveLandscape || (self.style == YZMoviePlayerControlsStyleLive && self.moviePlayer.movieFullscreen)){//直播横屏
         
         
         //top bar
@@ -188,7 +188,7 @@ static const inline BOOL isIpad() {
         }
         
         
-    }else if (self.style == YZMoviePlayerControlsStyleLivePortrait || (self.style == YZMoviePlayerControlsStyleLive && !self.moviePlayer.isFullscreen)){//直播竖屏
+    }else if (self.style == YZMoviePlayerControlsStyleLivePortrait || (self.style == YZMoviePlayerControlsStyleLive && !self.moviePlayer.movieFullscreen)){//直播竖屏
         
         
         //top bar
@@ -360,7 +360,7 @@ static const inline BOOL isIpad() {
     _fullscreenButton.delegate = self;
     
     
-    if (_style == YZMoviePlayerControlsStyleFullscreen || (_style == YZMoviePlayerControlsStyleDefault && _moviePlayer.isFullscreen)) {//录播全屏
+    if (_style == YZMoviePlayerControlsStyleFullscreen || (_style == YZMoviePlayerControlsStyleDefault && _moviePlayer.movieFullscreen)) {//录播全屏
         _titleLabel.font = [UIFont systemFontOfSize:14.f];
         _timeRemainingLabel.font = [UIFont systemFontOfSize:13.f];
         _timeTotalLabel.font = [UIFont systemFontOfSize:13.f];
@@ -548,7 +548,7 @@ static const inline BOOL isIpad() {
         
     }else{//未播放，需要显示播放按钮
         
-        if (self.moviePlayer.isFullscreen) {
+        if (self.moviePlayer.movieFullscreen) {
             [_playPauseButton setImage:[UIImage imageNamed:X1BUNDLE_Image(@"yz_ic_movie_play_sel")] forState:UIControlStateNormal];
             [_playPauseButton setImage:[UIImage imageNamed:X1BUNDLE_Image(@"yz_ic_movie_play_sel")] forState:UIControlStateHighlighted];
         }else{
@@ -693,14 +693,14 @@ static const inline BOOL isIpad() {
 - (void)fullscreenPressed:(UIButton *)button {
     
     //改变全屏标识
-    self.moviePlayer.fullscreen = !self.moviePlayer.isFullscreen;
+    self.moviePlayer.movieFullscreen = !self.moviePlayer.movieFullscreen;
     
     //1 重写setter方法改变样式
     if (self.style == YZMoviePlayerControlsStyleDefault) {
-        self.style = self.moviePlayer.isFullscreen ? YZMoviePlayerControlsStyleFullscreen : YZMoviePlayerControlsStyleEmbedded;
+        self.style = self.moviePlayer.movieFullscreen ? YZMoviePlayerControlsStyleFullscreen : YZMoviePlayerControlsStyleEmbedded;
     }else if (self.style == YZMoviePlayerControlsStyleLive) {
         
-        self.style = self.moviePlayer.isFullscreen ? YZMoviePlayerControlsStyleLiveLandscape :
+        self.style = self.moviePlayer.movieFullscreen ? YZMoviePlayerControlsStyleLiveLandscape :
         YZMoviePlayerControlsStyleLivePortrait;
     }
     
@@ -709,18 +709,18 @@ static const inline BOOL isIpad() {
         self.moviePlayer.isRealFullScreenBtnPress = YES;
         
         //改变设备标识
-        if (self.moviePlayer.isFullscreen) {
+        if (self.moviePlayer.movieFullscreen) {
             self.currentOrientation = UIInterfaceOrientationLandscapeRight;
         }else{
             self.currentOrientation = UIInterfaceOrientationPortrait;
         }
         
-        [self.moviePlayer setFullscreen:self.moviePlayer.fullscreen orientation:self.currentOrientation animated:YES];
+        [self.moviePlayer setFullscreen:self.moviePlayer.movieFullscreen orientation:self.currentOrientation animated:YES];
         
     }else{//设备旋转导致的
         self.moviePlayer.isRealFullScreenBtnPress = NO;
         
-        [self.moviePlayer setFullscreen:self.moviePlayer.fullscreen orientation:self.currentOrientation animated:YES];
+        [self.moviePlayer setFullscreen:self.moviePlayer.movieFullscreen orientation:self.currentOrientation animated:YES];
         
     }
     
@@ -900,10 +900,41 @@ static const inline BOOL isIpad() {
 #pragma mark -- 显示隐藏 控制层
 //显示控制层
 - (void)showControls:(void(^)(void))completion autoHide:(BOOL)autohide{
-
+    
+    //锁屏情况处理
+    if (self.isLocked &&!self.isShowing) {
+         _showing = YES;
+        [UIView animateWithDuration:0.3 animations:^{
+            self.controlAdditionView.lockBtn.alpha = 1.f;
+            self.topBar.alpha = 0.f;
+            self.bottomBar.alpha = 0.f;
+        }];
+        
+    }else if(self.isLocked &&self.isShowing){
+        if (completion)
+            completion();
+        if (autohide) {
+            
+            [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(hideControls:) object:nil];
+            
+            [self performSelector:@selector(hideControls:) withObject:nil afterDelay:self.fadeDelay];
+            
+        }
+        
+    }
+    
+   //非锁屏情况处理
     if (!self.isShowing) {
         
         _showing = YES;
+        
+        if (self.moviePlayer.movieFullscreen) {
+            [[UIApplication sharedApplication] setStatusBarHidden:NO];
+
+        }else{
+            [[UIApplication sharedApplication] setStatusBarHidden:NO];
+
+        }
         
         
         [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(hideControls:) object:nil];
@@ -914,6 +945,8 @@ static const inline BOOL isIpad() {
             
             self.topBar.alpha = 1.f;
             self.bottomBar.alpha = 1.f;
+            self.controlAdditionView.lockBtn.alpha = 1.f;
+            
         } completion:^(BOOL finished) {
             if (completion)
                 completion();
@@ -939,16 +972,47 @@ static const inline BOOL isIpad() {
 //隐藏控制层
 - (void)hideControls:(void(^)(void))completion{
     
-
+    //锁屏情况处理
+    if (self.isLocked&&self.isShowing) {
+        _showing = NO;
+        if (self.moviePlayer.movieFullscreen) {
+            [[UIApplication sharedApplication] setStatusBarHidden:YES];
+            
+        }else{
+            [[UIApplication sharedApplication] setStatusBarHidden:NO];
+            
+        }
+        
+        [UIView animateWithDuration:0.3 animations:^{
+            self.topBar.alpha = 0.f;
+            self.bottomBar.alpha = 0.f;
+            self.controlAdditionView.lockBtn.alpha = 0.f;
+        }];
+        
+    }else if(self.isLocked&&!self.isShowing){
+        if (completion)
+            completion();
+    }
+    
+    //非锁屏情况处理
     if (self.isShowing)
     {
         _showing = NO;
+        
+        if (self.moviePlayer.movieFullscreen) {
+            [[UIApplication sharedApplication] setStatusBarHidden:YES];
+            
+        }else{
+            [[UIApplication sharedApplication] setStatusBarHidden:NO];
+            
+        }
         
         [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(hideControls:) object:nil];
 
             [UIView animateWithDuration:0.3 delay:0.0 options:0 animations:^{
                 self.topBar.alpha = 0.f;
                 self.bottomBar.alpha = 0.f;
+                self.controlAdditionView.lockBtn.alpha = 0.f;
                 
             } completion:^(BOOL finished) {
                 if (completion)
@@ -1111,6 +1175,24 @@ static const inline BOOL isIpad() {
     
     [self setNeedsLayout];
     [self layoutIfNeeded];
+    
+}
+
+-(void)setIsLocked:(BOOL)isLocked{
+    
+    _isLocked = isLocked;
+    
+    self.moviePlayer.isLocked = isLocked;
+    
+    if (isLocked) {
+
+        _showing = NO;
+        [self showControls:nil autoHide:YES];
+
+    }else{
+        _showing = NO;
+        [self showControls:nil autoHide:YES];
+    }
     
 }
 
