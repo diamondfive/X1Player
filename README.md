@@ -4,11 +4,8 @@
 X1Player是基于ffmpeg封装的播放器，支持直播 录播视频的播放,支持常用的播放界面控制，类似于ijkplayer 优点是体积更小,使用快捷。
 
 ## 展示效果
-![首页](https://github.com/diamondfive/X1Player/blob/develop/首页.png?raw=true)![快退](https://github.com/diamondfive/X1Player/blob/develop/小窗.PNG?raw=true)
-![清晰度](https://github.com/diamondfive/X1Player/blob/develop/清晰度.PNG?raw=true)
-![流量](https://github.com/diamondfive/X1Player/blob/develop/流量播放.png?raw=true)
-![超时](https://github.com/diamondfive/X1Player/blob/develop/超时.PNG?raw=true)
 
+![展示效果](https://github.com/diamondfive/X1Player/blob/develop/showtime.png?raw=true)
 
 ## 功能特性
 - [x] 支持直播点播，支持格式包括RTMP、FLV、HLS、MP4等
