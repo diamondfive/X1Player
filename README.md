@@ -50,6 +50,7 @@ pod 'X1Player', '~> 1.0'
       - libz.tbd
       - libbz2.tbd
       - libiconv.tbd
+      - libc++.tbd
       
 ## 用例
 

@@ -57,10 +57,10 @@ Pod::Spec.new do |s|
   #
 
   # s.framework  = "SomeFramework"
-    s.frameworks = "CoreTelephony", "OpenAL","VideoToolbox","GLKit"
+    s.frameworks = ["CoreTelephony", "OpenAL","VideoToolbox","GLKit"]
 
   # s.library   = "iconv"
-    s.libraries = "bz2","iconv","z"
+    s.libraries = ["bz2","iconv","z","c++"]
 
     s.vendored_libraries = "X1Player/X1PlayerSDK/**/libmediaplayer.a"
 
