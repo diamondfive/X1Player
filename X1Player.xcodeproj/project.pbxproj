@@ -105,11 +105,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A34734CA218C527F00F3B67B /* libc++.tbd in Frameworks */,
 				A347346D218AD3E900F3B67B /* CoreTelephony.framework in Frameworks */,
 				A325633B21796B0B009E9DA2 /* OpenAL.framework in Frameworks */,
 				A325633A21796ABC009E9DA2 /* VideoToolbox.framework in Frameworks */,
 				A325632F217968EA009E9DA2 /* GLKit.framework in Frameworks */,
+				A34734CA218C527F00F3B67B /* libc++.tbd in Frameworks */,
 				A325632D217968C7009E9DA2 /* libbz2.tbd in Frameworks */,
 				A325632B217968BB009E9DA2 /* libiconv.tbd in Frameworks */,
 				A3256329217968AE009E9DA2 /* libz.tbd in Frameworks */,
