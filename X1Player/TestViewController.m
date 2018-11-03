@@ -225,9 +225,9 @@ static inline BOOL IPhoneXSeries() {
 #pragma mark - 屏幕旋转
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
     //播放器旋转
-    
     [self.playerView rorateToInterfaceOrientation:toInterfaceOrientation animated:YES];
 }
+
 #pragma mark  --支持哪些转屏方向
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations {
 

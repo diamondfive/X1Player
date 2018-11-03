@@ -36,7 +36,7 @@ X1Player是基于ffmpeg封装的播放器，支持直播 录播视频的播放,�
 - 通过[CocoaPods](https://cocoapods.org)安装
 
 ```objc
-pod 'X1Player', '~> 1.0'
+pod 'X1Player', '~> 1.1.2'
 ```
 
 - 手动安装
@@ -50,7 +50,6 @@ pod 'X1Player', '~> 1.0'
       - libz.tbd
       - libbz2.tbd
       - libiconv.tbd
-      - libc++.tbd
       
 ## 用例
 
@@ -81,6 +80,17 @@ self.playerView.delegate = self;
 [self.playerView playWithUrl:@"http://5815.liveplay.myqcloud.com/live/5815_89aad37e06ff11e892905cb9018cf0d4_900.flv" definitionUrlArr:@[model1,model2,model3] playerTitle:@"直播清晰度切换测试" coverImage:self.image autoPlay:YES style:YZMoviePlayerControlsStyleLive];
 ```
 
+### 横竖屏切换
+需要在控制器的设备旋转方法中调用播放器的设备旋转方法
+
+```
+#pragma mark - 屏幕旋转
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+    //播放器旋转
+    [self.playerView rorateToInterfaceOrientation:toInterfaceOrientation animated:YES];
+}
+```
+ 
 
 ### 切换视频
 
@@ -106,5 +116,5 @@ X1Player is available under the MIT license. See the LICENSE file for more info.
 
 ## 更多
 
-项目封装时间比较仓促,如果使用过程中遇到问题 请issue项目或者email fyz333501@163.com
+如果使用过程中遇到问题 请issue项目或者email fyz333501@163.com
 
