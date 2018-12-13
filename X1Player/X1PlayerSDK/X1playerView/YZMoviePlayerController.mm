@@ -502,7 +502,7 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
 - (void)rotateMoviePlayerForOrientation:(UIDeviceOrientation)orientation animated:(BOOL)animated completion:(void (^)(void))completion {
     
     if (self.isRealFullScreenBtnPress) {
-        //屏幕旋转
+        //强制屏幕旋转
         [self interfaceOrientation:orientation];
     }
     
@@ -568,7 +568,7 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
     //2018.12.12Fix 这种写法在点击全屏按钮 点击锁屏 横置屏幕 竖直屏幕 点击解锁屏 点击返回按钮的情况下 设备依旧竖屏,界面异常
     //原因是 如果 KVC 之前的device orientation == 1 kvc 设置的device orientation
     //不会触发shouldAutorotate 和 supportedInterfaceOrientations
-    [[UIDevice currentDevice] setValue:@(orientation) forKey:@"orientation"];
+//    [[UIDevice currentDevice] setValue:@(orientation) forKey:@"orientation"];
     
     if ([[UIDevice currentDevice] respondsToSelector:@selector(setOrientation:)]) {
         SEL selector = NSSelectorFromString(@"setOrientation:");

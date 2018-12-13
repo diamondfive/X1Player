@@ -692,8 +692,21 @@ static const inline BOOL isIpad() {
 //全屏按钮点击的处理
 - (void)fullscreenPressed:(UIButton *)button {
     
-    //改变全屏标识
-    self.moviePlayer.movieFullscreen = !self.moviePlayer.movieFullscreen;
+    if (self.currentOrientation) { //设备旋转触发
+        if (self.currentOrientation == UIDeviceOrientationLandscapeLeft || self.currentOrientation == UIDeviceOrientationLandscapeRight) {
+            self.moviePlayer.movieFullscreen = YES;
+        }else{
+            
+            //改变全屏标识
+            self.moviePlayer.movieFullscreen = NO;
+        }
+        
+    }else{//点击全屏按钮触发
+        
+        //改变全屏标识
+        self.moviePlayer.movieFullscreen = !self.moviePlayer.movieFullscreen;
+    }
+    
     
     //1 重写setter方法改变样式
     if (self.style == YZMoviePlayerControlsStyleDefault) {
