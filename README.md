@@ -7,6 +7,7 @@ X1Player是基于ffmpeg封装的播放器，支持直播 录播视频的播放,�
 
 ![展示效果](https://github.com/diamondfive/X1Player/blob/develop/showtime.png?raw=true)
 
+
 ## 功能特性
 - [x] 支持直播点播，支持格式包括RTMP、FLV、HLS、MP4等
 - [x] 支持横竖屏切换，支持清晰度切换
@@ -36,7 +37,7 @@ X1Player是基于ffmpeg封装的播放器，支持直播 录播视频的播放,�
 - 通过[CocoaPods](https://cocoapods.org)安装
 
 ```objc
-pod 'X1Player', '~> 1.1.2'
+pod 'X1Player', '~> 1.0'
 ```
 
 - 手动安装
@@ -81,15 +82,19 @@ self.playerView.delegate = self;
 ```
 
 ### 横竖屏切换
-需要在控制器的设备旋转方法中调用播放器的设备旋转方法
+
+播放器的isLocked属性标识播放器是否锁屏，调用逻辑如下
 
 ```
-#pragma mark - 屏幕旋转
-- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
-    //播放器旋转
-    [self.playerView rorateToInterfaceOrientation:toInterfaceOrientation animated:YES];
+
+-(BOOL)shouldAutorotate{
+    if (self.playerView.isLocked) {
+        return NO;
+    }
+    return YES;
 }
 ```
+
  
 
 ### 切换视频
@@ -103,6 +108,7 @@ self.playerView.delegate = self;
 ```
 [self.playerView showFloatViewWithFrame:CGRectMake(0, 100, 160, 90) showCloseBtn:YES];
 ```
+
 ### 移除播放器
 当不需要播放器时，调用resetPlayer清理播放器内部状态，防止干扰下次播放。
 
@@ -116,5 +122,9 @@ X1Player is available under the MIT license. See the LICENSE file for more info.
 
 ## 更多
 
-如果使用过程中遇到问题 请issue项目或者email fyz333501@163.com
+项目封装时间比较仓促,如果使用过程中遇到问题 请issue项目或者email fyz333501@163.com
+
+
+
+
 
