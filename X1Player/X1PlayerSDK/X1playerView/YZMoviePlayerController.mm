@@ -35,13 +35,13 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
 
 @implementation UIApplication (YZAppDimensions)
 
-+ (CGSize)sizeInOrientation:(UIInterfaceOrientation)orientation {
++ (CGSize)sizeInOrientation:(UIDeviceOrientation)orientation {
     
     //防止不同iOS系统[UIScreen mainScreen].bounds.size颠倒的问题，所以取竖屏尺寸
     CGSize size = CGSizeMake(MIN([UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height), MAX([UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height));
     
     UIApplication *application = [UIApplication sharedApplication];
-    if (UIInterfaceOrientationIsLandscape(orientation)) {
+    if (UIDeviceOrientationIsLandscape(orientation)) {
         size = CGSizeMake(size.height, size.width);
     }
     if (!application.statusBarHidden && IOSVERSION < 7.0) {
@@ -210,13 +210,19 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
     
     [_replayView showReplayViewWithBackBtn:_isNeedShowBackBtn];
 }
+//展示锁屏提示
+-(void)showLockedHint{
+    
+    [self.controls showControls:nil autoHide:YES];
+    
+}
 
 - (void)changeTitle:(NSString*)title;
 {
     self.controls.programTitle = title;
 }
 
-- (CGFloat)statusBarHeightInOrientation:(UIInterfaceOrientation)orientation {
+- (CGFloat)statusBarHeightInOrientation:(UIDeviceOrientation)orientation {
     if (IOSVERSION <= 7.0){
         return 0.f;
 
@@ -420,7 +426,7 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
 
 #pragma mark -- 设备旋转相关处理
 //设备旋转时调用
--(void)rorateToOrientation:(UIInterfaceOrientation)orientation animated:(BOOL)animated{
+-(void)rorateToOrientation:(UIDeviceOrientation)orientation animated:(BOOL)animated{
     //弹回键盘
     [self.view endEditing:YES];
   
@@ -433,7 +439,7 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
 }
 
 //全屏按钮点击时 && 设备旋转时  都会调用的方法
-- (void)setFullscreen:(BOOL)fullscreen orientation:(UIInterfaceOrientation)orientation  animated:(BOOL)animated{
+- (void)setFullscreen:(BOOL)fullscreen orientation:(UIDeviceOrientation)orientation  animated:(BOOL)animated{
     
     //弹回键盘
     [self.view endEditing:YES];
@@ -441,7 +447,7 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
     _movieFullscreen = fullscreen;
     
     //设备旋转的orientation标识判断全屏
-    if (orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight) {
+    if (orientation == UIDeviceOrientationLandscapeLeft || orientation == UIDeviceOrientationLandscapeRight) {
         
         if ([self.delegate respondsToSelector:@selector(yzMoviePlayerControllerMoviePlayerWillEnterFullScreen)]) {
             [self.delegate yzMoviePlayerControllerMoviePlayerWillEnterFullScreen];
@@ -479,7 +485,7 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
 //
         [self.movieBackgroundView removeFromSuperview];
         
-        [self rotateMoviePlayerForOrientation:UIInterfaceOrientationPortrait animated:animated completion:^{
+        [self rotateMoviePlayerForOrientation:UIDeviceOrientationPortrait animated:animated completion:^{
             
             [[NSNotificationCenter defaultCenter] postNotificationName:YZMoviePlayerDidExitFullscreenNotification object:nil];
             //处理完置为NO
@@ -493,7 +499,7 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
  
 }
 // !!!:屏幕旋转核心代码
-- (void)rotateMoviePlayerForOrientation:(UIInterfaceOrientation)orientation animated:(BOOL)animated completion:(void (^)(void))completion {
+- (void)rotateMoviePlayerForOrientation:(UIDeviceOrientation)orientation animated:(BOOL)animated completion:(void (^)(void))completion {
     
     if (self.isRealFullScreenBtnPress) {
         //屏幕旋转
@@ -505,23 +511,23 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
     CGRect backgroundFrame;
     CGRect movieFrame;
     switch (orientation) {
-        case UIInterfaceOrientationPortraitUpsideDown:
+        case UIDeviceOrientationPortraitUpsideDown:
             angle = M_PI;
             backgroundFrame = CGRectMake(0,0,self.view.bounds.size.width,self.view.bounds.size.height);
             movieFrame = CGRectMake(0,0,self.view.bounds.size.width,self.view.bounds.size.height);
             break;
-        case UIInterfaceOrientationLandscapeLeft:
+        case UIDeviceOrientationLandscapeRight:
             angle = - M_PI_2;
-            backgroundFrame = CGRectMake([self statusBarHeightInOrientation:orientation] - YZMovieBackgroundPadding, -YZMovieBackgroundPadding, windowSize.height + YZMovieBackgroundPadding*2, windowSize.width + YZMovieBackgroundPadding*2);
-            movieFrame = CGRectMake(YZMovieBackgroundPadding, YZMovieBackgroundPadding, backgroundFrame.size.height - YZMovieBackgroundPadding*2, backgroundFrame.size.width - YZMovieBackgroundPadding*2);
+            backgroundFrame = CGRectMake(-YZMovieBackgroundPadding, -YZMovieBackgroundPadding,MAX(windowSize.width, windowSize.height) + YZMovieBackgroundPadding*2,MIN(windowSize.width, windowSize.height) + YZMovieBackgroundPadding*2);
+            movieFrame = CGRectMake(YZMovieBackgroundPadding, YZMovieBackgroundPadding, backgroundFrame.size.width - YZMovieBackgroundPadding*2, backgroundFrame.size.height - YZMovieBackgroundPadding*2);
             break;
-        case UIInterfaceOrientationLandscapeRight:
+        case UIDeviceOrientationLandscapeLeft:
             angle = M_PI_2;
             backgroundFrame = CGRectMake(-YZMovieBackgroundPadding, -YZMovieBackgroundPadding,MAX(windowSize.width, windowSize.height) + YZMovieBackgroundPadding*2,MIN(windowSize.width, windowSize.height) + YZMovieBackgroundPadding*2);
             movieFrame = CGRectMake(YZMovieBackgroundPadding, YZMovieBackgroundPadding, backgroundFrame.size.width - YZMovieBackgroundPadding*2, backgroundFrame.size.height - YZMovieBackgroundPadding*2);
           
             break;
-        case UIInterfaceOrientationPortrait:
+        case UIDeviceOrientationPortrait:
         default:
             angle = 0.f;
             backgroundFrame = CGRectMake(0,0,self.view.bounds.size.width,self.view.bounds.size.height);
@@ -555,9 +561,26 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
  *  强制屏幕转屏
  *setFullscreen *  @param orientation 屏幕方向
  */
-- (void)interfaceOrientation:(UIInterfaceOrientation)orientation {
+- (void)interfaceOrientation:(UIDeviceOrientation)orientation {
     
+//    NSLog(@"current device %ld",[[UIDevice currentDevice] orientation]);
+
+    //2018.12.12Fix 这种写法在点击全屏按钮 点击锁屏 横置屏幕 竖直屏幕 点击解锁屏 点击返回按钮的情况下 设备依旧竖屏,界面异常
+    //原因是 如果 KVC 之前的device orientation == 1 kvc 设置的device orientation
+    //不会触发shouldAutorotate 和 supportedInterfaceOrientations
     [[UIDevice currentDevice] setValue:@(orientation) forKey:@"orientation"];
+    
+    if ([[UIDevice currentDevice] respondsToSelector:@selector(setOrientation:)]) {
+        SEL selector = NSSelectorFromString(@"setOrientation:");
+        NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[UIDevice instanceMethodSignatureForSelector:selector]];
+        [invocation setSelector:selector];
+        [invocation  setTarget:[UIDevice currentDevice]];
+        int val  =  orientation;
+        [invocation setArgument:&val atIndex:2];
+        [invocation invoke];
+    }
+    
+    
     
 }
 
@@ -611,9 +634,9 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
     self.isRealFullScreenBtnPress = YES;
     
     if (self.fullscreen) {
-        [self setFullscreen:self.movieFullscreen orientation:UIInterfaceOrientationLandscapeRight animated:YES];
+        [self setFullscreen:self.movieFullscreen orientation:UIDeviceOrientationLandscapeLeft animated:YES];
     }else{
-        [self setFullscreen:self.movieFullscreen orientation:UIInterfaceOrientationPortrait animated:YES];
+        [self setFullscreen:self.movieFullscreen orientation:UIDeviceOrientationPortrait animated:YES];
 
     }
 }
@@ -846,8 +869,8 @@ static const NSTimeInterval YZFullscreenAnimationDuration = 0.25;
         
         [self.controls monitorMoviePlayableDuration];
         
-//       //展示重播视图
-//        [self showReplayView];
+       //展示重播视图
+        [self showReplayView];
 
         
         

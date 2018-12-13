@@ -24,7 +24,14 @@
 //点击小窗的通知
 extern NSString * const X1PlayerViewOnClickFloatViewNotification;
 //点击小窗关闭按钮的通知
-extern NSString * const X1PlayerVuewOnClickCloseFloatViewBtnNotification;
+extern NSString * const X1PlayerViewOnClickCloseFloatViewBtnNotification;
+
+//点击了锁屏操作的通知
+extern NSString * const X1PlayerViewOnClickLockScreenBtnNotification;
+
+//点击了取消锁屏操作的通知
+extern NSString * const X1PlayerViewOnClickUnLockScreenBtnNotification;
+
 
 @class X1PlayerView;
 @protocol X1PlayerViewDelegate <NSObject>
@@ -141,7 +148,7 @@ extern NSString * const X1PlayerVuewOnClickCloseFloatViewBtnNotification;
 
 
 //设备横竖屏切换的时候调用,可以让播放控件适应设备全屏 （为什么不封装在SDK内部，因为设备旋转之后播放界面不一定要变为全屏，比如 淘宝的黑色背景小窗 腾讯新闻的竖屏全屏大窗 都不是由设备旋转触发）
--(void)rorateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation animated:(BOOL)animated;
+//-(void)rorateToDeviceOrientation:(UIDeviceOrientation)deviceOrientation animated:(BOOL)animated;
 
 /**
  展示直播开播前倒计时视图(简单业务逻辑场景)
@@ -160,8 +167,6 @@ extern NSString * const X1PlayerVuewOnClickCloseFloatViewBtnNotification;
 -(void)setCoverimage:(UIImage *)coverimage;
 //设置控制层渐变遮罩颜色
 -(void)setBarGradientColor:(UIColor *)color;
-//展示重播视图
--(void)showReplayView;
 
 
 

@@ -48,6 +48,7 @@ static inline BOOL IPhoneXSeries() {
 
     self.view.backgroundColor = [UIColor whiteColor];
     
+    [self registerNotification];
     //返回按钮
     UIButton *btn =[UIButton buttonWithType:UIButtonTypeCustom];
     [btn setImage:[UIImage imageNamed:X1BUNDLE_Image(@"yz_videoPlayer_fanhui")] forState:UIControlStateNormal];
@@ -222,10 +223,29 @@ static inline BOOL IPhoneXSeries() {
     
 }
 
+#pragma mark -- Notification
+-(void)registerNotification{
+    
+//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(x1playerLockedNotification) name:X1PlayerViewOnClickLockScreenBtnNotification object:nil];
+//
+//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(x1playerUnLockedNotification) name:X1PlayerViewOnClickUnLockScreenBtnNotification object:nil];
+
+}
+
+//-(void)x1playerLockedNotification{
+//
+//    [self shouldAutorotate];
+//}
+//
+//-(void)x1playerUnLockedNotification{
+//
+//    [self shouldAutorotate];
+//}
+
 #pragma mark - 屏幕旋转
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
-    //播放器旋转
-    [self.playerView rorateToInterfaceOrientation:toInterfaceOrientation animated:YES];
+
+    NSLog(@"toInterfaceOrientation%ld",(long)toInterfaceOrientation);
 }
 
 #pragma mark  --支持哪些转屏方向
@@ -237,8 +257,10 @@ static inline BOOL IPhoneXSeries() {
 -(BOOL)shouldAutorotate{
     if (self.playerView.isLocked) {
         return NO;
+    }else{
+        
+        return YES;
     }
-    return YES;
 }
 
 
@@ -275,8 +297,8 @@ static inline BOOL IPhoneXSeries() {
 
 //播放完成回调
 -(void)x1PlayerViewOnPlayComplete:(X1PlayerView *)x1PlayerView{
-    //展示重播视图
-    [self.playerView showReplayView];
+//    //展示重播视图
+//    [self.playerView showReplayView];
 }
 
 

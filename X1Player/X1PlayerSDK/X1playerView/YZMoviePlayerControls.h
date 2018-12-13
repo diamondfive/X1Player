@@ -127,7 +127,7 @@ typedef enum {
 -(void)showDataTimeOutView;
 -(void)removeDataTimeOutView;
 // 设备旋转时调用的方法
--(void)fullscreenPressedWithOrientation:(UIInterfaceOrientation)orientation;
+-(void)fullscreenPressedWithOrientation:(UIDeviceOrientation)orientation;
 
 - (void)backBtnClick:(id)button;//点击返回按钮
 - (void)fullscreenPressed:(id)button;//点击全屏按钮

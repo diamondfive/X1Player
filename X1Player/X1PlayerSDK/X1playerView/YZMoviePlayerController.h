@@ -132,16 +132,18 @@ extern NSString * const YZMoviePlayerContentURLDidChangeNotification;
 -(void)setBarGradientColor:(UIColor *)color;
 //展示重播视图
 -(void)showReplayView;
+//展示锁屏提示
+-(void)showLockedHint;
 
 /*********************** 设备旋转相关  ************************/
 //设备旋转时调用
--(void)rorateToOrientation:(UIInterfaceOrientation)orientation animated:(BOOL)animated;
+-(void)rorateToOrientation:(UIDeviceOrientation)orientation animated:(BOOL)animated;
 //全屏按钮点击时调用
 - (void)setFullscreen:(BOOL)fullscreen animated:(BOOL)animated;
 // 强制屏幕转屏
-- (void)interfaceOrientation:(UIInterfaceOrientation)orientation;
+- (void)interfaceOrientation:(UIDeviceOrientation)orientation;
 //全屏按钮点击时 && 设备旋转时  都会调用的核心方法
-- (void)setFullscreen:(BOOL)fullscreen orientation:(UIInterfaceOrientation)orientation  animated:(BOOL)animated;
+- (void)setFullscreen:(BOOL)fullscreen orientation:(UIDeviceOrientation)orientation  animated:(BOOL)animated;
 
 /*********************** 控件操作事件  ************************/
 //点击了返回按钮

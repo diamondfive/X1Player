@@ -4,7 +4,7 @@
 //
 //  Created by 付彦彰 on 2018/6/18.
 //  Copyright © 2018年 channelsoft. All rights reserved.
-//  重播视图
+//  重播视图(支持定制化)
 
 #import <UIKit/UIKit.h>
 #import "YZMoviePlayerControlButton.h"

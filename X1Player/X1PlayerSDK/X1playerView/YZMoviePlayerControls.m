@@ -56,7 +56,7 @@ static const inline BOOL isIpad() {
 @property (nonatomic, strong) UILabel *titleLabel;//标题
 @property (nonatomic, strong) UILabel *timeOutView_3S;//超时3秒
 //当前设备方向,设备旋转时赋初值
-@property (nonatomic, assign) UIInterfaceOrientation currentOrientation;
+@property (nonatomic, assign) UIDeviceOrientation currentOrientation;
 //渐变图层
 @property (nonatomic, strong) UIView *topbarGradientView;
 @property (nonatomic, strong) UIView *bottombarGradientView;
@@ -632,7 +632,7 @@ static const inline BOOL isIpad() {
 
 #pragma mark -- Public Method
 // 设备旋转时调用的方法
--(void)fullscreenPressedWithOrientation:(UIInterfaceOrientation)orientation{
+-(void)fullscreenPressedWithOrientation:(UIDeviceOrientation)orientation{
     
     self.currentOrientation = orientation;
     
@@ -664,7 +664,7 @@ static const inline BOOL isIpad() {
 
 //竖屏返回按钮被点击
 - (void)backBtnPressed:(UIButton *)sender {
-    NSLog(@"QNYZMovieControls backBtnPressed");
+    NSLog(@"YZMovieControls backBtnPressed");
     [self.moviePlayer clickBackBtn];
 }
 
@@ -710,9 +710,9 @@ static const inline BOOL isIpad() {
         
         //改变设备标识
         if (self.moviePlayer.movieFullscreen) {
-            self.currentOrientation = UIInterfaceOrientationLandscapeRight;
+            self.currentOrientation = UIDeviceOrientationLandscapeLeft;
         }else{
-            self.currentOrientation = UIInterfaceOrientationPortrait;
+            self.currentOrientation = UIDeviceOrientationPortrait;
         }
         
         [self.moviePlayer setFullscreen:self.moviePlayer.movieFullscreen orientation:self.currentOrientation animated:YES];
@@ -787,7 +787,7 @@ static const inline BOOL isIpad() {
             [self startDurationTimer];
             
             //播放状态下切换全屏不再次显示控制层
-            if (self.currentOrientation == UIInterfaceOrientationLandscapeLeft || self.currentOrientation == UIInterfaceOrientationLandscapeRight) {
+            if (self.currentOrientation == UIDeviceOrientationLandscapeLeft || self.currentOrientation == UIDeviceOrientationLandscapeRight) {
                 [self hideControls:nil];
             }else{
                 [self showControls:nil autoHide:YES];

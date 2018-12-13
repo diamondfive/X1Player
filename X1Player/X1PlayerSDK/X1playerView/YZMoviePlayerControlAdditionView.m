@@ -332,8 +332,13 @@ typedef NS_ENUM(NSInteger, PanDirection){
     
     if (sender.isSelected) {
         self.controls.isLocked = YES;
+        [[NSNotificationCenter defaultCenter] postNotificationName:X1PlayerViewOnClickLockScreenBtnNotification object:nil];
+        
     }else{
         self.controls.isLocked = NO;
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:X1PlayerViewOnClickUnLockScreenBtnNotification object:nil];
+        
     }
     
 }
@@ -526,6 +531,7 @@ typedef NS_ENUM(NSInteger, PanDirection){
     } else {
         ([UIScreen mainScreen].brightness -= value / 10000);
     }
+
 }
 
 

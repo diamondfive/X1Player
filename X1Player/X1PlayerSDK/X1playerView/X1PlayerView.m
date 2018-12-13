@@ -18,7 +18,14 @@
 //点击小窗的通知
 NSString * const X1PlayerViewOnClickFloatViewNotification = @"X1PlayerViewOnClickFloatViewNotification";
 //点击小窗关闭按钮的通知
-NSString * const X1PlayerVuewOnClickCloseFloatViewBtnNotification = @"X1PlayerVuewOnClickCloseFloatViewBtnNotification";
+NSString * const X1PlayerViewOnClickCloseFloatViewBtnNotification = @"X1PlayerViewOnClickCloseFloatViewBtnNotification";
+
+//点击了锁屏操作的通知
+NSString * const X1PlayerViewOnClickLockScreenBtnNotification = @"X1PlayererViewOnClickLockScreenBtnNotification";
+
+//点击了取消锁屏操作的通知
+NSString * const X1PlayerViewOnClickUnLockScreenBtnNotification = @"X1PlayerViewOnClickUnLockScreenBtnNotification";
+
 
 //globalPlayerView在小窗的情况下有值
 static X1PlayerView  *GlobalPlayerView;
@@ -243,19 +250,20 @@ static X1PlayerView  *GlobalPlayerView;
     
 }
 
-//展示重播视图
--(void)showReplayView{
-    
-    [self.moviePlayer showReplayView];
-}
+////展示重播视图
+//-(void)showReplayView{
+//    
+//    [self.moviePlayer showReplayView];
+//}
 
 
 //屏幕旋转时调用
--(void)rorateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation animated:(BOOL)animated{
+-(void)rorateToDeviceOrientation:(UIDeviceOrientation)deviceOrientation animated:(BOOL)animated{
     
     //播放器旋转
-    [self.moviePlayer rorateToOrientation:interfaceOrientation animated:animated];
+    [self.moviePlayer rorateToOrientation:deviceOrientation animated:animated];
 }
+
 
 
 #pragma mark -- Internal Method
@@ -349,6 +357,11 @@ static X1PlayerView  *GlobalPlayerView;
 //注册通知,设置通知回调
 - (void)registerNotification
 {
+    /*********************** 设备旋转通知   *************************/
+    
+    //旋转通知
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceOrientationChanged:) name:UIDeviceOrientationDidChangeNotification object:nil];
+    
     /*********************** 注册播放器相关的通知 *********************/
     //播放器将要进入全屏通知
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moviePlayerWillEnterFullscreen:) name:YZMoviePlayerWillEnterFullscreenNotification object:nil];
@@ -378,6 +391,37 @@ static X1PlayerView  *GlobalPlayerView;
     
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
+//设备旋转通知
+-(void)deviceOrientationChanged:(NSNotification*)notification{
+    
+    if (self.isLocked == true) {
+        
+        [self.moviePlayer showLockedHint];
+        return;
+    }
+    
+    
+    UIDeviceOrientation currentOrientation = [[UIDevice currentDevice] orientation];
+    NSLog(@"toDeviceOrientation%ld",(long)currentOrientation);
+
+    switch(currentOrientation){
+        case UIDeviceOrientationPortrait:{
+            [self rorateToDeviceOrientation:currentOrientation animated:YES];
+        }
+            break;
+        case UIDeviceOrientationLandscapeRight:{
+            [self rorateToDeviceOrientation:currentOrientation animated:YES];
+        }
+            break;
+        case UIDeviceOrientationLandscapeLeft:{
+            [self rorateToDeviceOrientation:currentOrientation animated:YES];
+        }
+            break;
+        default:
+            break;
+    }
+}
+
 //进入全屏通知
 -(void)moviePlayerWillEnterFullscreen:(NSNotification *)sender{
     if ([self.delegate respondsToSelector:@selector(x1PlayerViewOnWillEnterFullScreen:)]) {
@@ -555,7 +599,7 @@ static X1PlayerView  *GlobalPlayerView;
         [self.delegate x1PlayerViewOnClickCloseFloatViewBtn:self];
     }
     
-    [[NSNotificationCenter defaultCenter] postNotificationName:X1PlayerVuewOnClickCloseFloatViewBtnNotification object:self];
+    [[NSNotificationCenter defaultCenter] postNotificationName:X1PlayerViewOnClickCloseFloatViewBtnNotification object:self];
     
     [GlobalPlayerView viewDestroy];
     
