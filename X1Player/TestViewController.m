@@ -216,7 +216,7 @@ static inline BOOL IPhoneXSeries() {
 #pragma mark --导航栏返回按钮被点击
 -(void)navBackBtnClick:(UIButton *)sender{
     
-    [self.playerView showFloatViewWithFrame:CGRectMake(0, 300, 160, 90) showCloseBtn:YES];
+//    [self.playerView showFloatViewWithFrame:CGRectMake(0, 300, 160, 90) showCloseBtn:YES];
     
     [self.navigationController popViewControllerAnimated:YES];  //退出当前控制器
     

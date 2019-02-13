@@ -210,7 +210,9 @@ static X1PlayerView  *GlobalPlayerView;
         self.smallViewFrame = frame;
         [self.moviePlayer setFrame:frame];
         
-        self.fatherView = self.superview;
+        if (!self.fatherView) {
+            self.fatherView = self.superview;
+        }
         
         [[UIApplication sharedApplication].keyWindow addSubview:self.moviePlayer.view];
         GlobalPlayerView  = self;  //绑定全局变量
@@ -616,7 +618,9 @@ static X1PlayerView  *GlobalPlayerView;
 //切换横屏
 - (void)yzMoviePlayerControllerMoviePlayerWillEnterFullScreen {
     NSLog(@"X1PlayerView 将要进入了全屏");
-    self.fatherView = self.superview;
+    if (!self.fatherView) {
+        self.fatherView = self.superview;
+    }
 
     UIWindow *window = [[[UIApplication sharedApplication] delegate] window];
     [self setFrame:CGRectMake(0, 0, MAX(window.bounds.size.height, window.bounds.size.width), MIN(window.bounds.size.height, window.bounds.size.width))];
