@@ -5,7 +5,7 @@ X1Player是iOS端封装的播放器，支持直播 录播视频的播放,支持�
 
 ## 展示效果
 
-![展示效果](https://github.com/diamondfive/X1Player/blob/develop/showtime.png?raw=true)
+![展示效果](https://github.com/diamondfive/X1Player/blob/master/showtime.png?raw=true)
 
 
 ## 功能特性
