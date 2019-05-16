@@ -54,7 +54,7 @@ pod 'X1Player', '~> 1.1.5'
       
 ## 用例
 
-![结构图](https://github.com/diamondfive/X1Player/blob/develop/结构图.png?raw=true)
+![结构图](https://github.com/diamondfive/X1Player/blob/master/结构图.png?raw=true)
 ### 创建播放器
 X1Player主类为X1PlayerView，您需要先创建它并添加到合适的容器View中。
 
